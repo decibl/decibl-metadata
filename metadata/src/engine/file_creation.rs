@@ -7,7 +7,9 @@ use std::collections::BTreeMap;
 
 static APP_INFO: Lazy<ProjectDirs> = Lazy::new(|| ProjectDirs::from("com", "decibl", "desktop").unwrap());
 static CONFIG_FILE: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("config.yaml"));
+static DATABASE_FILE: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.data_dir().join("analytics.db"));
 
+// please make the yaml file look like this bruh
 pub struct Config {
     pub soundFilesPath: String,
 }
