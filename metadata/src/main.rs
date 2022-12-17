@@ -4,8 +4,13 @@ fn main() {
     println!("Hello, world!");
     engine::cringeit();
     engine::create_all_files();
-    engine::write_soundfiles_path("C:\\Users\\decib\\Desktop\\soundfiles");
-    let path = engine::get_soundfiles_path();
+    let exConfig = engine::Config {
+        soundFilesPath: String::from("C:\\Users\\james\\Documents\\GitHub\\cringeit\\metadata\\src\\test"),
+    };
 
-    println!("The path is: {}", path);
+    engine::write_whole_config(exConfig);
+    
+
+
+
 }
