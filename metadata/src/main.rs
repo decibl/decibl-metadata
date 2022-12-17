@@ -1,2 +1,6 @@
-use metadata::core;
-use metadata::tests;
+use metadata::engine;
+
+fn main() {
+    println!("Hello, world!");
+    engine::cringeit();
+}
