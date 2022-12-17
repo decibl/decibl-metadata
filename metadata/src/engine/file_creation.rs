@@ -34,14 +34,54 @@ pub fn write_whole_config(config: Config) {
     let mut file = File::create(config_file_str).expect("Unable to create file");
     file.write_all(yaml.as_bytes()).expect("Unable to write data");
 
-    println!("The path is: {}", yaml);
+    // println!("The path is: {}", yaml);
 
 }
 
+// make function write_config_var which accepts a string and a string and writes the string to the config file with the key being the string
+
+pub fn write_config_var(key: &str, value: &str) {
+    // write the path to the file
+    // turn CONFIG_FILE into a string
+    let config_file_str = CONFIG_FILE.to_str().unwrap();
+
+    // now open the yaml file
+    let mut file = File::open(config_file_str).expect("Unable to open file");
+    let mut contents = String::new();
+
+    file.read_to_string(&mut contents).expect("Unable to read string");
+
+    let mut deserialized_map: BTreeMap<String, String> = serde_yaml::from_str(&contents).unwrap();
+
+    // if the key already exists, overwrite it
+    if deserialized_map.contains_key(key) {
+        deserialized_map.insert(key.to_string(), value.to_string());
+    } else {
+        deserialized_map.insert(key.to_string(), value.to_string());
+    }
+
+    let yaml = serde_yaml::to_string(&deserialized_map).unwrap();
+
+    // write the yaml str to CONFIG_FILE
+
+    let mut writeFile = File::create(config_file_str).expect("Unable to create file");
+    writeFile.write_all(yaml.as_bytes()).expect("Unable to write data");
+
+    // println!("The path is: {}", yaml);
+
+    
+}
 
 
+pub fn get_config_as_str() -> String {
+    let config_file_str = CONFIG_FILE.to_str().unwrap();
+    let mut file = File::open(config_file_str).expect("Unable to open file");
+    let mut contents = String::new();
 
+    file.read_to_string(&mut contents).expect("Unable to read string");
 
+    contents
+}
 
 
 

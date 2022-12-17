@@ -9,7 +9,12 @@ fn main() {
     };
 
     engine::write_whole_config(exConfig);
-    
+    let config = engine::write_config_var("bruh", "bruhf");
+
+    let contents = engine::get_config_as_str();
+
+    println!("The contents are: {}", contents);
+
 
 
 
