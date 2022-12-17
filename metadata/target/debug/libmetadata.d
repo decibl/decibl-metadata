@@ -1,0 +1,1 @@
+C:\Users\drale\Documents\GitHub\decibl-metadata\metadata\target\debug\libmetadata.rlib: C:\Users\drale\Documents\GitHub\decibl-metadata\metadata\src\engine\file_creation.rs C:\Users\drale\Documents\GitHub\decibl-metadata\metadata\src\engine\mod.rs C:\Users\drale\Documents\GitHub\decibl-metadata\metadata\src\lib.rs
