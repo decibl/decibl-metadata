@@ -97,17 +97,117 @@ pub fn compile_song_paths_table() -> String {
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// create a HashMapw with keys string and <T> values
+// create a HashMap with key value pairs of <str, str>
 
-// SONGS
-// pub static SONGS_INSERTION_MAP<T>: HashMap<&'static str, T> = {
-// };
+pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("song_id", "");
+    map.insert("main_artist", "");
+    map.insert("filesize_bytes", "");
+    map.insert("padding_bytes", "");
+    map.insert("album_artwork_bit_depth", "");
+    map.insert("album_artwork_colors", "");
+    map.insert("album_artwork_height", "");
+    map.insert("album_artwork_width", "");
+    map.insert("bit_depth", "");
+    map.insert("bitrate", "");
+    map.insert("channels", "");
+    map.insert("duration", "");
+    map.insert("sample_rate", "");
+    map.insert("album", "");
+    map.insert("barcode", "");
+    map.insert("date_created", "");
+    map.insert("disc_number", "");
+    map.insert("disc_total", "");
+    map.insert("isrc", "");
+    map.insert("itunesadvisory", "");
+    map.insert("length", "");
+    map.insert("publisher", "");
+    map.insert("rating", "");
+    map.insert("title", "");
+    map.insert("track_number", "");
+    map.insert("track_total", "");
+    map.insert("source", "");
+    map
+
+});
+
+pub static PLAY_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("play_id", "");
+    map.insert("song_id", "");
+    map.insert("song_title", "");
+    map.insert("song_primary_artist", "");
+    map.insert("filesize_bytes", "");
+    map.insert("start_dt", "");
+    map.insert("end_dt", "");
+    map
+
+});
+
+pub static PLAYLIST_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("playlist_id", "");
+    map.insert("playlist_name", "");
+    map.insert("playlist_desc", "");
+    map.insert("created_dt", "");
+    map
+
+});
 
 
+pub static PLAYLIST_SONGS_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("playlist_id", "");
+    map.insert("song_id", "");
+    map.insert("added_dt", "");
+    map
 
+});
 
+pub static SONG_ARTISTS_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("artist_name", "");
+    map.insert("song_id", "");
+    map.insert("dt_added", "");
+    map
 
+});
 
+pub static ALBUM_ARTISTS_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("artist_name", "");
+    map.insert("song_id", "");
+    map.insert("dt_added", "");
+    map
+
+});
+
+pub static COMPOSERS_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("composer_name", "");
+    map.insert("song_id", "");
+    map.insert("dt_added", "");
+    map
+
+});
+
+pub static GENRES_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("genre_name", "");
+    map.insert("song_id", "");
+    map.insert("dt_added", "");
+    map
+
+});
+
+pub static SONGPATHS_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+    map.insert("song_id", "");
+    map.insert("song_path", "");
+    map
+
+});
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -226,7 +326,7 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
         },
         Column {
             name: "duration",
-            data_type: "INTEGER",
+            data_type: "FLOAT",
             primary_key: false,
             auto_increment: false,
             notes: "The duration of the song in seconds",
@@ -578,6 +678,7 @@ static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
     ],
 });
 
+
 // // GENRES TABLE
 // // genre_name TEXT NOT NULL,
 // // song_id TEXT NOT NULL,
@@ -609,6 +710,7 @@ static GENRES: Lazy<Table> = Lazy::new(|| Table {
         },
     ],
 });
+
 
 // // SONGPATHS TABLE
 // // song_id TEXT NOT NULL,
