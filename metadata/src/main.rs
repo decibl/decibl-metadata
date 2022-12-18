@@ -21,6 +21,11 @@ fn main() {
 
     let soundFilesPath = engine::get_test_soundfiles_path();    
     println!("The soundFilesPath is: {}", soundFilesPath);
+
+    let database_file_path = engine::get_database_file_path();
+    println!("The database_file_path is: {}", database_file_path);
+
+    engine::create_song_table();
     
 
 

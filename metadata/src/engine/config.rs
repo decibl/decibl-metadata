@@ -13,7 +13,7 @@ use std::collections::BTreeMap;
 
 pub static APP_INFO: Lazy<ProjectDirs> = Lazy::new(|| ProjectDirs::from("com", "decibl", "desktop").unwrap());
 pub static CONFIG_FILE_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("config.yaml"));
-pub static DATABASE_FILE_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.data_dir().join("analytics.db"));
+pub static DATABASE_FILE_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("analytics.db"));
 pub static TEST_SOUNDFILES_PATH: Lazy<path::PathBuf> = Lazy::new(|| path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).parent().unwrap().join("test_soundfiles"));
 
 
