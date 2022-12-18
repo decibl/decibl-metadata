@@ -15,6 +15,9 @@ fn main() {
 
     println!("The contents are: {}", contents);
 
+    let song_table_str = engine::compile_table(&engine::SONGS);
+    println!("The song table is: {}", song_table_str);
+
 
 
 

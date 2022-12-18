@@ -1,10 +1,9 @@
 // This file will hold all the different tables as models
 // We'll have structs for each table and a compile method which turns the struct into an sql string
 
-use std::collections::HashMap;
-use std::collections::Vec;
+use once_cell::sync::Lazy;
 
-struct Column {
+pub struct Column {
     name: &'static str,
     data_type: &'static str,
     primary_key: bool,
@@ -12,11 +11,76 @@ struct Column {
     notes: &'static str,
 }
 
-struct Table {
+pub struct Table {
     name: &'static str,
+    // make columns an array of the Column struct that is NOT a vector
     columns: Vec<Column>,
 }
 
+
+
+// make public function compile_table which takes a table and returns a valid SQL string for creating the table
+// has to accept a Lazy<Table> as a parameter
+
+pub fn compile_table(table: &Table) -> String {
+    let mut sql_string = String::from("CREATE TABLE IF NOT EXISTS ");
+    sql_string.push_str(table.name);
+    sql_string.push_str(" (");
+    for column in &table.columns {
+        sql_string.push_str(column.name);
+        sql_string.push_str(" ");
+        sql_string.push_str(column.data_type);
+        if column.primary_key {
+            sql_string.push_str(" PRIMARY KEY");
+        }
+        if column.auto_increment {
+            sql_string.push_str(" AUTOINCREMENT");
+        }
+        sql_string.push_str(", ");
+    }
+    sql_string.pop();
+    sql_string.pop();
+    sql_string.push_str(");");
+    sql_string
+}
+
+// now make compiles for each table
+
+pub fn compile_songs_table() -> String {
+    compile_table(&SONGS)
+}
+
+pub fn compile_plays_table() -> String {
+    compile_table(&PLAYS)
+}   
+
+pub fn compile_playlists_table() -> String {
+    compile_table(&PLAYLISTS)
+}
+
+pub fn compile_playlist_songs_table() -> String {
+    compile_table(&PLAYLIST_SONGS)
+}
+
+pub fn compile_song_artists_table() -> String {
+    compile_table(&SONG_ARTISTS)
+}
+
+pub fn compile_album_artists_table() -> String {
+    compile_table(&ALBUM_ARTISTS)
+}
+
+pub fn compile_composers_table() -> String {
+    compile_table(&COMPOSERS)
+}
+
+pub fn compile_genres_table() -> String {
+    compile_table(&GENRES)
+}
+
+pub fn compile_song_paths_table() -> String {
+    compile_table(&SONG_PATHS)
+}
 // SONG TABLE
 // "song_id": "N/A", # string
 // "main_artist": "N/A", # string
@@ -46,9 +110,9 @@ struct Table {
 // "track_total": -1, # int
 // "source": "N/A", # string
 //     # }
-static SONGS: Table = Table {
+pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
     name: "songs",
-    columns: [
+    columns: vec![
         Column {
             name: "song_id",
             data_type: "INTEGER",
@@ -65,7 +129,7 @@ static SONGS: Table = Table {
         },
         Column {
             name: "filesize_bytes",
-            data_type: "INTEGER",
+            data_type: "BIGINT",
             primary_key: false,
             auto_increment: false,
             notes: "The size of the song in bytes",
@@ -246,20 +310,20 @@ static SONGS: Table = Table {
             notes: "The name of the main artist of the song",
         },
     ],
-};
+});
 
-// PLAYS TABLE
-// play_id INTEGER PRIMARY KEY AUTOINCREMENT,
-// song_title TEXT NOT NULL,
-// song_primary_artist TEXT NOT NULL,
-// filesize BIGINT,
-// start_dt TEXT NOT NULL,
-// end_dt TEXT NOT NULL,
-// song_id TEXT NOT NULL
+// // PLAYS TABLE
+// // play_id INTEGER PRIMARY KEY AUTOINCREMENT,
+// // song_title TEXT NOT NULL,
+// // song_primary_artist TEXT NOT NULL,
+// // filesize BIGINT,
+// // start_dt TEXT NOT NULL,
+// // end_dt TEXT NOT NULL,
+// // song_id TEXT NOT NULL
 
-static PLAYS: Table = Table {
+static PLAYS: Lazy<Table> = Lazy::new(|| Table {
     name: "plays",
-    columns: [
+    columns: vec![
         Column {
             name: "play_id",
             data_type: "INTEGER",
@@ -310,17 +374,17 @@ static PLAYS: Table = Table {
             notes: "The end date and time of the play in YYYY-MM-DD HH:MM:SS",
         }
     ],
-};
+});
 
-// PLAYLISTS TABLE
-// playlist_id INTEGER PRIMARY KEY AUTOINCREMENT,
-// playlist_name TEXT NOT NULL,
-// playlist_desc TEXT,
-// created_dt TEXT NOT NULL
+// // PLAYLISTS TABLE
+// // playlist_id INTEGER PRIMARY KEY AUTOINCREMENT,
+// // playlist_name TEXT NOT NULL,
+// // playlist_desc TEXT,
+// // created_dt TEXT NOT NULL
 
-static PLAYLISTS: Table = Table {
+static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
     name: "playlists",
-    columns: [
+    columns: vec![
         Column {
             name: "playlist_id",
             data_type: "INTEGER",
@@ -350,16 +414,16 @@ static PLAYLISTS: Table = Table {
             notes: "The date and time the playlist was created in YYYY-MM-DD HH:MM:SS",
         },
     ],
-};
+});
 
-// PLAYLIST_SONGS TABLE
-// playlist_id INTEGER NOT NULL,
-// song_id TEXT NOT NULL,
-// added_dt TEXT NOT NULL
+// // PLAYLIST_SONGS TABLE
+// // playlist_id INTEGER NOT NULL,
+// // song_id TEXT NOT NULL,
+// // added_dt TEXT NOT NULL
 
-static PLAYLIST_SONGS: Table = Table {
+static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {   
     name: "playlist_songs",
-    columns: [
+    columns: vec![
         Column {
             name: "playlist_id",
             data_type: "INTEGER",
@@ -382,16 +446,16 @@ static PLAYLIST_SONGS: Table = Table {
             notes: "The date and time the song was added to the playlist in YYYY-MM-DD HH:MM:SS",
         },
     ],
-};
+});
 
-// SONG ARTISTS TABLE
-// artist_name TEXT NOT NULL,
-// song_id TEXT NOT NULL,
-// dt_added TEXT NOT NULL
+// // SONG ARTISTS TABLE
+// // artist_name TEXT NOT NULL,
+// // song_id TEXT NOT NULL,
+// // dt_added TEXT NOT NULL
 
-static SONG_ARTISTS: Table = Table {
+static SONG_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
     name: "song_artists",
-    columns: [
+    columns: vec![
         Column {
             name: "artist_name",
             data_type: "TEXT",
@@ -414,16 +478,16 @@ static SONG_ARTISTS: Table = Table {
             notes: "The date and time the artist was added to the song in YYYY-MM-DD HH:MM:SS",
         },
     ],
-};
+});
 
-// ALBUM ARTISTS TABLE
-// artist_name TEXT NOT NULL,
-// song_id TEXT NOT NULL,
-// dt_added TEXT NOT NULL
+// // ALBUM ARTISTS TABLE
+// // artist_name TEXT NOT NULL,
+// // song_id TEXT NOT NULL,
+// // dt_added TEXT NOT NULL
 
-static ALBUM_ARTISTS: Table = Table {
+static ALBUM_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
     name: "album_artists",
-    columns: [
+    columns: vec![
         Column {
             name: "artist_name",
             data_type: "TEXT",
@@ -446,16 +510,16 @@ static ALBUM_ARTISTS: Table = Table {
             notes: "The date and time the artist was added to the song in YYYY-MM-DD HH:MM:SS",
         },
     ],
-};
+});
 
-// COMPOSERS TABLE
-// composer_name TEXT NOT NULL,
-// song_id TEXT NOT NULL,
-// dt_added TEXT NOT NULL
+// // COMPOSERS TABLE
+// // composer_name TEXT NOT NULL,
+// // song_id TEXT NOT NULL,
+// // dt_added TEXT NOT NULL
 
-static COMPOSERS: Table = Table {
+static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
     name: "composers",
-    columns: [
+    columns: vec![
         Column {
             name: "composer_name",
             data_type: "TEXT",
@@ -478,16 +542,16 @@ static COMPOSERS: Table = Table {
             notes: "The date and time the composer was added to the song in YYYY-MM-DD HH:MM:SS",
         },
     ],
-};
+});
 
-// GENRES TABLE
-// genre_name TEXT NOT NULL,
-// song_id TEXT NOT NULL,
-// dt_added TEXT NOT NULL
+// // GENRES TABLE
+// // genre_name TEXT NOT NULL,
+// // song_id TEXT NOT NULL,
+// // dt_added TEXT NOT NULL
 
-static GENRES: Table = Table {
+static GENRES: Lazy<Table> = Lazy::new(|| Table {
     name: "genres",
-    columns: [
+    columns: vec![
         Column {
             name: "genre_name",
             data_type: "TEXT",
@@ -510,15 +574,15 @@ static GENRES: Table = Table {
             notes: "The date and time the genre was added to the song in YYYY-MM-DD HH:MM:SS",
         },
     ],
-};
+});
 
-// SONGPATHS TABLE
-// song_id TEXT NOT NULL,
-// song_path TEXT NOT NULL,
+// // SONGPATHS TABLE
+// // song_id TEXT NOT NULL,
+// // song_path TEXT NOT NULL,
 
-static SONGPATHS: Table = Table {
+static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
     name: "songpaths",
-    columns: [
+    columns: vec![
         Column {
             name: "song_id",
             data_type: "TEXT",
@@ -534,4 +598,5 @@ static SONGPATHS: Table = Table {
             notes: "The path to the song",
         },
     ],
-};
+});
+
