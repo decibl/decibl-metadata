@@ -113,7 +113,7 @@ pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::n
     map.insert("bitrate", "");
     map.insert("channels", "");
     map.insert("duration", "");
-    map.insert("sample_rate", "");
+    map.insert("sample_rate_khz", "");
     map.insert("album", "");
     map.insert("barcode", "");
     map.insert("date_created", "");
@@ -209,6 +209,17 @@ pub static SONGPATHS_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = La
 
 });
 
+// make function to return a clone of a given map
+
+pub fn clone_map(map: &HashMap<&'static str, &'static str>) -> HashMap<&'static str, &'static str> {
+    let mut new_map: HashMap<&'static str, &'static str> = HashMap::new();
+
+    for (key, value) in map {
+        new_map.insert(key, value);
+    }
+
+    new_map
+}
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //                                                                      BEGIN MODELS
@@ -228,7 +239,7 @@ pub static SONGPATHS_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = La
 // "bitrate": -1, # in bits, divide by 1000 to get Kbps
 // "channels": -1, # int
 // "duration": -1, # in seconds
-// "sample_rate": -1, # in KHz
+// "sample_rate_khz": -1, # in KHz
 // "album": "N/A", # string
 // "barcode": "N/A", # string
 // "date_created": "N/A", # in YYYY-MM-DD

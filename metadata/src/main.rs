@@ -1,5 +1,6 @@
 use metadata::engine;
 use std::path;
+use std::collections::HashMap;
 
 fn main() {
     // println!("Hello, world!");
@@ -25,7 +26,17 @@ fn main() {
     let database_file_path = engine::get_database_file_path();
     println!("The database_file_path is: {}", database_file_path);
 
-    engine::clear_all_tables();
+    // pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    
+    // copy SONG_TABLE_DATA from engine::models into a new HashMap
+    let mut song_table_data = engine::clone_map(&engine::SONG_TABLE_DATA);
+
+    // set song_table_data["song_id"] to "test"
+
+    song_table_data.insert("song_id", "test");
+
+
+    engine::insert_song(song_table_data);
     
 
 
