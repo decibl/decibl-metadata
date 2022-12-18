@@ -20,7 +20,6 @@ pub struct Table {
 
 
 // make public function compile_table which takes a table and returns a valid SQL string for creating the table
-// has to accept a Lazy<Table> as a parameter
 
 pub fn compile_table(table: &Table) -> String {
     let mut sql_string = String::from("CREATE TABLE IF NOT EXISTS ");
@@ -82,6 +81,10 @@ pub fn compile_song_paths_table() -> String {
     compile_table(&SONGPATHS)
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//                                                                      BEGIN MODELS
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // SONG TABLE
 // "song_id": "N/A", # string
 // "main_artist": "N/A", # string

@@ -1,4 +1,5 @@
 use metadata::engine;
+use std::path;
 
 fn main() {
     println!("Hello, world!");
@@ -17,6 +18,10 @@ fn main() {
 
     let song_table_str = engine::compile_table(&engine::SONGS);
     println!("The song table is: {}", song_table_str);
+
+    let soundFilesPath = engine::get_test_soundfiles_path();    
+    println!("The soundFilesPath is: {}", soundFilesPath);
+    
 
 
 
