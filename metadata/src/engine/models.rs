@@ -79,8 +79,9 @@ pub fn compile_genres_table() -> String {
 }
 
 pub fn compile_song_paths_table() -> String {
-    compile_table(&SONG_PATHS)
+    compile_table(&SONGPATHS)
 }
+
 // SONG TABLE
 // "song_id": "N/A", # string
 // "main_artist": "N/A", # string
