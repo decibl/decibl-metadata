@@ -54,7 +54,7 @@ pub fn compile_table(table: &Table) -> String {
 
 // now make compiles for each table
 
-pub fn compile_songs_table() -> String {
+pub fn compile_song_table() -> String {
     compile_table(&SONGS)
 }
 
