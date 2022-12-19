@@ -1,5 +1,5 @@
 #![allow(warnings)]
-use metadata::engine::*;
+use metadata::engine::{*, self};
 use std::path;
 use std::collections::HashMap;
 
@@ -31,7 +31,7 @@ fn main() {
     
     // make a SONG_TABLE_DATA object from struct engine::SONG_TABLE_DATA
     let mut song_table_data = engine::SONG_TABLE_DATA {
-        song_id: String::from("bruh"),
+        song_id: String::from("b3ru2h"),
         main_artist: String::from("bruh"),
         filesize_bytes: 0,
         padding_bytes: 0,
@@ -71,8 +71,8 @@ fn main() {
 
     //engine::insert_song(song_table_data);
     
-    let mut test = AudioFileMP3::new("./02 - Gemstone.flac".to_string());
-    test.load_file();
+    // let mut test = AudioFileMP3::new("./02 - Gemstone.flac".to_string());
+    // test.load_file();
     
 
 
