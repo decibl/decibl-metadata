@@ -24,6 +24,7 @@ pub fn create_table(sql_query: String) {
         }
     }
 }
+
 pub fn create_song_table() {
     let song_sql_query = compile_song_table();
     create_table(song_sql_query)
