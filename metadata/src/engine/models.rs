@@ -131,7 +131,7 @@ pub struct PLAY_TABLE_DATA {
     pub play_id: String,
     pub song_id: String,
     pub song_title: String,
-    pub song_primary_artist: String,
+    pub main_artist: String,
     pub filesize_bytes: i64,
     pub start_dt: String,
     pub end_dt: String,
@@ -413,13 +413,13 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
 // // PLAYS TABLE
 // // play_id INTEGER PRIMARY KEY AUTOINCREMENT,
 // // song_title TEXT NOT NULL,
-// // song_primary_artist TEXT NOT NULL,
+// // main_artist TEXT NOT NULL,
 // // filesize BIGINT,
 // // start_dt TEXT NOT NULL,
 // // end_dt TEXT NOT NULL,
 // // song_id TEXT NOT NULL
 
-static PLAYS: Lazy<Table> = Lazy::new(|| Table {
+pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
     name: "plays",
     columns: vec![
         Column {
@@ -444,7 +444,7 @@ static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             notes: "The title of the song",
         },
         Column {
-            name: "song_primary_artist",
+            name: "main_artist",
             data_type: "TEXT",
             primary_key: false,
             auto_increment: false,
@@ -480,7 +480,7 @@ static PLAYS: Lazy<Table> = Lazy::new(|| Table {
 // // playlist_desc TEXT,
 // // created_dt TEXT NOT NULL
 
-static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
+pub static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
     name: "playlists",
     columns: vec![
         Column {
@@ -519,7 +519,7 @@ static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
 // // song_id TEXT NOT NULL,
 // // added_dt TEXT NOT NULL
 
-static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {   
+pub static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {   
     name: "playlist_songs",
     columns: vec![
         Column {
@@ -551,7 +551,7 @@ static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {
 // // song_id TEXT NOT NULL,
 // // dt_added TEXT NOT NULL
 
-static SONG_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
+pub static SONG_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
     name: "song_artists",
     columns: vec![
         Column {
@@ -583,7 +583,7 @@ static SONG_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
 // // song_id TEXT NOT NULL,
 // // dt_added TEXT NOT NULL
 
-static ALBUM_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
+pub static ALBUM_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
     name: "album_artists",
     columns: vec![
         Column {
@@ -615,7 +615,7 @@ static ALBUM_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
 // // song_id TEXT NOT NULL,
 // // dt_added TEXT NOT NULL
 
-static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
+pub static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
     name: "composers",
     columns: vec![
         Column {
@@ -648,7 +648,7 @@ static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
 // // song_id TEXT NOT NULL,
 // // dt_added TEXT NOT NULL
 
-static GENRES: Lazy<Table> = Lazy::new(|| Table {
+pub static GENRES: Lazy<Table> = Lazy::new(|| Table {
     name: "genres",
     columns: vec![
         Column {
@@ -680,7 +680,7 @@ static GENRES: Lazy<Table> = Lazy::new(|| Table {
 // // song_id TEXT NOT NULL,
 // // song_path TEXT NOT NULL,
 
-static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
+pub static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
     name: "songpaths",
     columns: vec![
         Column {
@@ -700,3 +700,26 @@ static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
     ],
 });
 
+// make fn generate_insertion_sql that takes a table and returns the SQL for inserting into that table
+// for example "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
+// static SONGS: Lazy<Table> = Lazy::new(|| Table {
+pub fn generate_insertion_sql(table: &Table) -> String {
+    let mut sql = String::from("INSERT INTO ");
+    sql.push_str(&table.name);
+    sql.push_str(" (");
+    for column in &table.columns {
+        sql.push_str(&column.name);
+        sql.push_str(", ");
+    }
+    sql.pop();
+    sql.pop();
+    sql.push_str(") VALUES (");
+    for _ in &table.columns {
+        sql.push_str("?, ");
+
+    }
+    sql.pop();
+    sql.pop();
+    sql.push_str(")");
+    sql
+}

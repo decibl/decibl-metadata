@@ -108,53 +108,262 @@ pub fn clear_all_tables() {
 // make function insert_song which inserts a file into a song database.
 // has to be compatible with this hashmap pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
 
-    pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
-        let conn = Connection::open(get_database_file_path());
-    
-        // example query
-        let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
-    
-        match conn {
-            Ok(conn) => {
-                conn.execute(
-                    &sql_query,
-                    params![
-                        song_table_data.song_id,
-                        song_table_data.main_artist,
-                        song_table_data.filesize_bytes,
-                        song_table_data.padding_bytes,
-                        song_table_data.album_artwork_bit_depth,
-                        song_table_data.album_artwork_colors,
-                        song_table_data.album_artwork_height,
-                        song_table_data.album_artwork_width,
-                        song_table_data.bit_depth,
-                        song_table_data.bitrate,
-                        song_table_data.channels,
-                        song_table_data.duration,
-                        song_table_data.sample_rate_khz,
-                        song_table_data.album,
-                        song_table_data.barcode,
-                        song_table_data.date_created,
-                        song_table_data.disc_number,
-                        song_table_data.disc_total,
-                        song_table_data.isrc,
-                        song_table_data.itunesadvisory,
-                        song_table_data.length,
-                        song_table_data.publisher,
-                        song_table_data.rating,
-                        song_table_data.title,
-                        song_table_data.track_number,
-                        song_table_data.track_total,
-                        song_table_data.source
-                    ],
-                )
-                .unwrap();
-            }
-            Err(e) => {
-                println!("Error: {}", e);
-            }
+pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
+    let conn = Connection::open(get_database_file_path());
+
+    // example query
+    // let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
+    // INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27)
+    // static SONGS: Lazy<Table> = Lazy::new(|| Table {
+    // pub fn generate_insertion_sql(table: Lazy<Table>) -> String {
+
+    let sql_query = generate_insertion_sql(&SONGS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    song_table_data.song_id,
+                    song_table_data.main_artist,
+                    song_table_data.filesize_bytes,
+                    song_table_data.padding_bytes,
+                    song_table_data.album_artwork_bit_depth,
+                    song_table_data.album_artwork_colors,
+                    song_table_data.album_artwork_height,
+                    song_table_data.album_artwork_width,
+                    song_table_data.bit_depth,
+                    song_table_data.bitrate,
+                    song_table_data.channels,
+                    song_table_data.duration,
+                    song_table_data.sample_rate_khz,
+                    song_table_data.album,
+                    song_table_data.barcode,
+                    song_table_data.date_created,
+                    song_table_data.disc_number,
+                    song_table_data.disc_total,
+                    song_table_data.isrc,
+                    song_table_data.itunesadvisory,
+                    song_table_data.length,
+                    song_table_data.publisher,
+                    song_table_data.rating,
+                    song_table_data.title,
+                    song_table_data.track_number,
+                    song_table_data.track_total,
+                    song_table_data.source
+                ],
+            )
+            .unwrap();
+        }
+        Err(e) => {
+            println!("Error: {}", e);
         }
     }
+}
+
+pub fn insert_play(plays: PLAY_TABLE_DATA) {
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&PLAYS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    plays.play_id,
+                    plays.song_id,
+                    plays.song_title,
+                    plays.main_artist,
+                    plays.filesize_bytes,
+                    plays.start_dt,
+                    plays.end_dt
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+}
+
+pub fn insert_playlist(playlist: PLAYLIST_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&PLAYLISTS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    playlist.playlist_id,
+                    playlist.playlist_name,
+                    playlist.playlist_desc,
+                    playlist.created_dt,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
+pub fn insert_playlist_song(playlist_song: PLAYLIST_SONGS_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&PLAYLIST_SONGS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    playlist_song.playlist_id,
+                    playlist_song.song_id,
+                    playlist_song.added_dt,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
+pub fn insert_song_artist(song_artist: SONG_ARTISTS_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&SONG_ARTISTS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    song_artist.song_id,
+                    song_artist.artist_name,
+                    song_artist.dt_added,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
+pub fn insert_album_artist(album_artist: ALBUM_ARTISTS_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&ALBUM_ARTISTS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    album_artist.song_id,
+                    album_artist.artist_name,
+                    album_artist.dt_added,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
+pub fn insert_composer(composer: COMPOSERS_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&COMPOSERS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    composer.song_id,
+                    composer.composer_name,
+                    composer.dt_added,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
+pub fn insert_genre(genre: GENRES_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&GENRES);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    genre.song_id,
+                    genre.genre_name,
+                    genre.dt_added,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
+pub fn insert_songpath(songpath: SONGPATHS_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&SONGPATHS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    songpath.song_id,
+                    songpath.song_path,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
