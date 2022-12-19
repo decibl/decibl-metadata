@@ -3,30 +3,7 @@ use metadata::engine::{*, self};
 use std::path;
 use std::collections::HashMap;
 
-fn main() {
-    // println!("Hello, world!");
-    // engine::cringeit();
-    // engine::create_all_files();
-    // let exConfig = engine::Config {
-    //     soundFilesPath: String::from("C:\\Users\\james\\Documents\\GitHub\\cringeit\\metadata\\src\\test"),
-    // };
-
-    // engine::write_whole_config(exConfig);
-    // let config = engine::write_config_var("bruh", "bruhf");
-
-    // let contents = engine::get_config_as_str();
-
-    // println!("The contents are: {}", contents);
-
-    // let song_table_str = engine::compile_table(&engine::SONGS);
-    // println!("The song table is: {}", song_table_str);
-
-    // let soundFilesPath = engine::get_test_soundfiles_path();    
-    // println!("The soundFilesPath is: {}", soundFilesPath);
-
-    //let database_file_path = engine::get_database_file_path();
-    //println!("The database_file_path is: {}", database_file_path);
-
+fn salshit() {
     engine::create_all_tables();
     
     // make a SONG_TABLE_DATA object from struct engine::SONG_TABLE_DATA
@@ -61,6 +38,42 @@ fn main() {
     };
 
     engine::insert_song(song_table_data);
+}
+
+fn jeffshit() {
+    let mut test = AudioFileMP3::new("./test1.flac".to_string());
+    test.load_file();
+}
+fn main() {
+    //sal this for u
+    //salshit();
+
+    jeffshit();
+
+    // println!("Hello, world!");
+    // engine::cringeit();
+    // engine::create_all_files();
+    // let exConfig = engine::Config {
+    //     soundFilesPath: String::from("C:\\Users\\james\\Documents\\GitHub\\cringeit\\metadata\\src\\test"),
+    // };
+
+    // engine::write_whole_config(exConfig);
+    // let config = engine::write_config_var("bruh", "bruhf");
+
+    // let contents = engine::get_config_as_str();
+
+    // println!("The contents are: {}", contents);
+
+    // let song_table_str = engine::compile_table(&engine::SONGS);
+    // println!("The song table is: {}", song_table_str);
+
+    // let soundFilesPath = engine::get_test_soundfiles_path();    
+    // println!("The soundFilesPath is: {}", soundFilesPath);
+
+    //let database_file_path = engine::get_database_file_path();
+    //println!("The database_file_path is: {}", database_file_path);
+
+
     // copy SONG_TABLE_DATA from engine::models into a new HashMap
     //let mut song_table_data = engine::clone_map(&engine::SONG_TABLE_DATA);
 
@@ -70,9 +83,6 @@ fn main() {
 
 
     //engine::insert_song(song_table_data);
-    
-    // let mut test = AudioFileMP3::new("./02 - Gemstone.flac".to_string());
-    // test.load_file();
     
 
 

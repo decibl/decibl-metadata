@@ -243,6 +243,7 @@ dependencies = [
  "audiotags",
  "data-encoding",
  "directories-next",
+ "metaflac",
  "once_cell",
  "ring",
  "rusqlite",

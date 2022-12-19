@@ -13,6 +13,7 @@ serde_yaml = "0.8"
 audiotags = "0.4.1"
 data-encoding = "2.3.3"
 ring = "0.16.20"
+metaflac = "0.2"
 
 [dependencies.rusqlite]
 version = "0.28.0"
