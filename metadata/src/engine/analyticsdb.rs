@@ -179,81 +179,53 @@ pub fn clear_all_tables() {
 // make function insert_song which inserts a file into a song database.
 // has to be compatible with this hashmap pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
 
-pub fn insert_song(song_data: HashMap<&str, &str>) {
-    let conn = Connection::open(get_database_file_path());
-
-    // map.insert("song_id", "");
-    // map.insert("main_artist", "");
-    // map.insert("filesize_bytes", "");
-    // map.insert("padding_bytes", "");
-    // map.insert("album_artwork_bit_depth", "");
-    // map.insert("album_artwork_colors", "");
-    // map.insert("album_artwork_height", "");
-    // map.insert("album_artwork_width", "");
-    // map.insert("bit_depth", "");
-    // map.insert("bitrate", "");
-    // map.insert("channels", "");
-    // map.insert("duration", "");
-    // map.insert("sample_rate_khz", "");
-    // map.insert("album", "");
-    // map.insert("barcode", "");
-    // map.insert("date_created", "");
-    // map.insert("disc_number", "");
-    // map.insert("disc_total", "");
-    // map.insert("isrc", "");
-    // map.insert("itunesadvisory", "");
-    // map.insert("length", "");
-    // map.insert("publisher", "");
-    // map.insert("rating", "");
-    // map.insert("title", "");
-    // map.insert("track_number", "");
-    // map.insert("track_total", "");
-    // map.insert("source", "");
+    pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
+        let conn = Connection::open(get_database_file_path());
     
-    // example query
-    let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(
-                &sql_query,
-                params![
-                    song_data["song_id"],
-                    song_data["main_artist"],
-                    song_data["filesize_bytes"],
-                    song_data["padding_bytes"],
-                    song_data["album_artwork_bit_depth"],
-                    song_data["album_artwork_colors"],
-                    song_data["album_artwork_height"],
-                    song_data["album_artwork_width"],
-                    song_data["bit_depth"],
-                    song_data["bitrate"],
-                    song_data["channels"],
-                    song_data["duration"],
-                    song_data["sample_rate_khz"],
-                    song_data["album"],
-                    song_data["barcode"],
-                    song_data["date_created"],
-                    song_data["disc_number"],
-                    song_data["disc_total"],
-                    song_data["isrc"],
-                    song_data["itunesadvisory"],
-                    song_data["length"],
-                    song_data["publisher"],
-                    song_data["rating"],
-                    song_data["title"],
-                    song_data["track_number"],
-                    song_data["track_total"],
-                    song_data["source"]
-                ],
-            )
-            .unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
+        // example query
+        let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
+    
+        match conn {
+            Ok(conn) => {
+                conn.execute(
+                    &sql_query,
+                    params![
+                        song_table_data.song_id,
+                        song_table_data.main_artist,
+                        song_table_data.filesize_bytes,
+                        song_table_data.padding_bytes,
+                        song_table_data.album_artwork_bit_depth,
+                        song_table_data.album_artwork_colors,
+                        song_table_data.album_artwork_height,
+                        song_table_data.album_artwork_width,
+                        song_table_data.bit_depth,
+                        song_table_data.bitrate,
+                        song_table_data.channels,
+                        song_table_data.duration,
+                        song_table_data.sample_rate_khz,
+                        song_table_data.album,
+                        song_table_data.barcode,
+                        song_table_data.date_created,
+                        song_table_data.disc_number,
+                        song_table_data.disc_total,
+                        song_table_data.isrc,
+                        song_table_data.itunesadvisory,
+                        song_table_data.length,
+                        song_table_data.publisher,
+                        song_table_data.rating,
+                        song_table_data.title,
+                        song_table_data.track_number,
+                        song_table_data.track_total,
+                        song_table_data.source
+                    ],
+                )
+                .unwrap();
+            }
+            Err(e) => {
+                println!("Error: {}", e);
+            }
         }
     }
-}
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------

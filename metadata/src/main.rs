@@ -22,22 +22,43 @@ fn main() {
 
     // let soundFilesPath = engine::get_test_soundfiles_path();    
     // println!("The soundFilesPath is: {}", soundFilesPath);
-
     let database_file_path = engine::get_database_file_path();
     println!("The database_file_path is: {}", database_file_path);
 
-    // pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    engine::create_all_tables();
     
-    // copy SONG_TABLE_DATA from engine::models into a new HashMap
-    let mut song_table_data = engine::clone_map(&engine::SONG_TABLE_DATA);
-
-    // set song_table_data["song_id"] to "test"
-
-    song_table_data.insert("song_id", "test");
-
+    // make a SONG_TABLE_DATA object from struct engine::SONG_TABLE_DATA
+    let mut song_table_data = engine::SONG_TABLE_DATA {
+        song_id: String::from("bruh"),
+        main_artist: String::from("bruh"),
+        filesize_bytes: 0,
+        padding_bytes: 0,
+        album_artwork_bit_depth: 0,
+        album_artwork_colors: 0,
+        album_artwork_height: 0,
+        album_artwork_width: 0,
+        bit_depth: 0,
+        bitrate: 0,
+        channels: 0,
+        duration: 0.0,
+        sample_rate_khz: 0,
+        album: String::from("bruh"),
+        barcode: String::from("bruh"),
+        date_created: String::from("bruh"),
+        disc_number: 0,
+        disc_total: 0,
+        isrc: String::from("bruh"),
+        itunesadvisory: String::from("bruh"),
+        length: 0,
+        publisher: String::from("bruh"),
+        rating: 0,
+        title: String::from("bruh"),
+        track_number: 0,
+        track_total: 0,
+        source: String::from("bruh"),
+    };
 
     engine::insert_song(song_table_data);
-    
 
 
 
