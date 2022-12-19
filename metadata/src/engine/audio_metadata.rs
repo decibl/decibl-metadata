@@ -114,7 +114,6 @@ impl AudioFile for AudioFileMP3 {
         println!("hash: {}", self.hash);
         let mut tag = Tag::new().read_from_path(self.filepath.clone()).unwrap();
         //print tag
-        println!("tag: {:?}", tag.title());
         //self.metadata.insert("title".to_string(), tag.title().unwrap().to_string());
 
 
