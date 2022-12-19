@@ -1,12 +1,8 @@
 use rusqlite::params;
-use rusqlite::NO_PARAMS;
-use rusqlite::{Connection, Result};
-// use models and config from current directory
+use rusqlite::{Connection};
 use crate::engine::config::*;
 use crate::engine::models::*;
 use std::collections::HashMap;
-use std::fs;
-use std::path;
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -20,7 +16,7 @@ pub fn create_song_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&song_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&song_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -34,7 +30,7 @@ pub fn create_plays_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&plays_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&plays_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -48,7 +44,7 @@ pub fn create_playlist_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&playlist_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&playlist_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -62,7 +58,7 @@ pub fn create_playlist_songs_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&playlist_song_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&playlist_song_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -76,7 +72,7 @@ pub fn create_song_artists_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&song_artists_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&song_artists_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -90,7 +86,7 @@ pub fn create_album_artists_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&album_artists_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&album_artists_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -104,7 +100,7 @@ pub fn create_composers_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&composers_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&composers_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -118,7 +114,7 @@ pub fn create_genres_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&genres_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&genres_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -132,7 +128,7 @@ pub fn create_song_paths_table() {
 
     match conn {
         Ok(conn) => {
-            conn.execute(&song_paths_sql_query, NO_PARAMS).unwrap();
+            conn.execute(&song_paths_sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
@@ -160,7 +156,7 @@ pub fn clear_all_tables() {
         let conn = Connection::open(get_database_file_path());
         match conn {
             Ok(conn) => {
-                conn.execute(&format!("DELETE FROM {}", table_name), NO_PARAMS)
+                conn.execute(&format!("DELETE FROM {}", table_name), [])
                     .unwrap();
             }
             Err(e) => {
