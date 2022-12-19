@@ -10,130 +10,63 @@ use std::collections::HashMap;
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-pub fn create_song_table() {
-    let song_sql_query = compile_song_table();
+// make pub fn create_table() which accepts a function that returns a string
+
+pub fn create_table(sql_query: String) {
     let conn = Connection::open(get_database_file_path());
 
     match conn {
         Ok(conn) => {
-            conn.execute(&song_sql_query, []).unwrap();
+            conn.execute(&sql_query, []).unwrap();
         }
         Err(e) => {
             println!("Error: {}", e);
         }
     }
+}
+pub fn create_song_table() {
+    let song_sql_query = compile_song_table();
+    create_table(song_sql_query)
 }
 
 pub fn create_plays_table() {
     let plays_sql_query = compile_plays_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&plays_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(plays_sql_query)
 }
 
 pub fn create_playlist_table() {
     let playlist_sql_query = compile_playlists_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&playlist_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(playlist_sql_query)
 }
 
 pub fn create_playlist_songs_table() {
     let playlist_song_sql_query = compile_playlist_songs_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&playlist_song_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(playlist_song_sql_query)
 }
 
 pub fn create_song_artists_table() {
     let song_artists_sql_query = compile_song_artists_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&song_artists_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(song_artists_sql_query)
 }
 
 pub fn create_album_artists_table() {
     let album_artists_sql_query = compile_album_artists_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&album_artists_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(album_artists_sql_query)
 }
 
 pub fn create_composers_table() {
     let composers_sql_query = compile_composers_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&composers_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(composers_sql_query)
 }
 
 pub fn create_genres_table() {
     let genres_sql_query = compile_genres_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&genres_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(genres_sql_query)
 }
 
 pub fn create_song_paths_table() {
     let song_paths_sql_query = compile_song_paths_table();
-    let conn = Connection::open(get_database_file_path());
-
-    match conn {
-        Ok(conn) => {
-            conn.execute(&song_paths_sql_query, []).unwrap();
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
+    create_table(song_paths_sql_query)
 }
 
 pub fn create_all_tables() {
