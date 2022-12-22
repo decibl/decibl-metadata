@@ -105,19 +105,19 @@ pub fn compile_albums_table() -> String {
 
 pub struct SONG_TABLE_DATA  {
     pub song_id: String,
-    pub main_artist: String,
-    pub filesize_bytes: i64,
+    pub main_artist: String, // yes
+    pub filesize_bytes: i64, 
     pub padding_bytes: i64,
-    pub album_artwork_bit_depth: i64,
-    pub album_artwork_colors: i64,
-    pub album_artwork_height: i64,
-    pub album_artwork_width: i64,
+    pub album_artwork_bit_depth: i64, // picture::depth
+    pub album_artwork_colors: i64, // picture::num_colors
+    pub album_artwork_height: i64, // picture::height
+    pub album_artwork_width: i64, // picture::width
     pub bit_depth: i64,
-    pub bitrate: i64,
-    pub channels: i64,
+    pub bitrate: i64, // streaminfo::bits_per_sample
+    pub channels: i64, // streaminfo::num_channels
     pub duration: f64,
-    pub sample_rate: i64,
-    pub album: String,
+    pub sample_rate: i64, // StreamInfo::sample_rate
+    pub album: String, // VorbisComment::album
     pub barcode: String,
     pub date_created: String,
     pub disc_number: i64,
@@ -127,10 +127,10 @@ pub struct SONG_TABLE_DATA  {
     pub length: i64,
     pub publisher: String,
     pub rating: i64,
-    pub title: String,
-    pub track_number: i64,
-    pub track_total: i64,
-    pub source: String,
+    pub title: String, // vorbisComment::title
+    pub track_number: i64, // cueSheet:catalog_number
+    pub track_total: i64, // cueSheet: tracks
+    pub source: String, 
 }
 
 pub struct PLAY_TABLE_DATA {

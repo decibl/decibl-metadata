@@ -3,6 +3,12 @@
 use decibl_metadata::engine::{*, self};
 use std::path;
 use std::collections::HashMap;
+use audiotags::{Tag, Picture, MimeType};
+use symphonia::core::formats::FormatOptions;
+use symphonia::core::meta::MetadataOptions;
+use symphonia::core::io::MediaSourceStream;
+use symphonia::core::probe::Hint;
+
 
 fn test_insert_song(){
     engine::create_all_tables();
@@ -41,7 +47,8 @@ fn test_insert_song(){
 
     engine::insert_song(song_table_data);
 }
-fn salshit() {
+
+fn test_config_shit(){
     engine::create_all_tables();
     let tablenames = engine::get_all_table_names();
     println!("The tablenames are: {:?}", tablenames);
@@ -52,13 +59,40 @@ fn salshit() {
 
 }
 
+// C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/src/enemy.flac
+
+fn salshit() {
+    let args = std::env::args().collect::<Vec<String>>();
+    let path = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/src/enemy.flac";   
+
+    let src = std::fs::File::open(path).unwrap();
+
+    let mss = MediaSourceStream::new(Box::new(src), Default::default());
+    let mut hint = Hint::new();
+    hint.with_extension("flac");
+
+    let meta_opts = MetadataOptions::default();
+    let format_opts = FormatOptions::default();
+
+    let probed = symphonia::default::get_probe().format(&hint, mss, &format_opts, &meta_opts).expect("failed to probe");
+
+    let mut format = probed.format;
+
+    let binding = format.metadata();
+    let meta = binding.current().unwrap().tags();
+
+    println!("The meta is: {:?}", meta);
+
+
+
+}
+
 fn jeffshit() {
     let mut test = AudioFileMP3::new("./test1.flac".to_string());
     test.load_file();
 }
 fn main() {
     //sal this for u
-    engine::create_all_files();
     salshit();
 
     // jeffshit();
@@ -67,7 +101,7 @@ fn main() {
     // engine::cringeit();
     // engine::create_all_files();
     // let exConfig = engine::Config {
-    //     soundFilesPath: String::from("C:\\Users\\james\\Documents\\GitHub\\cringeit\\metadata\\src\\test"),
+    //     soundFilesPath: String::from("C://Users//james//Documents//GitHub//cringeit//metadata//src//test"),
     // };
 
     // engine::write_whole_config(exConfig);
