@@ -14,6 +14,8 @@ use std::collections::BTreeMap;
 pub static APP_INFO: Lazy<ProjectDirs> = Lazy::new(|| ProjectDirs::from("com", "decibl", "desktop").unwrap());
 pub static CONFIG_FILE_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("config.yaml"));
 pub static DATABASE_FILE_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("analytics.db"));
+pub static ARTIST_PHOTO_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("artist_photos"));
+pub static ALBUM_PHOTO_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("album_photos"));
 pub static TEST_SOUNDFILES_PATH: Lazy<path::PathBuf> = Lazy::new(|| path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).parent().unwrap().join("test_soundfiles"));
 
 
@@ -29,7 +31,17 @@ pub fn get_test_soundfiles_path() -> String {
     TEST_SOUNDFILES_PATH.to_str().unwrap().to_string()
 }
 
+pub fn get_artist_photo_path() -> String {
+    ARTIST_PHOTO_PATH.to_str().unwrap().to_string()
+}
 
+pub fn get_album_photo_path() -> String {
+    ALBUM_PHOTO_PATH.to_str().unwrap().to_string()
+}
+
+pub fn get_soundfiles_path() -> String {
+    TEST_SOUNDFILES_PATH.to_str().unwrap().to_string()
+}
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 //                                                           CONFIG FILE
@@ -44,7 +56,15 @@ pub fn create_all_files() {
     // create config dir
     let config_dir = APP_INFO.config_dir();
     let config_file_path = CONFIG_FILE_PATH.to_str().unwrap();
+
     std::fs::create_dir_all(config_dir).unwrap();
+    std::fs::create_dir_all(ARTIST_PHOTO_PATH.to_str().unwrap()).unwrap();
+    std::fs::create_dir_all(ALBUM_PHOTO_PATH.to_str().unwrap()).unwrap();
+
+    // only create the config file if it doesn't exist
+    if std::path::Path::new(config_file_path).exists() {
+        return;
+    }
     let mut file = File::create(config_file_path).expect("Unable to create file");
     file.write_all("".as_bytes()).expect("Unable to write data");
 
@@ -79,6 +99,23 @@ pub fn write_config_var(key: &str, value: &str) {
 
     file.read_to_string(&mut contents).expect("Unable to read string");
 
+    // if the file is empty, create a new map
+    if contents.is_empty() {
+        let mut map  = BTreeMap::new();
+        map.insert(key.to_string(), value.to_string());
+
+        let yaml = serde_yaml::to_string(&map).unwrap();
+
+        // write the yaml str to CONFIG_FILE_PATH
+
+        let mut writeFile = File::create(config_file_str).expect("Unable to create file");
+        writeFile.write_all(yaml.as_bytes()).expect("Unable to write data");
+
+        // println!("The path is: {}", yaml);
+
+        return;
+    }
+
     let mut deserialized_map: BTreeMap<String, String> = serde_yaml::from_str(&contents).unwrap();
 
     // if the key already exists, overwrite it
@@ -101,6 +138,21 @@ pub fn write_config_var(key: &str, value: &str) {
 }
 
 
+/// Returns a tuple of the key and value of the config file for the given key
+pub fn get_config_var(key: &str) -> (String, String) {
+    let config_file_str = CONFIG_FILE_PATH.to_str().unwrap();
+    let mut file = File::open(config_file_str).expect("Unable to open file");
+    let mut contents = String::new();
+
+    file.read_to_string(&mut contents).expect("Unable to read string");
+
+    let deserialized_map: BTreeMap<String, String> = serde_yaml::from_str(&contents).unwrap();
+
+    let value = deserialized_map.get(key).unwrap();
+
+    (key.to_string(), value.to_string())
+}
+
 pub fn get_config_as_str() -> String {
     let config_file_str = CONFIG_FILE_PATH.to_str().unwrap();
     let mut file = File::open(config_file_str).expect("Unable to open file");
@@ -114,3 +166,4 @@ pub fn get_config_as_str() -> String {
 pub fn cringeit() {
     println!("Cringe!");
 }
+

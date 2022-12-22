@@ -45,6 +45,10 @@ fn salshit() {
     engine::create_all_tables();
     let tablenames = engine::get_all_table_names();
     println!("The tablenames are: {:?}", tablenames);
+    // engine::create_all_files();
+    let retn = engine::write_config_var("soundfiles_paths", "C:/Users/drale/Music/music/FavoritesPL");
+    let valuepair = engine::get_config_var("soundfiles_path");
+    println!("The valuepair is: {:?}", valuepair);
 
 }
 
@@ -54,6 +58,7 @@ fn jeffshit() {
 }
 fn main() {
     //sal this for u
+    engine::create_all_files();
     salshit();
 
     // jeffshit();

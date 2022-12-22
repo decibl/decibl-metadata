@@ -879,4 +879,7 @@ pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
     albums
 }
 
-// now some more, useful queries
+// now some more, useful functions
+
+
+// pub fn populate_database()
