@@ -12,17 +12,17 @@ use once_cell::sync::Lazy;
 
 
 pub struct Column {
-    name: &'static str,
-    data_type: &'static str,
-    primary_key: bool,
-    auto_increment: bool,
-    notes: &'static str,
+    pub name: &'static str,
+    pub data_type: &'static str,
+    pub primary_key: bool,
+    pub auto_increment: bool,
+    pub notes: &'static str,
 }
 
 pub struct Table {
-    name: &'static str,
+    pub name: &'static str,
     // make columns an array of the Column struct that is NOT a vector
-    columns: Vec<Column>,
+    pub columns: Vec<Column>,
 }
 
 
@@ -195,7 +195,7 @@ pub struct ALBUMS_TABLE_DATA {
     pub album_name: String,
     pub artist_name: String,
     pub album_description: String,
-    pub album_art_song_file: String,
+    pub album_art_location: String,
     pub album_release_date: String,
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -747,7 +747,7 @@ pub static ARTISTS: Lazy<Table> = Lazy::new(|| Table {
     ],
 });
 
-// make album table with album id, album_name, artist_name, album_description, album_art_song_file, album_release_date
+// make album table with album id, album_name, artist_name, album_description, album_art_location, album_release_date
 
 pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
     name: "albums",
@@ -781,7 +781,7 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
             notes: "The description of the album",
         },
         Column {
-            name: "album_art_song_file",
+            name: "album_art_location",
             data_type: "TEXT",
             primary_key: false,
             auto_increment: false,

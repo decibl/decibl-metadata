@@ -480,7 +480,7 @@ pub fn insert_album(album: ALBUMS_TABLE_DATA){
                     album.album_name,
                     album.artist_name,
                     album.album_description,
-                    album.album_art_song_file,
+                    album.album_art_location,
                     album.album_release_date,
                 ],
             )
@@ -503,15 +503,28 @@ pub fn insert_album(album: ALBUMS_TABLE_DATA){
 
 pub fn get_all_table_names() -> Vec<String> {
     let mut table_names: Vec<String> = Vec::new();
-    table_names.push("songs".to_string());
-    table_names.push("plays".to_string());
-    table_names.push("playlists".to_string());
-    table_names.push("playlist_songs".to_string());
-    table_names.push("song_artists".to_string());
-    table_names.push("album_artists".to_string());
-    table_names.push("composers".to_string());
-    table_names.push("genres".to_string());
-    table_names.push("songpaths".to_string());
+    // table_names.push("songs".to_string());
+    // table_names.push("plays".to_string());
+    // table_names.push("playlists".to_string());
+    // table_names.push("playlist_songs".to_string());
+    // table_names.push("song_artists".to_string());
+    // table_names.push("album_artists".to_string());
+    // table_names.push("composers".to_string());
+    // table_names.push("genres".to_string());
+    // table_names.push("songpaths".to_string());
+    // table_names.push("artists".to_string());
+    // table_names.push("albums".to_string());
+    table_names.push(SONGS.name.to_string());
+    table_names.push(PLAYS.name.to_string());
+    table_names.push(PLAYLISTS.name.to_string());
+    table_names.push(PLAYLIST_SONGS.name.to_string());
+    table_names.push(SONG_ARTISTS.name.to_string());
+    table_names.push(ALBUM_ARTISTS.name.to_string());
+    table_names.push(COMPOSERS.name.to_string());
+    table_names.push(GENRES.name.to_string());
+    table_names.push(SONGPATHS.name.to_string());
+    table_names.push(ARTISTS.name.to_string());
+    table_names.push(ALBUMS.name.to_string());
     table_names
 }
 
@@ -851,7 +864,7 @@ pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
                     album_name: row.get(1).unwrap(),
                     artist_name: row.get(2).unwrap(),
                     album_description: row.get(3).unwrap(),
-                    album_art_song_file: row.get(4).unwrap(),
+                    album_art_location: row.get(4).unwrap(),
                     album_release_date: row.get(5).unwrap(),
                 })
             }).unwrap();

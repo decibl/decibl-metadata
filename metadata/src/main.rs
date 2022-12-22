@@ -4,7 +4,7 @@ use decibl_metadata::engine::{*, self};
 use std::path;
 use std::collections::HashMap;
 
-fn salshit() {
+fn test_insert_song(){
     engine::create_all_tables();
     engine::clear_all_tables();
     
@@ -40,6 +40,12 @@ fn salshit() {
     };
 
     engine::insert_song(song_table_data);
+}
+fn salshit() {
+    engine::create_all_tables();
+    let tablenames = engine::get_all_table_names();
+    println!("The tablenames are: {:?}", tablenames);
+
 }
 
 fn jeffshit() {
