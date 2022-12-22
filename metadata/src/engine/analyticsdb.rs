@@ -101,6 +101,16 @@ pub fn create_song_paths_table() {
     create_table(song_paths_sql_query)
 }
 
+pub fn create_artists_table() {
+    let artists_sql_query = compile_artists_table();
+    create_table(artists_sql_query)
+}
+
+pub fn create_albums_table() {
+    let albums_sql_query = compile_albums_table();
+    create_table(albums_sql_query)
+}
+
 pub fn create_all_tables() {
     create_song_table();
     create_plays_table();
@@ -111,6 +121,8 @@ pub fn create_all_tables() {
     create_composers_table();
     create_genres_table();
     create_song_paths_table();
+    create_artists_table();
+    create_albums_table();
 }
 
 pub fn clear_all_tables() {
@@ -123,6 +135,8 @@ pub fn clear_all_tables() {
     clear_table("composers".to_string());
     clear_table("genres".to_string());
     clear_table("songpaths".to_string());
+    clear_table("artists".to_string());
+    clear_table("albums".to_string());
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -170,7 +184,6 @@ pub fn clear_all_tables() {
 ///     source: "CD",
 /// };
 /// insert_song(song_table_data);
-/// 
 pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
@@ -403,7 +416,8 @@ pub fn insert_genre(genre: GENRES_TABLE_DATA){
     }
 }
 
-pub fn insert_songpath(songpath: SONGPATHS_TABLE_DATA){
+pub fn insert_songpath(songpath: SONGPATHS_TABLE_DATA){ 
+
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&SONGPATHS);
@@ -427,12 +441,65 @@ pub fn insert_songpath(songpath: SONGPATHS_TABLE_DATA){
     }
 }
 
+pub fn insert_artist(artist: ARTISTS_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
 
+    let sql_query = generate_insertion_sql(&ARTISTS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    artist.artist_name,
+                    artist.artist_bio,
+                    artist.artist_photo_location,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
+
+pub fn insert_album(album: ALBUMS_TABLE_DATA){
+    let conn = Connection::open(get_database_file_path());
+
+    let sql_query = generate_insertion_sql(&ALBUMS);
+    // println!("{}", sql_query);
+    match conn {
+        Ok(conn) => {
+            conn.execute(
+                &sql_query,
+                params![
+                    album.album_id,
+                    album.album_name,
+                    album.artist_name,
+                    album.album_description,
+                    album.album_art_location,
+                    album.album_release_date,
+                ],
+            )
+            .unwrap();
+
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+
+    }
+}
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
-//                                                           RETRIEVE DATA
+//                                                           RETRIEVE DATA 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
+
+// mass retrieval
 
 pub fn get_all_table_names() -> Vec<String> {
     let mut table_names: Vec<String> = Vec::new();
@@ -447,8 +514,6 @@ pub fn get_all_table_names() -> Vec<String> {
     table_names.push("songpaths".to_string());
     table_names
 }
-
-// make queries to get all data from a table
 
 pub fn get_all_songs() -> Vec<SONG_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
@@ -536,3 +601,209 @@ pub fn get_all_plays() -> Vec<PLAY_TABLE_DATA> {
     }
     plays
 }
+
+pub fn get_all_playlists() -> Vec<PLAYLIST_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut playlists: Vec<PLAYLIST_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&PLAYLISTS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let playlist_iter = stmt.query_map([], |row| {
+                Ok(PLAYLIST_TABLE_DATA {
+                    playlist_id: row.get(0).unwrap(),
+                    playlist_name: row.get(1).unwrap(),
+                    playlist_desc: row.get(2).unwrap(),
+                    created_dt: row.get(3).unwrap(),
+                })
+            }).unwrap();
+            for playlist in playlist_iter {
+                playlists.push(playlist.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    playlists
+}
+
+pub fn get_all_playlist_songs() -> Vec<PLAYLIST_SONGS_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut playlist_songs: Vec<PLAYLIST_SONGS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&PLAYLIST_SONGS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let playlist_song_iter = stmt.query_map([], |row| {
+                Ok(PLAYLIST_SONGS_TABLE_DATA {
+                    playlist_id: row.get(0).unwrap(),
+                    song_id: row.get(1).unwrap(),
+                    added_dt: row.get(2).unwrap(),
+                })
+            }).unwrap();
+            for playlist_song in playlist_song_iter {
+                playlist_songs.push(playlist_song.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    playlist_songs
+}
+
+pub fn get_all_song_artists() -> Vec<SONG_ARTISTS_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut song_artists: Vec<SONG_ARTISTS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&SONG_ARTISTS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let song_artist_iter = stmt.query_map([], |row| {
+                Ok(SONG_ARTISTS_TABLE_DATA {
+                    artist_name: row.get(0).unwrap(),
+                    song_id: row.get(1).unwrap(),
+                    dt_added: row.get(2).unwrap(),
+                })
+            }).unwrap();
+            for song_artist in song_artist_iter {
+                song_artists.push(song_artist.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    song_artists
+}
+
+pub fn get_all_album_artists() -> Vec<ALBUM_ARTISTS_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut album_artists: Vec<ALBUM_ARTISTS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&ALBUM_ARTISTS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let album_artist_iter = stmt.query_map([], |row| {
+                Ok(ALBUM_ARTISTS_TABLE_DATA {
+                    artist_name: row.get(0).unwrap(),
+                    song_id: row.get(1).unwrap(),
+                    dt_added: row.get(2).unwrap(),
+                })
+            }).unwrap();
+            for album_artist in album_artist_iter {
+                album_artists.push(album_artist.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    album_artists
+}
+
+pub fn get_all_composers() -> Vec<COMPOSERS_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut composers: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&COMPOSERS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let composer_iter = stmt.query_map([], |row| {
+                Ok(COMPOSERS_TABLE_DATA {
+                    composer_name: row.get(0).unwrap(),
+                    song_id: row.get(1).unwrap(),
+                    dt_added: row.get(2).unwrap(),
+                })
+            }).unwrap();
+            for composer in composer_iter {
+                composers.push(composer.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    composers
+}
+
+pub fn get_all_genres() -> Vec<GENRES_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut genres: Vec<GENRES_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&GENRES);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let genre_iter = stmt.query_map([], |row| {
+                Ok(GENRES_TABLE_DATA {
+                    genre_name: row.get(0).unwrap(),
+                    song_id: row.get(1).unwrap(),
+                    dt_added: row.get(2).unwrap(),
+                })
+            }).unwrap();
+            for genre in genre_iter {
+                genres.push(genre.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    genres
+}
+
+pub fn get_all_songpaths() -> Vec<SONGPATHS_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut songpaths: Vec<SONGPATHS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&SONGPATHS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let songpath_iter = stmt.query_map([], |row| {
+                Ok(SONGPATHS_TABLE_DATA {
+                    song_id: row.get(0).unwrap(),
+                    song_path: row.get(1).unwrap(),
+                })
+            }).unwrap();
+            for songpath in songpath_iter {
+                songpaths.push(songpath.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    songpaths
+}
+
+// now some more, useful queries
+

@@ -89,6 +89,13 @@ pub fn compile_song_paths_table() -> String {
     compile_table(&SONGPATHS)
 }
 
+pub fn compile_artists_table() -> String {
+    compile_table(&ARTISTS)
+}
+
+pub fn compile_albums_table() -> String {
+    compile_table(&ALBUMS)
+}
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -172,13 +179,25 @@ pub struct GENRES_TABLE_DATA {
     pub song_id: String,
     pub dt_added: String,
 }
-
-
 pub struct SONGPATHS_TABLE_DATA {
     pub song_id: String,
     pub song_path: String,
 }
 
+pub struct ARTISTS_TABLE_DATA {
+    pub artist_name: String,
+    pub artist_bio: String,
+    pub artist_photo_location: String,
+}
+
+pub struct ALBUMS_TABLE_DATA {
+    pub album_id: String,
+    pub album_name: String,
+    pub artist_name: String,
+    pub album_description: String,
+    pub album_art_location: String,
+    pub album_release_date: String,
+}
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //                                                                      BEGIN MODELS
@@ -699,6 +718,84 @@ pub static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
     ],
 });
 
+// make artist table with artist_name, artist_bio, artist_photo_location
+
+pub static ARTISTS: Lazy<Table> = Lazy::new(|| Table {
+    name: "artists",
+    columns: vec![
+        Column {
+            name: "artist_name",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The name of the artist",
+        },
+        Column {
+            name: "artist_bio",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The bio of the artist",
+        },
+        Column {
+            name: "artist_photo_location",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The location of the artist's photo",
+        },
+    ],
+});
+
+// make album table with album id, album_name, artist_name, album_description, album_art_location, album_release_date
+
+pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
+    name: "albums",
+    columns: vec![
+        Column {
+            name: "album_id",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The ID of the album",
+        },
+        Column {
+            name: "album_name",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The name of the album",
+        },
+        Column {
+            name: "artist_name",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The name of the artist",
+        },
+        Column {
+            name: "album_description",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The description of the album",
+        },
+        Column {
+            name: "album_art_location",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The location of the album's art",
+        },
+        Column {
+            name: "album_release_date",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The release date of the album",
+        },
+    ],
+});
 // make fn generate_insertion_sql that takes a table and returns the SQL for inserting into that table
 // for example "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
 // static SONGS: Lazy<Table> = Lazy::new(|| Table {
