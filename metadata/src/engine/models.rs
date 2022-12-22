@@ -2,7 +2,6 @@
 // We'll have structs for each table and a compile method which turns the struct into an sql string
 
 use once_cell::sync::Lazy;
-use std::collections::HashMap;
 
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
