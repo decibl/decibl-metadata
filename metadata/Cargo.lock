@@ -91,6 +91,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23d8666cb01533c39dde32bcbab8e227b4ed6679b2c925eba05feabea39508fb"
 
 [[package]]
+name = "decibl-metadata"
+version = "0.1.0"
+dependencies = [
+ "audiotags",
+ "data-encoding",
+ "directories-next",
+ "metaflac",
+ "once_cell",
+ "ring",
+ "rusqlite",
+ "serde",
+ "serde_yaml",
+]
+
+[[package]]
 name = "directories-next"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -234,21 +249,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "metadata"
-version = "0.1.0"
-dependencies = [
- "audiotags",
- "data-encoding",
- "directories-next",
- "metaflac",
- "once_cell",
- "ring",
- "rusqlite",
- "serde",
- "serde_yaml",
 ]
 
 [[package]]

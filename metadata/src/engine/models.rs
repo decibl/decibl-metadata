@@ -109,7 +109,7 @@ pub struct SONG_TABLE_DATA  {
     pub bitrate: i64,
     pub channels: i64,
     pub duration: f64,
-    pub sample_rate_khz: i64,
+    pub sample_rate: i64,
     pub album: String,
     pub barcode: String,
     pub date_created: String,
@@ -198,7 +198,7 @@ pub struct SONGPATHS_TABLE_DATA {
 // "bitrate": -1, # in bits, divide by 1000 to get Kbps
 // "channels": -1, # int
 // "duration": -1, # in seconds
-// "sample_rate_khz": -1, # in KHz
+// "sample_rate": -1, # in hz
 // "album": "N/A", # string
 // "barcode": "N/A", # string
 // "date_created": "N/A", # in YYYY-MM-DD
@@ -302,7 +302,7 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             notes: "The duration of the song in seconds",
         },
         Column {
-            name: "sample_rate_khz",
+            name: "sample_rate",
             data_type: "INTEGER",
             primary_key: false,
             auto_increment: false,
@@ -700,7 +700,7 @@ pub static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
 });
 
 // make fn generate_insertion_sql that takes a table and returns the SQL for inserting into that table
-// for example "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
+// for example "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
 // static SONGS: Lazy<Table> = Lazy::new(|| Table {
 pub fn generate_insertion_sql(table: &Table) -> String {
     let mut sql = String::from("INSERT INTO ");

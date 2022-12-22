@@ -1,14 +1,15 @@
 #![allow(warnings)]
-use metadata::engine::{*, self};
+use decibl_metadata::engine::{*, self};
 use std::path;
 use std::collections::HashMap;
 
 fn salshit() {
     engine::create_all_tables();
+    engine::clear_all_tables();
     
     // make a SONG_TABLE_DATA object from struct engine::SONG_TABLE_DATA
     let mut song_table_data = engine::SONG_TABLE_DATA {
-        song_id: String::from("b3ruXs2hz"),
+        song_id: String::from("b3rsuXs2hz"),
         main_artist: String::from("bruh"),
         filesize_bytes: 0,
         padding_bytes: 0,
@@ -20,7 +21,7 @@ fn salshit() {
         bitrate: 0,
         channels: 0,
         duration: 0.0,
-        sample_rate_khz: 0,
+        sample_rate: 0,
         album: String::from("bruh"),
         barcode: String::from("bruh"),
         date_created: String::from("bruh"),
@@ -46,9 +47,9 @@ fn jeffshit() {
 }
 fn main() {
     //sal this for u
-    //salshit();
+    salshit();
 
-    jeffshit();
+    // jeffshit();
 
     // println!("Hello, world!");
     // engine::cringeit();

@@ -10,8 +10,17 @@ use std::collections::HashMap;
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-// make pub fn create_table() which accepts a function that returns a string
-
+/// Creates a table in the SQLite database with the given `sql_query`.
+///
+/// # Examples
+///
+/// ```
+/// use rusqlite::{Connection, Result};
+///
+/// let conn = Connection::open("my_database.db")?;
+/// let sql_query = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL)";
+/// create_table(sql_query);
+/// ```
 pub fn create_table(sql_query: String) {
     let conn = Connection::open(get_database_file_path());
 
@@ -25,54 +34,74 @@ pub fn create_table(sql_query: String) {
     }
 }
 
+pub fn clear_table(table_name: String) {
+    let conn = Connection::open(get_database_file_path());
+
+    match conn {
+        Ok(conn) => {
+            let sql_query = format!("DELETE FROM {}", table_name);
+            conn.execute(&sql_query, []).unwrap();
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+}
+/// Creates the 'songs' table in the SQLite database.
 pub fn create_song_table() {
     let song_sql_query = compile_song_table();
     create_table(song_sql_query)
 }
 
+/// Creates the 'plays' table in the SQLite database.
 pub fn create_plays_table() {
     let plays_sql_query = compile_plays_table();
     create_table(plays_sql_query)
 }
 
+/// Creates the 'playlists' table in the SQLite database.
 pub fn create_playlist_table() {
     let playlist_sql_query = compile_playlists_table();
     create_table(playlist_sql_query)
 }
 
+/// Creates the 'playlist_songs' table in the SQLite database.
 pub fn create_playlist_songs_table() {
     let playlist_song_sql_query = compile_playlist_songs_table();
     create_table(playlist_song_sql_query)
 }
 
+/// Creates the 'song_artists' table in the SQLite database.
 pub fn create_song_artists_table() {
     let song_artists_sql_query = compile_song_artists_table();
     create_table(song_artists_sql_query)
 }
 
+/// Creates the 'album_artists' table in the SQLite database.
 pub fn create_album_artists_table() {
     let album_artists_sql_query = compile_album_artists_table();
     create_table(album_artists_sql_query)
 }
 
+/// Creates the 'composers' table in the SQLite database.
 pub fn create_composers_table() {
     let composers_sql_query = compile_composers_table();
     create_table(composers_sql_query)
 }
 
+/// Creates the 'genres' table in the SQLite database.
 pub fn create_genres_table() {
     let genres_sql_query = compile_genres_table();
     create_table(genres_sql_query)
 }
 
+/// Creates the 'song_paths' table in the SQLite database.
 pub fn create_song_paths_table() {
     let song_paths_sql_query = compile_song_paths_table();
     create_table(song_paths_sql_query)
 }
 
 pub fn create_all_tables() {
-    // check if tables exist
-    // if not, create them
     create_song_table();
     create_plays_table();
     create_playlist_table();
@@ -85,21 +114,16 @@ pub fn create_all_tables() {
 }
 
 pub fn clear_all_tables() {
-    let table_names = get_all_table_names();
-    for table_name in table_names {
-        let conn = Connection::open(get_database_file_path());
-        match conn {
-            Ok(conn) => {
-                conn.execute(&format!("DELETE FROM {}", table_name), [])
-                    .unwrap();
-            }
-            Err(e) => {
-                println!("Error: {}", e);
-            }
-        }
-    }
+    clear_table("songs".to_string());
+    clear_table("plays".to_string());
+    clear_table("playlists".to_string());
+    clear_table("playlist_songs".to_string());
+    clear_table("song_artists".to_string());
+    clear_table("album_artists".to_string());
+    clear_table("composers".to_string());
+    clear_table("genres".to_string());
+    clear_table("songpaths".to_string());
 }
-
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 //                                                           INSERT DATA
@@ -113,8 +137,8 @@ pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     // example query
-    // let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
-    // INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate_khz, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27)
+    // let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
+    // INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27)
     // static SONGS: Lazy<Table> = Lazy::new(|| Table {
     // pub fn generate_insertion_sql(table: Lazy<Table>) -> String {
 
@@ -137,7 +161,7 @@ pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
                     song_table_data.bitrate,
                     song_table_data.channels,
                     song_table_data.duration,
-                    song_table_data.sample_rate_khz,
+                    song_table_data.sample_rate,
                     song_table_data.album,
                     song_table_data.barcode,
                     song_table_data.date_created,
@@ -413,7 +437,7 @@ pub fn get_all_songs() -> Vec<SONG_TABLE_DATA> {
                     bitrate: row.get(9).unwrap(),
                     channels: row.get(10).unwrap(),
                     duration: row.get(11).unwrap(),
-                    sample_rate_khz: row.get(12).unwrap(),
+                    sample_rate: row.get(12).unwrap(),
                     album: row.get(13).unwrap(),
                     barcode: row.get(14).unwrap(),
                     date_created: row.get(15).unwrap(),
