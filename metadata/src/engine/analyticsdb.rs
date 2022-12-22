@@ -480,7 +480,7 @@ pub fn insert_album(album: ALBUMS_TABLE_DATA){
                     album.album_name,
                     album.artist_name,
                     album.album_description,
-                    album.album_art_location,
+                    album.album_art_song_file,
                     album.album_release_date,
                 ],
             )
@@ -805,5 +805,65 @@ pub fn get_all_songpaths() -> Vec<SONGPATHS_TABLE_DATA> {
     songpaths
 }
 
-// now some more, useful queries
+pub fn get_all_artists() -> Vec<ARTISTS_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut artists: Vec<ARTISTS_TABLE_DATA> = Vec::new();
 
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&ARTISTS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let artist_iter = stmt.query_map([], |row| {
+                Ok(ARTISTS_TABLE_DATA {
+                    artist_name: row.get(0).unwrap(),
+                    artist_bio: row.get(1).unwrap(),
+                    artist_photo_location: row.get(2).unwrap(),
+                })
+            }).unwrap();
+            for artist in artist_iter {
+                artists.push(artist.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    artists
+}
+
+pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut albums: Vec<ALBUMS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&ALBUMS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let album_iter = stmt.query_map([], |row| {
+                Ok(ALBUMS_TABLE_DATA {
+                    album_id: row.get(0).unwrap(),
+                    album_name: row.get(1).unwrap(),
+                    artist_name: row.get(2).unwrap(),
+                    album_description: row.get(3).unwrap(),
+                    album_art_song_file: row.get(4).unwrap(),
+                    album_release_date: row.get(5).unwrap(),
+                })
+            }).unwrap();
+            for album in album_iter {
+                albums.push(album.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    albums
+}
+
+// now some more, useful queries
