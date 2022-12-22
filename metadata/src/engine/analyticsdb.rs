@@ -130,9 +130,47 @@ pub fn clear_all_tables() {
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-// make function insert_song which inserts a file into a song database.
-// has to be compatible with this hashmap pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
-
+/// Inserts a song into the 'songs' table in the SQLite database.
+/// 
+/// Has to be compatible with this hashmap `pub static SONG_TABLE_DATA : Lazy<HashMap<&'static str, &'static str>>`
+///
+/// # Examples
+///
+/// ```
+/// use rusqlite::{Connection, Result};
+///
+/// let conn = Connection::open("my_database.db")?;
+/// let song_table_data = SONG_TABLE_DATA {
+///     song_id: 1,
+///     main_artist: "John Doe",
+///     filesize_bytes: 1024,
+///     padding_bytes: 0,
+///     album_artwork_bit_depth: 24,
+///     album_artwork_colors: 256,
+///     album_artwork_height: 300,
+///     album_artwork_width: 300,
+///     bit_depth: 16,
+///     bitrate: 128,
+///     channels: 2,
+///     duration: 180,
+///     sample_rate_khz: 44.1,
+///     album: "Greatest Hits",
+///     barcode: "1234567890",
+///     date_created: "2022-01-01",
+///     disc_number: 1,
+///     disc_total: 1,
+///     isrc: "US1234567890",
+///     itunesadvisory: "clean",
+///     length: "3:00",
+///     publisher: "John Doe Music",
+///     rating: 5,
+///     title: "Best Song Ever",
+///     track_number: 1,
+///     track_total: 10,
+///     source: "CD",
+/// };
+/// insert_song(song_table_data);
+/// 
 pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
