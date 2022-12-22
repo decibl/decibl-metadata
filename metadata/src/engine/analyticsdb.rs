@@ -881,5 +881,8 @@ pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
 
 // now some more, useful functions
 
-
-// pub fn populate_database()
+/// This is going to be used to populate the database with some data.
+/// Look into config.get_soundfiles_path() to find all the soundfiles. Iterate through each one, parse their metadata, etc.
+pub fn populate_database(){
+    return;
+}
