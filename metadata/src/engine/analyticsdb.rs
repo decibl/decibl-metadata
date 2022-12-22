@@ -385,3 +385,92 @@ pub fn get_all_table_names() -> Vec<String> {
     table_names.push("songpaths".to_string());
     table_names
 }
+
+// make queries to get all data from a table
+
+pub fn get_all_songs() -> Vec<SONG_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut songs: Vec<SONG_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&SONGS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let song_iter = stmt.query_map([], |row| {
+                Ok(SONG_TABLE_DATA {
+                    song_id: row.get(0).unwrap(),
+                    main_artist: row.get(1).unwrap(),
+                    filesize_bytes: row.get(2).unwrap(),
+                    padding_bytes: row.get(3).unwrap(),
+                    album_artwork_bit_depth: row.get(4).unwrap(),
+                    album_artwork_colors: row.get(5).unwrap(),
+                    album_artwork_height: row.get(6).unwrap(),
+                    album_artwork_width: row.get(7).unwrap(),
+                    bit_depth: row.get(8).unwrap(),
+                    bitrate: row.get(9).unwrap(),
+                    channels: row.get(10).unwrap(),
+                    duration: row.get(11).unwrap(),
+                    sample_rate_khz: row.get(12).unwrap(),
+                    album: row.get(13).unwrap(),
+                    barcode: row.get(14).unwrap(),
+                    date_created: row.get(15).unwrap(),
+                    disc_number: row.get(16).unwrap(),
+                    disc_total: row.get(17).unwrap(),
+                    isrc: row.get(18).unwrap(),
+                    itunesadvisory: row.get(19).unwrap(),
+                    length: row.get(20).unwrap(),
+                    publisher: row.get(21).unwrap(),
+                    rating: row.get(22).unwrap(),
+                    title: row.get(23).unwrap(),
+                    track_number: row.get(24).unwrap(),
+                    track_total: row.get(25).unwrap(),
+                    source: row.get(26).unwrap(),
+                })
+            }).unwrap();
+            for song in song_iter {
+                songs.push(song.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    songs
+}
+
+pub fn get_all_plays() -> Vec<PLAY_TABLE_DATA> {
+    let conn = Connection::open(get_database_file_path());
+    let mut plays: Vec<PLAY_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    let sql_query = generate_select_all_sql(&PLAYS);
+    
+    match conn {
+        Ok(conn) => {
+            let mut stmt = conn.prepare(&sql_query).unwrap();
+            let play_iter = stmt.query_map([], |row| {
+                Ok(PLAY_TABLE_DATA {
+                    play_id: row.get(0).unwrap(),
+                    song_id: row.get(1).unwrap(),
+                    song_title: row.get(2).unwrap(),
+                    main_artist: row.get(3).unwrap(),
+                    filesize_bytes: row.get(4).unwrap(),
+                    start_dt: row.get(5).unwrap(),
+                    end_dt: row.get(6).unwrap(),
+
+                })
+            }).unwrap();
+            for play in play_iter {
+                plays.push(play.unwrap());
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    plays
+}

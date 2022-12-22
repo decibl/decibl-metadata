@@ -722,3 +722,9 @@ pub fn generate_insertion_sql(table: &Table) -> String {
     sql.push_str(")");
     sql
 }
+
+pub fn generate_select_all_sql(table: &Table) -> String {
+    let mut sql = String::from("SELECT * FROM ");
+    sql.push_str(&table.name);
+    sql
+}
