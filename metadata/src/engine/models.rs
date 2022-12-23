@@ -111,16 +111,16 @@ pub struct SONG_TABLE_DATA  {
     pub song_id: String,
     pub main_artist: String, // yes
     pub filesize_bytes: i64,  // yes *
-    pub padding_bytes: i64, 
+    pub padding_bytes: i64,  // flack pack yes
     pub album_artwork_bit_depth: i64, // yes
     pub album_artwork_colors: i64, // yes
     pub album_artwork_height: i64, //  yes
     pub album_artwork_width: i64, // yes
-    pub bit_depth: i64, //yes
-    pub bitrate: i64, // streaminfo::bits_per_sample
-    pub channels: i64, // streaminfo::num_channels
-    pub duration: f64,
-    pub sample_rate: i64, // StreamInfo::sample_rate
+    pub bit_depth: i64, // flac bits_per_sample 
+    pub bitrate: i64, // flac can calculate
+    pub channels: i64, // flac pack
+    pub duration: f64, // can calculate
+    pub sample_rate: i64,  // flac pack
     pub album: String, // yes
     pub barcode: String, // yes
     pub date_created: String, // yes

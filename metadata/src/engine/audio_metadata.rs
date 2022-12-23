@@ -16,9 +16,11 @@ use crate::engine::models::*;
 use crate::engine::config::*;
 use sha2::{Digest, Sha256};
 use symphonia::core::formats::FormatOptions;
+use symphonia::core::formats::FormatReader;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::io::MediaSourceStream;
 use symphonia::core::meta::Tag;
+use symphonia::core::codecs;
 use symphonia::core::probe::Hint;
 // include hashmap
 use std::collections::HashMap;
@@ -90,9 +92,9 @@ pub struct AudioFileFlac {
 // let meta = binding.current().unwrap().tags();
 
 // println!("The meta is: {:?}", meta);
-impl AudioFile for AudioFileFlac{
 
-    fn load_file(&mut self, filepath: String) {
+impl AudioFileFlac{
+    fn get_symphonia_data(&self, filepath: String) -> Box<dyn FormatReader> {
         let args = std::env::args().collect::<Vec<String>>();
         let path = filepath.clone();
 
@@ -108,6 +110,12 @@ impl AudioFile for AudioFileFlac{
         let probed = symphonia::default::get_probe().format(&hint, mss, &format_opts, &meta_opts).expect("failed to probe");
 
         let mut format = probed.format;
+
+        format
+    }
+
+    fn add_symphonia_data(&mut self, filepath: String){
+        let mut format = self.get_symphonia_data(filepath.clone());
 
         let binding = format.metadata();
         let metaTags = binding.current().unwrap().tags();
@@ -160,10 +168,23 @@ impl AudioFile for AudioFileFlac{
         metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
         metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
 
+
+
         // println!("The colors are: {:?}", colors);
-        println!("Old metadata: {:?}", metaTags);
-        println!("New metadata: {:?}", metadata);
         self.raw_metadata = metadata;
+
+    }
+
+    
+}
+
+impl AudioFile for AudioFileFlac{
+
+    fn load_file(&mut self, filepath: String) {
+        
+        self.add_symphonia_data(filepath.clone());
+        println!("New metadata: {:?}", self.raw_metadata);
+
         self.filepath = filepath;
 
 
