@@ -87,13 +87,12 @@ fn salshit() {
 
 }
 
-fn jeffshit() {
-    let mut test = AudioFileMP3::new("./test1.flac".to_string());
-    test.load_file();
-}
+
 fn main() {
     //sal this for u
-    salshit();
+    // salshit();
+    let hash = engine::file_to_hash("C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/src/gemstone.flac".to_string());
+    println!("The hash is: {:#?}", hash);
 
     // jeffshit();
 

@@ -12,9 +12,9 @@ serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 audiotags = "0.4.1"
 data-encoding = "2.3.3"
-ring = "0.16.20"
 metaflac = "0.2"
 symphonia = "0.5.0"
+sha256 = "1.0.3" 
 
 [dependencies.rusqlite]
 version = "0.28.0"
