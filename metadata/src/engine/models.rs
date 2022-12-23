@@ -110,31 +110,31 @@ pub trait default {
 pub struct SONG_TABLE_DATA  {
     pub song_id: String,
     pub main_artist: String, // yes
-    pub filesize_bytes: i64, 
-    pub padding_bytes: i64,
-    pub album_artwork_bit_depth: i64, // picture::depth
-    pub album_artwork_colors: i64, // picture::num_colors
-    pub album_artwork_height: i64, // picture::height
-    pub album_artwork_width: i64, // picture::width
-    pub bit_depth: i64,
+    pub filesize_bytes: i64,  // yes *
+    pub padding_bytes: i64, 
+    pub album_artwork_bit_depth: i64, // yes
+    pub album_artwork_colors: i64, // yes
+    pub album_artwork_height: i64, //  yes
+    pub album_artwork_width: i64, // yes
+    pub bit_depth: i64, //yes
     pub bitrate: i64, // streaminfo::bits_per_sample
     pub channels: i64, // streaminfo::num_channels
     pub duration: f64,
     pub sample_rate: i64, // StreamInfo::sample_rate
-    pub album: String, // VorbisComment::album
-    pub barcode: String,
-    pub date_created: String,
-    pub disc_number: i64,
-    pub disc_total: i64,
-    pub isrc: String,
-    pub itunesadvisory: String,
-    pub length: i64,
-    pub publisher: String,
-    pub rating: i64,
-    pub title: String, // vorbisComment::title
-    pub track_number: i64, // cueSheet:catalog_number
-    pub track_total: i64, // cueSheet: tracks
-    pub source: String, 
+    pub album: String, // yes
+    pub barcode: String, // yes
+    pub date_created: String, // yes
+    pub disc_number: i64, // yes
+    pub disc_total: i64, // yes
+    pub isrc: String, // yes
+    pub itunesadvisory: String, // yes
+    pub length: i64, // yes
+    pub publisher: String, // yes
+    pub rating: i64,  // yes
+    pub title: String, // yes
+    pub track_number: i64, // yes
+    pub track_total: i64, // yes
+    pub source: String,  // yes
 
     // make new function
 }
