@@ -208,8 +208,8 @@ pub struct ALBUMS_TABLE_DATA {
 impl default for SONG_TABLE_DATA {
     fn default() -> Self {
         SONG_TABLE_DATA {
-            song_id: "N/A".to_string(),
-            main_artist: "N/A".to_string(),
+            song_id: "".to_string(),
+            main_artist: "".to_string(),
             filesize_bytes: -1,
             padding_bytes: -1,
             album_artwork_bit_depth: -1,
@@ -221,20 +221,20 @@ impl default for SONG_TABLE_DATA {
             channels: -1,
             duration: -1.0,
             sample_rate: -1,
-            album: "N/A".to_string(),
-            barcode: "N/A".to_string(),
-            date_created: "N/A".to_string(),
+            album: "".to_string(),
+            barcode: "".to_string(),
+            date_created: "".to_string(),
             disc_number: -1,
             disc_total: -1,
-            isrc: "N/A".to_string(),
-            itunesadvisory: "N/A".to_string(),
+            isrc: "".to_string(),
+            itunesadvisory: "".to_string(),
             length: -1,
-            publisher: "N/A".to_string(),
+            publisher: "".to_string(),
             rating: -1,
-            title: "N/A".to_string(),
+            title: "".to_string(),
             track_number: -1,
             track_total: -1,
-            source: "N/A".to_string(),
+            source: "".to_string(),
         }
     }
 }
@@ -242,13 +242,13 @@ impl default for SONG_TABLE_DATA {
 impl default for PLAY_TABLE_DATA {
     fn default() -> Self {
         PLAY_TABLE_DATA {
-            play_id: "N/A".to_string(),
-            song_id: "N/A".to_string(),
-            song_title: "N/A".to_string(),
-            main_artist: "N/A".to_string(),
+            play_id: "".to_string(),
+            song_id: "".to_string(),
+            song_title: "".to_string(),
+            main_artist: "".to_string(),
             filesize_bytes: -1,
-            start_dt: "N/A".to_string(),
-            end_dt: "N/A".to_string(),
+            start_dt: "".to_string(),
+            end_dt: "".to_string(),
         }
     }
 }
@@ -256,10 +256,10 @@ impl default for PLAY_TABLE_DATA {
 impl default for PLAYLIST_TABLE_DATA {
     fn default() -> Self {
         PLAYLIST_TABLE_DATA {
-            playlist_id: "N/A".to_string(),
-            playlist_name: "N/A".to_string(),
-            playlist_desc: "N/A".to_string(),
-            created_dt: "N/A".to_string(),
+            playlist_id: "".to_string(),
+            playlist_name: "".to_string(),
+            playlist_desc: "".to_string(),
+            created_dt: "".to_string(),
         }
     }
 }
@@ -267,9 +267,9 @@ impl default for PLAYLIST_TABLE_DATA {
 impl default for PLAYLIST_SONGS_TABLE_DATA {
     fn default() -> Self {
         PLAYLIST_SONGS_TABLE_DATA {
-            playlist_id: "N/A".to_string(),
-            song_id: "N/A".to_string(),
-            added_dt: "N/A".to_string(),
+            playlist_id: "".to_string(),
+            song_id: "".to_string(),
+            added_dt: "".to_string(),
         }
     }
 }
@@ -277,9 +277,9 @@ impl default for PLAYLIST_SONGS_TABLE_DATA {
 impl default for SONG_ARTISTS_TABLE_DATA {
     fn default() -> Self {
         SONG_ARTISTS_TABLE_DATA {
-            artist_name: "N/A".to_string(),
-            song_id: "N/A".to_string(),
-            dt_added: "N/A".to_string(),
+            artist_name: "".to_string(),
+            song_id: "".to_string(),
+            dt_added: "".to_string(),
         }
     }
 }
@@ -287,9 +287,9 @@ impl default for SONG_ARTISTS_TABLE_DATA {
 impl default for ALBUM_ARTISTS_TABLE_DATA {
     fn default() -> Self {
         ALBUM_ARTISTS_TABLE_DATA {
-            artist_name: "N/A".to_string(),
-            song_id: "N/A".to_string(),
-            dt_added: "N/A".to_string(),
+            artist_name: "".to_string(),
+            song_id: "".to_string(),
+            dt_added: "".to_string(),
         }
     }
 }
@@ -297,9 +297,9 @@ impl default for ALBUM_ARTISTS_TABLE_DATA {
 impl default for COMPOSERS_TABLE_DATA {
     fn default() -> Self {
         COMPOSERS_TABLE_DATA {
-            composer_name: "N/A".to_string(),
-            song_id: "N/A".to_string(),
-            dt_added: "N/A".to_string(),
+            composer_name: "".to_string(),
+            song_id: "".to_string(),
+            dt_added: "".to_string(),
         }
     }
 }
@@ -307,9 +307,9 @@ impl default for COMPOSERS_TABLE_DATA {
 impl default for GENRES_TABLE_DATA {
     fn default() -> Self {
         GENRES_TABLE_DATA {
-            genre_name: "N/A".to_string(),
-            song_id: "N/A".to_string(),
-            dt_added: "N/A".to_string(),
+            genre_name: "".to_string(),
+            song_id: "".to_string(),
+            dt_added: "".to_string(),
         }
     }
 }
@@ -317,8 +317,8 @@ impl default for GENRES_TABLE_DATA {
 impl default for SONGPATHS_TABLE_DATA {
     fn default() -> Self {
         SONGPATHS_TABLE_DATA {
-            song_id: "N/A".to_string(),
-            song_path: "N/A".to_string(),
+            song_id: "".to_string(),
+            song_path: "".to_string(),
         }
     }
 }
@@ -326,9 +326,9 @@ impl default for SONGPATHS_TABLE_DATA {
 impl default for ARTISTS_TABLE_DATA {
     fn default() -> Self {
         ARTISTS_TABLE_DATA {
-            artist_name: "N/A".to_string(),
-            artist_bio: "N/A".to_string(),
-            artist_photo_location: "N/A".to_string(),
+            artist_name: "".to_string(),
+            artist_bio: "".to_string(),
+            artist_photo_location: "".to_string(),
         }
     }
 }
@@ -336,12 +336,12 @@ impl default for ARTISTS_TABLE_DATA {
 impl default for ALBUMS_TABLE_DATA {
     fn default() -> Self {
         ALBUMS_TABLE_DATA {
-            album_id: "N/A".to_string(),
-            album_name: "N/A".to_string(),
-            artist_name: "N/A".to_string(),
-            album_description: "N/A".to_string(),
-            album_art_location: "N/A".to_string(),
-            album_release_date: "N/A".to_string(),
+            album_id: "".to_string(),
+            album_name: "".to_string(),
+            artist_name: "".to_string(),
+            album_description: "".to_string(),
+            album_art_location: "".to_string(),
+            album_release_date: "".to_string(),
         }
     }
 }
@@ -353,8 +353,8 @@ impl default for ALBUMS_TABLE_DATA {
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // SONG TABLE
-// "song_id": "N/A", # string
-// "main_artist": "N/A", # string
+// "song_id": "", # string
+// "main_artist": "", # string
 // "filesize": -1, # in bytes
 // "padding": -1, # in bytes
 // "album_artwork_bit_depth": -1, # in bits
@@ -366,20 +366,20 @@ impl default for ALBUMS_TABLE_DATA {
 // "channels": -1, # int
 // "duration": -1, # in seconds
 // "sample_rate": -1, # in hz
-// "album": "N/A", # string
-// "barcode": "N/A", # string
-// "date_created": "N/A", # in YYYY-MM-DD
+// "album": "", # string
+// "barcode": "", # string
+// "date_created": "", # in YYYY-MM-DD
 // "disc_number": -1, # int
 // "disc_total": -1, # int
-// "isrc": "N/A", # string
-// "itunesadvisory": "N/A", # string
+// "isrc": "", # string
+// "itunesadvisory": "", # string
 // "length": -1, # int
-// "publisher": "N/A", # string
+// "publisher": "", # string
 // "rating": -1, # int
-// "title": "N/A", # string
+// "title": "", # string
 // "track_number": -1, # int
 // "track_total": -1, # int
-// "source": "N/A", # string
+// "source": "", # string
 //     # }
 pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
     name: "songs",

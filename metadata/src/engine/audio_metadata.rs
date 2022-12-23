@@ -143,14 +143,24 @@ impl AudioFile for AudioFileFlac{
         // pub album_artwork_width: i64,
 
         let mut artwork_bit_depth_vec: Vec<String> = Vec::new();
-        let mut artwork_colors_vec: Vec<String> = Vec::new();
+        // let mut artwork_colors_vec: Vec<String> = Vec::new();
         let mut artwork_height_vec: Vec<String> = Vec::new();
         let mut artwork_width_vec: Vec<String> = Vec::new();
 
+        
+        let bit_depth = vec_visual[0].bits_per_pixel.expect("No bit depth");
+        let height = vec_visual[0].dimensions.unwrap().height;
+        let width = vec_visual[0].dimensions.unwrap().width;
 
-        // let bit_depth = vec_visual[0].bits_per_pixel.to_string().expect("failed to get bit depth");
+        artwork_bit_depth_vec.push(bit_depth.to_string());
+        artwork_height_vec.push(height.to_string());
+        artwork_width_vec.push(width.to_string());
 
+        metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
+        metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
+        metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
 
+        // println!("The colors are: {:?}", colors);
         println!("Old metadata: {:?}", metaTags);
         println!("New metadata: {:?}", metadata);
         self.raw_metadata = metadata;
@@ -179,7 +189,7 @@ impl AudioFile for AudioFileFlac{
         println!("song_id: {:?}", song_table_data.song_id);
         
 
-        println!("hashmap: {:?}", self.raw_metadata);
+        // println!("hashmap: {:?}", self.raw_metadata);
         
         song_table_data
     }

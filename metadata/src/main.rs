@@ -91,9 +91,10 @@ fn salshit() {
 fn main() {
     //sal this for u
     // salshit();
-    let filepath = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
+    let filepathJeff = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
+    let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/enemy.flac";   
     let mut afile = engine::AudioFileFlac::default();
-    afile.load_file(filepath.to_string());
+    afile.load_file(filePathSal.to_string());
     afile.get_song_table_data();
 
     // let mut hash = engine::file_to_hash(filepath.to_string());
