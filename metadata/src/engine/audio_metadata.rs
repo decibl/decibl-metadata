@@ -4,16 +4,17 @@ make audio metadata class
 make classes with files that inherit from abstract class
 */
 
+use std::io::Error;
 /*
 //
 //              AudioFile Trait
 //
 */
 use std::fs::File;
-use std::vec;
+use std::io;
 use crate::engine::models::*;
 use crate::engine::config::*;
-use sha256;
+use sha2::{Digest, Sha256};
 use symphonia::core::formats::FormatOptions;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::io::MediaSourceStream;
@@ -22,11 +23,14 @@ use symphonia::core::probe::Hint;
 // include hashmap
 use std::collections::HashMap;
 
-pub fn file_to_hash(filepath: String) -> String {
-    let bytes = std::fs::read(filepath).unwrap();
-    let hash = sha256::digest_bytes(&bytes);
-
-    return hash;
+pub fn file_to_hash(filepath: String) -> Result<String,Error> {
+    let mut hasher = Sha256::new();
+    let mut file = File::open(filepath)?;
+    
+    let bytes_written = io::copy(&mut file, &mut hasher)?;
+    let hash_bytes = hasher.finalize();
+    let string = format!("{:x}", hash_bytes);
+    Ok(string)
 }
 
 
@@ -171,7 +175,8 @@ impl AudioFile for AudioFileFlac{
     fn get_song_table_data(&self) -> SONG_TABLE_DATA {
         // make a new song table data struct
         let mut song_table_data = SONG_TABLE_DATA::default();
-        song_table_data.song_id = file_to_hash(self.filepath.clone());
+        song_table_data.song_id = file_to_hash(self.filepath.clone()).unwrap();
+        println!("song_id: {:?}", song_table_data.song_id);
         
 
         println!("hashmap: {:?}", self.raw_metadata);

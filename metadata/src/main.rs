@@ -91,7 +91,7 @@ fn salshit() {
 fn main() {
     //sal this for u
     // salshit();
-    let filepath = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/gemstone.flac";
+    let filepath = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/gemstone.flac";
     let mut afile = engine::AudioFileFlac::default();
     afile.load_file(filepath.to_string());
     afile.get_song_table_data();
