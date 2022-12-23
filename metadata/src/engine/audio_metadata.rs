@@ -10,6 +10,7 @@ make classes with files that inherit from abstract class
 //
 */
 use std::fs::File;
+use std::vec;
 use crate::engine::models::*;
 use crate::engine::config::*;
 use sha256;
@@ -18,6 +19,8 @@ use symphonia::core::meta::MetadataOptions;
 use symphonia::core::io::MediaSourceStream;
 use symphonia::core::meta::Tag;
 use symphonia::core::probe::Hint;
+// include hashmap
+use std::collections::HashMap;
 
 pub fn file_to_hash(filepath: String) -> String {
     let bytes = std::fs::read(filepath).unwrap();
@@ -59,8 +62,7 @@ pub struct AudioFileFlac {
     album_artists_table_data: ALBUM_ARTISTS_TABLE_DATA,
     composers_table_data: COMPOSERS_TABLE_DATA,
     genres_table_data: GENRES_TABLE_DATA,
-    //list of Tag
-    raw_metadata: Vec<Tag>,
+    raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
 }
 
@@ -88,7 +90,7 @@ impl AudioFile for AudioFileFlac{
 
     fn load_file(&mut self, filepath: String) {
         let args = std::env::args().collect::<Vec<String>>();
-        let path = filepath;
+        let path = filepath.clone();
 
         let src = std::fs::File::open(path).unwrap();
 
@@ -104,12 +106,54 @@ impl AudioFile for AudioFileFlac{
         let mut format = probed.format;
 
         let binding = format.metadata();
-        let meta = binding.current().unwrap().tags();
+        let metaTags = binding.current().unwrap().tags();
+        let visualTags = binding.current().unwrap().visuals();
 
-        self.raw_metadata = meta.to_vec();
+        let vec_meta = metaTags.to_vec();
+        let vec_visual = visualTags.to_vec();
+
+        // Make a hashmap of <string, string> to store the metadata
+        let mut metadata: HashMap<String, Vec<String>> = HashMap::new();
+
+        for tag in vec_meta {
+            let key = tag.key.to_string();
+            let value = tag.value.to_string();
+
+            // if key is already in the hashmap, push the value to the vector
+            if metadata.contains_key(&key) {
+                let mut vec = metadata.get_mut(&key).unwrap();
+                vec.push(value);
+            } else {
+                // if key is not in the hashmap, create a new vector and push the value to it
+                let mut vec = Vec::new();
+                vec.push(value);
+                metadata.insert(key, vec);
+            }
+
+        }
+
+        // now add the following 
+        // pub album_artwork_bit_depth: i64, // picture::depth
+        // pub album_artwork_colors: i64, // picture::num_colors
+        // pub album_artwork_height: i64, // picture::height
+        // pub album_artwork_width: i64,
+
+        let mut artwork_bit_depth_vec: Vec<String> = Vec::new();
+        let mut artwork_colors_vec: Vec<String> = Vec::new();
+        let mut artwork_height_vec: Vec<String> = Vec::new();
+        let mut artwork_width_vec: Vec<String> = Vec::new();
 
 
-        // println!("The meta is: {:?}", meta);
+        // let bit_depth = vec_visual[0].bits_per_pixel.to_string().expect("failed to get bit depth");
+
+
+        println!("Old metadata: {:?}", metaTags);
+        println!("New metadata: {:?}", metadata);
+        self.raw_metadata = metadata;
+        self.filepath = filepath;
+
+
+        // println!("The metaTags is: {:?}", metaTags);
     }
 
     fn default() -> Self {
@@ -119,7 +163,7 @@ impl AudioFile for AudioFileFlac{
             album_artists_table_data: ALBUM_ARTISTS_TABLE_DATA::default(),
             composers_table_data: COMPOSERS_TABLE_DATA::default(),
             genres_table_data: GENRES_TABLE_DATA::default(),
-            raw_metadata: Vec::new(),
+            raw_metadata: HashMap::new(),
             filepath: String::new(),
         }
     }
@@ -127,9 +171,10 @@ impl AudioFile for AudioFileFlac{
     fn get_song_table_data(&self) -> SONG_TABLE_DATA {
         // make a new song table data struct
         let mut song_table_data = SONG_TABLE_DATA::default();
+        song_table_data.song_id = file_to_hash(self.filepath.clone());
+        
 
-
-        println!("The raw metadata is: {:?}", self.raw_metadata);
+        println!("hashmap: {:?}", self.raw_metadata);
         
         song_table_data
     }

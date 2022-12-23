@@ -96,6 +96,9 @@ fn main() {
     afile.load_file(filepath.to_string());
     afile.get_song_table_data();
 
+    // let mut hash = engine::file_to_hash(filepath.to_string());
+    // println!("The hash is: {}", hash);
+
     // jeffshit();
 
     // println!("Hello, world!");
