@@ -47,6 +47,7 @@ fn test_insert_song(){
         track_number: 0,
         track_total: 0,
         source: String::from("bruh"),
+        filetype: String::from("bruh"),
     };
 
     insert_song(song_table_data);

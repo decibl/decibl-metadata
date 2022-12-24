@@ -354,8 +354,21 @@ impl AudioFileMP3{
 
 
     /// Adds a ton of data from the mp3-metadata library to the raw_metadata hashmap
+    /// We can get the following data from this library:
+    /// 1. title
+    /// 2. artist
+    /// 3. album
+    /// 4. year
+    /// 5. genre
+    /// 6. duration
+    /// 7. sample_rate (sampling freq)
+    /// 8. bitrate
+    /// 9. channels (channel type)
+    /// 10. composers
+    /// 11. publisher
+
     pub fn add_id3_data(&mut self, filepath: String){
-    
+        // we cn
     }
     pub fn load_file(&mut self, filepath: String) {
         let mut metadata = add_symphonia_data(filepath.clone(), "mp3".to_string());

@@ -133,6 +133,7 @@ pub struct SONG_TABLE_DATA {
     pub track_number: i64,            // yes
     pub track_total: i64,             // yes
     pub source: String,               // yes
+    pub filetype: String,             // yes
 
                                       // make new function
 }
@@ -241,6 +242,7 @@ impl default for SONG_TABLE_DATA {
             track_number: -1,
             track_total: -1,
             source: "".to_string(),
+            filetype: "".to_string(),
         }
     }
 }
@@ -578,6 +580,13 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The source of the song",
+        },
+        Column {
+            name: "filetype",
+            data_type: "TEXT",
+            primary_key: false,
+            auto_increment: false,
+            notes: "The file type of the song",
         },
     ],
 });

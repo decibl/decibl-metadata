@@ -226,7 +226,8 @@ pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
                     song_table_data.title,
                     song_table_data.track_number,
                     song_table_data.track_total,
-                    song_table_data.source
+                    song_table_data.source,
+                    song_table_data.filetype,
                 ],
             )
             .unwrap();
@@ -568,6 +569,7 @@ pub fn get_all_songs() -> Vec<SONG_TABLE_DATA> {
                     track_number: row.get(24).unwrap(),
                     track_total: row.get(25).unwrap(),
                     source: row.get(26).unwrap(),
+                    filetype: row.get(27).unwrap(),
                 })
             }).unwrap();
             for song in song_iter {
