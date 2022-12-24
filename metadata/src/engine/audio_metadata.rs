@@ -368,11 +368,42 @@ impl AudioFileMP3{
     /// 11. publisher
 
     pub fn add_id3_data(&mut self, filepath: String){
-        // we cn
+        let mut metadata = mp3_metadata::read_from_file(filepath).unwrap();
+        let audiotag = metadata.tag.unwrap();
+
+        // make hashmap of all the data
+        let mut id3_data: HashMap<String, Vec<String>> = HashMap::new();
+
+        // add the title
+        let mut title_vec: Vec<String> = Vec::new();
+        title_vec.push(audiotag.title);
+        id3_data.insert("title".to_string(), title_vec);
+
+        // add the artist
+        let mut artist_vec: Vec<String> = Vec::new();
+        artist_vec.push(audiotag.artist);
+        id3_data.insert("main_artist".to_string(), artist_vec);
+
+        // add the album
+        let mut album_vec: Vec<String> = Vec::new();
+        album_vec.push(audiotag.album);
+        id3_data.insert("album".to_string(), album_vec);
+
+        // add the year
+        let mut year_vec: Vec<String> = Vec::new();
+        year_vec.push(audiotag.year.to_string());
+        id3_data.insert("year".to_string(), year_vec);
+
+        // add the genre
+        let mut genre_vec: Vec<String> = Vec::new();
+        
+        // genre is an enum, add the string representation of the enum
+        // cast the enum to a vector
+        // let genre_vec_enum: Vec<String> = audiotag.genre.iter().map(|x| x.to_string()).collect();
+        
+
     }
     pub fn load_file(&mut self, filepath: String) {
-        let mut metadata = add_symphonia_data(filepath.clone(), "mp3".to_string());
-        self.raw_metadata = metadata;
         // add all the data from the symphonia library
         self.add_id3_data(filepath.clone());
 
