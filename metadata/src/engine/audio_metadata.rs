@@ -19,11 +19,12 @@ use symphonia::core::formats::FormatOptions;
 use symphonia::core::formats::FormatReader;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::io::MediaSourceStream;
-use symphonia::core::meta::Tag;
 use symphonia::core::codecs;
 use symphonia::core::probe::Hint;
 // include hashmap
 use std::collections::HashMap;
+
+use metaflac;
 
 pub fn file_to_hash(filepath: String) -> Result<String,Error> {
     let mut hasher = Sha256::new();
@@ -175,7 +176,51 @@ impl AudioFileFlac{
 
     }
 
-    
+    fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
+        let mut tag = metaflac::Tag::read_from_path(filepath).unwrap();
+        let metadata = tag.get_streaminfo().unwrap();
+        // println!("The metadata is: {:?}", metadata);
+        let retn = metadata.clone();
+        
+        return retn;
+    }
+
+    fn add_metaflac_data(&mut self, filepath: String){
+        let streaminfo = self.get_metaflac_data(filepath.clone());
+        
+        // we have the following keys we need in stream info:
+        // sample_rate, channels, bit_depth,
+
+        let mut sample_rate_vec: Vec<String> = Vec::new();
+        let mut channels_vec: Vec<String> = Vec::new();
+        let mut bit_depth_vec: Vec<String> = Vec::new();
+
+        // StreamInfo { min_block_size: 4096, max_block_size: 4096, min_frame_size: 14, max_frame_size: 14705, sample_rate: 44100, num_channels: 2, bits_per_sample: 16, total_samples: 7646112, md5: 190b7e14f9e20550342fcef433e52313 }
+        sample_rate_vec.push(streaminfo.sample_rate.to_string());
+        channels_vec.push(streaminfo.num_channels.to_string());
+        bit_depth_vec.push(streaminfo.bits_per_sample.to_string());
+
+        // now we need to calculate bitrate, and duration
+        let mut bitrate_vec: Vec<String> = Vec::new();
+        let mut duration_vec: Vec<String> = Vec::new();
+
+        // cast streaminfo.bits_per_sample to u64
+
+        let bitrate = (streaminfo.bits_per_sample as u64 * streaminfo.sample_rate as u64 * streaminfo.num_channels as u64);
+
+        bitrate_vec.push(bitrate.to_string());
+
+        let duration = streaminfo.total_samples / streaminfo.sample_rate as u64;
+
+        duration_vec.push(duration.to_string());
+
+        self.raw_metadata.insert("sample_rate".to_string(), sample_rate_vec);
+        self.raw_metadata.insert("channels".to_string(), channels_vec);
+        self.raw_metadata.insert("bit_depth".to_string(), bit_depth_vec);
+        self.raw_metadata.insert("bitrate".to_string(), bitrate_vec);
+        self.raw_metadata.insert("duration".to_string(), duration_vec);
+        
+    }
 }
 
 impl AudioFile for AudioFileFlac{
@@ -183,8 +228,8 @@ impl AudioFile for AudioFileFlac{
     fn load_file(&mut self, filepath: String) {
         
         self.add_symphonia_data(filepath.clone());
+        self.add_metaflac_data(filepath.clone());
         println!("New metadata: {:?}", self.raw_metadata);
-
         self.filepath = filepath;
 
 
