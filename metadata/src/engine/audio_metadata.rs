@@ -22,6 +22,7 @@ use symphonia::core::probe::Hint;
 // include hashmap
 use std::collections::HashMap;
 use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
+use mp3_metadata;
 
 use metaflac;
 
@@ -54,11 +55,88 @@ pub trait AudioFile {
     fn default() -> Self;
 }
 
-pub struct AudioFileMP3 {
-    raw_metadata: HashMap<String, Vec<String>>,
-    filepath: String,
+
+pub fn get_symphonia_data(filepath: String, fileHint: String) -> Box<dyn FormatReader> {
+    let args = std::env::args().collect::<Vec<String>>();
+    let path = filepath.clone();
+
+    let src = std::fs::File::open(path).unwrap();
+
+    let mss = MediaSourceStream::new(Box::new(src), Default::default());
+    let mut hint = Hint::new();
+    hint.with_extension(&fileHint);
+
+    let meta_opts = MetadataOptions::default();
+    let format_opts = FormatOptions::default();
+
+    let probed = symphonia::default::get_probe().format(&hint, mss, &format_opts, &meta_opts).expect("failed to probe");
+
+    let mut format = probed.format;
+
+    format
 }
 
+pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::string::String, Vec<std::string::String>> {
+    let mut format = get_symphonia_data(filepath.clone(), fileHint.clone());
+
+    let binding = format.metadata();
+    let metaTags = binding.current().unwrap().tags();
+    let visualTags = binding.current().unwrap().visuals();
+
+    let vec_meta = metaTags.to_vec();
+    let vec_visual = visualTags.to_vec();
+
+    // Make a hashmap of <string, string> to store the metadata
+    let mut metadata: HashMap<String, Vec<String>> = HashMap::new();
+
+    for tag in vec_meta {
+        let key = tag.key.to_string();
+        let value = tag.value.to_string();
+
+        // if key is already in the hashmap, push the value to the vector
+        if metadata.contains_key(&key) {
+            let mut vec = metadata.get_mut(&key).unwrap();
+            vec.push(value);
+        } else {
+            // if key is not in the hashmap, create a new vector and push the value to it
+            let mut vec = Vec::new();
+            vec.push(value);
+            metadata.insert(key, vec);
+        }
+
+    }
+
+    // now add the following 
+    // pub album_artwork_bit_depth: i64, // picture::depth
+    // pub album_artwork_colors: i64, // picture::num_colors
+    // pub album_artwork_height: i64, // picture::height
+    // pub album_artwork_width: i64,
+
+    let mut artwork_bit_depth_vec: Vec<String> = Vec::new();
+    // let mut artwork_colors_vec: Vec<String> = Vec::new();
+    let mut artwork_height_vec: Vec<String> = Vec::new();
+    let mut artwork_width_vec: Vec<String> = Vec::new();
+
+    
+    let bit_depth = vec_visual[0].bits_per_pixel.expect("No bit depth");
+    let height = vec_visual[0].dimensions.unwrap().height;
+    let width = vec_visual[0].dimensions.unwrap().width;
+
+    artwork_bit_depth_vec.push(bit_depth.to_string());
+    artwork_height_vec.push(height.to_string());
+    artwork_width_vec.push(width.to_string());
+
+    metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
+    metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
+    metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
+
+
+
+    // println!("The colors are: {:?}", colors);
+    metadata
+
+}
+// ------------------------------------- FLAC -------------------------------------
 
 /// We will be using the Symphonia library and metaflac to parse stuff.
 /// After the load_file call, this is what the raw_metadata will look like:
@@ -70,94 +148,13 @@ pub struct AudioFileMP3 {
 /// "LENGTH": ["173000"], "TRACKNUMBER": ["1"], "TRACKTOTAL": ["1"],
 ///  "COMPOSER": ["Dan Reynolds", "Wayne Sermon", "Ben McKee", "Daniel Platzman", "Robin Fredriksson", "Mattias Larsson", "Justin Tranter", "Destin Route"], "SOURCE": ["Deezer"], "channels": ["2"], "SOURCEID": ["1543744602"]}
 /// ```
+#[derive(Debug)]
 pub struct AudioFileFlac {
     raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
 }
 
-// ------------------------------------- FLAC -------------------------------------
-
 impl AudioFileFlac{
-    fn get_symphonia_data(&self, filepath: String) -> Box<dyn FormatReader> {
-        let args = std::env::args().collect::<Vec<String>>();
-        let path = filepath.clone();
-
-        let src = std::fs::File::open(path).unwrap();
-
-        let mss = MediaSourceStream::new(Box::new(src), Default::default());
-        let mut hint = Hint::new();
-        hint.with_extension("flac");
-
-        let meta_opts = MetadataOptions::default();
-        let format_opts = FormatOptions::default();
-
-        let probed = symphonia::default::get_probe().format(&hint, mss, &format_opts, &meta_opts).expect("failed to probe");
-
-        let mut format = probed.format;
-
-        format
-    }
-
-    fn add_symphonia_data(&mut self, filepath: String){
-        let mut format = self.get_symphonia_data(filepath.clone());
-
-        let binding = format.metadata();
-        let metaTags = binding.current().unwrap().tags();
-        let visualTags = binding.current().unwrap().visuals();
-
-        let vec_meta = metaTags.to_vec();
-        let vec_visual = visualTags.to_vec();
-
-        // Make a hashmap of <string, string> to store the metadata
-        let mut metadata: HashMap<String, Vec<String>> = HashMap::new();
-
-        for tag in vec_meta {
-            let key = tag.key.to_string();
-            let value = tag.value.to_string();
-
-            // if key is already in the hashmap, push the value to the vector
-            if metadata.contains_key(&key) {
-                let mut vec = metadata.get_mut(&key).unwrap();
-                vec.push(value);
-            } else {
-                // if key is not in the hashmap, create a new vector and push the value to it
-                let mut vec = Vec::new();
-                vec.push(value);
-                metadata.insert(key, vec);
-            }
-
-        }
-
-        // now add the following 
-        // pub album_artwork_bit_depth: i64, // picture::depth
-        // pub album_artwork_colors: i64, // picture::num_colors
-        // pub album_artwork_height: i64, // picture::height
-        // pub album_artwork_width: i64,
-
-        let mut artwork_bit_depth_vec: Vec<String> = Vec::new();
-        // let mut artwork_colors_vec: Vec<String> = Vec::new();
-        let mut artwork_height_vec: Vec<String> = Vec::new();
-        let mut artwork_width_vec: Vec<String> = Vec::new();
-
-        
-        let bit_depth = vec_visual[0].bits_per_pixel.expect("No bit depth");
-        let height = vec_visual[0].dimensions.unwrap().height;
-        let width = vec_visual[0].dimensions.unwrap().width;
-
-        artwork_bit_depth_vec.push(bit_depth.to_string());
-        artwork_height_vec.push(height.to_string());
-        artwork_width_vec.push(width.to_string());
-
-        metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
-        metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
-        metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
-
-
-
-        // println!("The colors are: {:?}", colors);
-        self.raw_metadata = metadata;
-
-    }
 
     fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
         let mut tag = metaflac::Tag::read_from_path(filepath).unwrap();
@@ -306,8 +303,8 @@ impl AudioFile for AudioFileFlac{
     fn load_file(&mut self, filepath: String) {
         
         // add all the data from the symphonia library
-
-        self.add_symphonia_data(filepath.clone());
+        let mut metadata = add_symphonia_data(filepath.clone(), "flac".to_string());
+        self.raw_metadata = metadata;
 
         // add all the data from the metaflac library
         // THIS HAS TO BE CALLED SECOND
@@ -342,6 +339,36 @@ impl AudioFile for AudioFileFlac{
             raw_metadata: HashMap::new(),
             filepath: String::new(),
         }
+    }
+}
+
+// ------------------------------------ MP3 ----------------------------------------
+
+#[derive(Debug, Default)]
+pub struct AudioFileMP3 {
+    raw_metadata: HashMap<String, Vec<String>>,
+    filepath: String,
+}
+
+impl AudioFileMP3{
+
+
+    pub fn get_id3_data(&mut self, filepath: String){
+        let mut metadata = mp3_metadata::read_from_file(filepath.clone()).unwrap();
+        let bitrate = metadata.frames[0].bitrate;
+        let sample_rate = metadata.frames[0].sampling_freq;
+
+    
+    }
+    pub fn load_file(&mut self, filepath: String) {
+        let mut metadata = add_symphonia_data(filepath.clone(), "mp3".to_string());
+        self.raw_metadata = metadata;
+        // add all the data from the symphonia library
+        self.get_id3_data(filepath.clone());
+
+
+
+        println!("The metaTags is: {:?}", self.raw_metadata);
     }
 }
 

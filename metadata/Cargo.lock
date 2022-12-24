@@ -223,6 +223,7 @@ dependencies = [
  "data-encoding",
  "directories-next",
  "metaflac",
+ "mp3-metadata",
  "once_cell",
  "rusqlite",
  "serde",
@@ -458,6 +459,12 @@ checksum = "b275950c28b37e794e8c55d88aeb5e139d0ce23fdbbeda68f8d7174abdf9e8fa"
 dependencies = [
  "adler",
 ]
+
+[[package]]
+name = "mp3-metadata"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e4eaa3a228dc218005d769b88ce3a0310f49152f2029125289e94c49474c9cc4"
 
 [[package]]
 name = "mp4ameta"
