@@ -75,26 +75,7 @@ pub struct AudioFileFlac {
     filepath: String,
 }
 
-// let args = std::env::args().collect::<Vec<String>>();
-// let path = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/src/enemy.flac";   
-
-// let src = std::fs::File::open(path).unwrap();
-
-// let mss = MediaSourceStream::new(Box::new(src), Default::default());
-// let mut hint = Hint::new();
-// hint.with_extension("flac");
-
-// let meta_opts = MetadataOptions::default();
-// let format_opts = FormatOptions::default();
-
-// let probed = symphonia::default::get_probe().format(&hint, mss, &format_opts, &meta_opts).expect("failed to probe");
-
-// let mut format = probed.format;
-
-// let binding = format.metadata();
-// let meta = binding.current().unwrap().tags();
-
-// println!("The meta is: {:?}", meta);
+// ------------------------------------- FLAC -------------------------------------
 
 impl AudioFileFlac{
     fn get_symphonia_data(&self, filepath: String) -> Box<dyn FormatReader> {
@@ -224,8 +205,6 @@ impl AudioFileFlac{
         
     }
 }
-
-
 
 impl AudioFile for AudioFileFlac{
 
@@ -364,6 +343,5 @@ impl AudioFile for AudioFileFlac{
             filepath: String::new(),
         }
     }
-
-
 }
+
