@@ -98,11 +98,13 @@ fn main() {
     // salshit();
     // let filepathJeff = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
     let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/cbat.mp3";   
-    let mut afile = AudioFileMP3::default();
-    afile.load_file(filePathSal.to_string());
+    let AudioStuff = engine::audio_metadata::filepath_to_audiofile(filePathSal.to_string());
+    println!("The AudioStuff is: {:#?}", AudioStuff.get_song_table_data());
+    // let mut afile = AudioFileMP3::default();
+    // afile.load_file(filePathSal.to_string());
 
-    engine::analyticsdb::create_all_tables();
-    engine::analyticsdb::insert_song_information(afile);
+    // engine::analyticsdb::create_all_tables();
+    // engine::analyticsdb::insert_song_information(afile);
     // let song_table_data = afile.get_song_table_data();
     // let song_artists = afile.get_song_artists_table_data();
     // let album_arists = afile.get_album_artists_table_data();

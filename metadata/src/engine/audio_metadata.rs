@@ -26,6 +26,56 @@ use mp3_metadata;
 
 use metaflac;
 
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//                                                       USEFUL FUNCTIONS
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+pub trait AudioFile {
+    fn get_song_table_data(&self) -> SONG_TABLE_DATA;
+    fn get_song_artists_table_data(&self) -> Vec<SONG_ARTISTS_TABLE_DATA>;
+    fn get_album_artists_table_data(&self) -> Vec<ALBUM_ARTISTS_TABLE_DATA>;
+    fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>;
+    fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA>;
+    
+    fn load_file(&mut self, filepath:String);
+}
+
+pub fn filepath_to_audiofile(filepath: String) -> Box<dyn AudioFile> {
+    // get the file extension
+    let fileExt = std::path::Path::new(&filepath)
+        .extension()
+        .and_then(std::ffi::OsStr::to_str)
+        .unwrap()
+        .to_string();
+
+    // now we want to match the file extension to the correct audio file type
+
+    match fileExt.as_str() {
+        "mp3" => {
+            let mut afile = AudioFileMP3::default();
+            afile.load_file(filepath);
+            return Box::new(afile);
+        },
+        "flac" => {
+            let mut afile = AudioFileFLAC::default();
+            afile.load_file(filepath);
+            return Box::new(afile);
+        },
+        _ => {
+            println!("File extension not supported");
+        }
+
+    }
+
+    // return empty audio file
+    return Box::new(AudioFileMP3::default());
+
+
+    
+}
+
+
 pub fn file_to_hash(filepath: String) -> Result<String,Error> {
     let mut hasher = Sha256::new();
     let mut file = File::open(filepath)?;
@@ -35,26 +85,6 @@ pub fn file_to_hash(filepath: String) -> Result<String,Error> {
     let string = format!("{:x}", hash_bytes);
     Ok(string)
 }
-
-
-/// We want to make a trait that has the following functions
-/// * get_song_table_data returns SONG_TABLE_DATA struct
-/// * get_song_artists_table_data returns SONG_ARTISTS_TABLE_DATA struct
-/// * get_album_artists_table_data returns ALBUM_ARTISTS_TABLE_DATA struct
-/// * get_composers_table_data returns COMPOSERS_TABLE_DATA struct
-/// * get_genres_table_data returns GENRES_TABLE_DATA struct
-/// * load_file(filepath) which loads the file and it's data
-pub trait AudioFile {
-    fn get_song_table_data(&self) -> SONG_TABLE_DATA;
-    fn get_song_artists_table_data(&self) -> Vec<SONG_ARTISTS_TABLE_DATA>;
-    fn get_album_artists_table_data(&self) -> Vec<ALBUM_ARTISTS_TABLE_DATA>;
-    fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>;
-    fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA>;
-    
-    fn load_file(&mut self, filepath:String);
-    fn default() -> Self;
-}
-
 
 pub fn get_symphonia_data(filepath: String, fileHint: String) -> Box<dyn FormatReader> {
     let args = std::env::args().collect::<Vec<String>>();
@@ -137,6 +167,14 @@ pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::st
 
 }
 
+/// We want to make a trait that has the following functions
+/// * get_song_table_data returns SONG_TABLE_DATA struct
+/// * get_song_artists_table_data returns SONG_ARTISTS_TABLE_DATA struct
+/// * get_album_artists_table_data returns ALBUM_ARTISTS_TABLE_DATA struct
+/// * get_composers_table_data returns COMPOSERS_TABLE_DATA struct
+/// * get_genres_table_data returns GENRES_TABLE_DATA struct
+/// * load_file(filepath) which loads the file and it's data
+
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //                                                                               FLAC
@@ -154,12 +192,19 @@ pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::st
 ///  "COMPOSER": ["Dan Reynolds", "Wayne Sermon", "Ben McKee", "Daniel Platzman", "Robin Fredriksson", "Mattias Larsson", "Justin Tranter", "Destin Route"], "SOURCE": ["Deezer"], "channels": ["2"], "SOURCEID": ["1543744602"]}
 /// ```
 #[derive(Debug)]
-pub struct AudioFileFlac {
+pub struct AudioFileFLAC {
     raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
 }
 
-impl AudioFileFlac{
+impl AudioFileFLAC{
+
+    fn default() -> Self {
+        AudioFileFLAC {
+            raw_metadata: HashMap::new(),
+            filepath: String::new(),
+        }
+    }
 
     fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
         let mut tag = metaflac::Tag::read_from_path(filepath).unwrap();
@@ -208,7 +253,7 @@ impl AudioFileFlac{
     }
 }
 
-impl AudioFile for AudioFileFlac{
+impl AudioFile for AudioFileFLAC{
 
     fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>{
         let mut composers_table_data_vec: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
@@ -340,12 +385,6 @@ impl AudioFile for AudioFileFlac{
         // println!("The metaTags is: {:?}", metaTags);
     }
 
-    fn default() -> Self {
-        AudioFileFlac {
-            raw_metadata: HashMap::new(),
-            filepath: String::new(),
-        }
-    }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -362,10 +401,12 @@ pub struct AudioFileMP3 {
 }
 
 impl AudioFileMP3{
-
-
-
-
+    fn default() -> Self {
+        Self {
+            filepath: "".to_string(),
+            raw_metadata: HashMap::new(),
+        }
+    }
     /// Adds a ton of data from the mp3-metadata library to the raw_metadata hashmap
     /// We can get the following data from this library:
     /// 1. title
@@ -591,11 +632,6 @@ impl AudioFile for AudioFileMP3 {
         self.raw_metadata.insert("filetype".to_string(), vec!["mp3".to_string()]);
     }
 
-    fn default() -> Self {
-        Self {
-            filepath: "".to_string(),
-            raw_metadata: HashMap::new(),
-        }
-    }
+
 
 }

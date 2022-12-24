@@ -75,9 +75,9 @@ pub struct AudioFileFLAC {
 
 }
 
-pub impl AudioFileflac {
+pub impl AudioFileFLAC {
     fn new() -> AudioFileFLAC {
-        AudioFileflac {}
+        AudioFileFLAC {}
     }
 }
 
