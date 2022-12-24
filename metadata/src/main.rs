@@ -1,6 +1,10 @@
 #![allow(warnings)]
 
-use decibl_metadata::engine::{*, self};
+use decibl_metadata::engine::analyticsdb::*;
+use decibl_metadata::engine::audio_metadata::*;
+use decibl_metadata::engine::config::*;
+use decibl_metadata::engine::models::*;
+use decibl_metadata::{*, self};
 use std::path;
 use std::collections::HashMap;
 use audiotags::{Tag, Picture, MimeType};
@@ -11,11 +15,11 @@ use symphonia::core::probe::Hint;
 
 
 fn test_insert_song(){
-    engine::create_all_tables();
-    engine::clear_all_tables();
+    create_all_tables();
+    clear_all_tables();
     
-    // make a SONG_TABLE_DATA object from struct engine::SONG_TABLE_DATA
-    let mut song_table_data = engine::SONG_TABLE_DATA {
+    // make a SONG_TABLE_DATA object from struct SONG_TABLE_DATA
+    let mut song_table_data = SONG_TABLE_DATA {
         song_id: String::from("b3rsuXs2hz"),
         main_artist: String::from("bruh"),
         filesize_bytes: 0,
@@ -45,16 +49,16 @@ fn test_insert_song(){
         source: String::from("bruh"),
     };
 
-    engine::insert_song(song_table_data);
+    insert_song(song_table_data);
 }
 
 fn test_config_shit(){
-    engine::create_all_tables();
-    let tablenames = engine::get_all_table_names();
+    create_all_tables();
+    let tablenames = get_all_table_names();
     println!("The tablenames are: {:?}", tablenames);
-    // engine::create_all_files();
-    let retn = engine::write_config_var("soundfiles_paths", "C:/Users/drale/Music/music/FavoritesPL");
-    let valuepair = engine::get_config_var("soundfiles_path");
+    // create_all_files();
+    let retn = write_config_var("soundfiles_paths", "C:/Users/drale/Music/music/FavoritesPL");
+    let valuepair = get_config_var("soundfiles_path");
     println!("The valuepair is: {:?}", valuepair);
 
 }
@@ -93,7 +97,7 @@ fn main() {
     // salshit();
     let filepathJeff = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
     let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/cbat.mp3";   
-    let mut afile = engine::AudioFileMP3::default();
+    let mut afile = AudioFileMP3::default();
     afile.load_file(filePathSal.to_string());
     // afile.get_song_table_data();
     // let song_artists = afile.get_song_artists_table_data();
@@ -102,44 +106,44 @@ fn main() {
     //     println!("The artist is: {:#?}", artist);
     // }
 
-    // let mut hash = engine::file_to_hash(filepath.to_string());
+    // let mut hash = file_to_hash(filepath.to_string());
     // println!("The hash is: {}", hash);
 
     // jeffshit();
 
     // println!("Hello, world!");
-    // engine::cringeit();
-    // engine::create_all_files();
-    // let exConfig = engine::Config {
+    // cringeit();
+    // create_all_files();
+    // let exConfig = Config {
     //     soundFilesPath: String::from("C://Users//james//Documents//GitHub//cringeit//metadata//src//test"),
     // };
 
-    // engine::write_whole_config(exConfig);
-    // let config = engine::write_config_var("bruh", "bruhf");
+    // write_whole_config(exConfig);
+    // let config = write_config_var("bruh", "bruhf");
 
-    // let contents = engine::get_config_as_str();
+    // let contents = get_config_as_str();
 
     // println!("The contents are: {}", contents);
 
-    // let song_table_str = engine::compile_table(&engine::SONGS);
+    // let song_table_str = compile_table(&SONGS);
     // println!("The song table is: {}", song_table_str);
 
-    // let soundFilesPath = engine::get_test_soundfiles_path();    
+    // let soundFilesPath = get_test_soundfiles_path();    
     // println!("The soundFilesPath is: {}", soundFilesPath);
 
-    //let database_file_path = engine::get_database_file_path();
+    //let database_file_path = get_database_file_path();
     //println!("The database_file_path is: {}", database_file_path);
 
 
-    // copy SONG_TABLE_DATA from engine::models into a new HashMap
-    //let mut song_table_data = engine::clone_map(&engine::SONG_TABLE_DATA);
+    // copy SONG_TABLE_DATA from models into a new HashMap
+    //let mut song_table_data = clone_map(&SONG_TABLE_DATA);
 
     // set song_table_data["song_id"] to "test"
 
     //song_table_data.insert("song_id", "test");
 
 
-    //engine::insert_song(song_table_data);
+    //insert_song(song_table_data);
     
 
 

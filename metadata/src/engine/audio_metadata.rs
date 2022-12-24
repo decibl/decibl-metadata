@@ -353,18 +353,15 @@ pub struct AudioFileMP3 {
 impl AudioFileMP3{
 
 
-    pub fn get_id3_data(&mut self, filepath: String){
-        let mut metadata = mp3_metadata::read_from_file(filepath.clone()).unwrap();
-        let bitrate = metadata.frames[0].bitrate;
-        let sample_rate = metadata.frames[0].sampling_freq;
-
+    /// Adds a ton of data from the mp3-metadata library to the raw_metadata hashmap
+    pub fn add_id3_data(&mut self, filepath: String){
     
     }
     pub fn load_file(&mut self, filepath: String) {
         let mut metadata = add_symphonia_data(filepath.clone(), "mp3".to_string());
         self.raw_metadata = metadata;
         // add all the data from the symphonia library
-        self.get_id3_data(filepath.clone());
+        self.add_id3_data(filepath.clone());
 
 
 
