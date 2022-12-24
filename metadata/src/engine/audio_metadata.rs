@@ -13,16 +13,15 @@ use std::io::Error;
 use std::fs::File;
 use std::io;
 use crate::engine::models::*;
-use crate::engine::config::*;
 use sha2::{Digest, Sha256};
 use symphonia::core::formats::FormatOptions;
 use symphonia::core::formats::FormatReader;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::io::MediaSourceStream;
-use symphonia::core::codecs;
 use symphonia::core::probe::Hint;
 // include hashmap
 use std::collections::HashMap;
+use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
 
 use metaflac;
 
@@ -46,29 +45,32 @@ pub fn file_to_hash(filepath: String) -> Result<String,Error> {
 /// * load_file(filepath) which loads the file and it's data
 pub trait AudioFile {
     fn get_song_table_data(&self) -> SONG_TABLE_DATA;
-    // fn get_song_artists_table_data(&self) -> SONG_ARTISTS_TABLE_DATA;
-    // fn get_album_artists_table_data(&self) -> ALBUM_ARTISTS_TABLE_DATA;
-    // fn get_composers_table_data(&self) -> COMPOSERS_TABLE_DATA;
-    // fn get_genres_table_data(&self) -> GENRES_TABLE_DATA;
+    fn get_song_artists_table_data(&self) -> Vec<SONG_ARTISTS_TABLE_DATA>;
+    fn get_album_artists_table_data(&self) -> Vec<ALBUM_ARTISTS_TABLE_DATA>;
+    fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>;
+    fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA>;
+    
     fn load_file(&mut self, filepath:String);
     fn default() -> Self;
 }
 
 pub struct AudioFileMP3 {
-    song_table_data: SONG_TABLE_DATA,
-    song_artists_table_data: SONG_ARTISTS_TABLE_DATA,
-    album_artists_table_data: ALBUM_ARTISTS_TABLE_DATA,
-    composers_table_data: COMPOSERS_TABLE_DATA,
-    genres_table_data: GENRES_TABLE_DATA,
+    raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
 }
 
+
+/// We will be using the Symphonia library and metaflac to parse stuff.
+/// After the load_file call, this is what the raw_metadata will look like:
+/// ```
+/// {"ALBUMARTIST": ["Imagine Dragons", "Arcane", "League Of Legends"], "bit_depth": ["16"], "album_artwork_bit_depth": ["24"], "RATING": ["100"], "sample_rate": ["44100"], 
+/// "PUBLISHER": ["KIDinaKORNER/Interscope Records"], "GENRE": ["Alternative"], "BARCODE": ["602445192335"], 
+/// "ARTIST": ["Imagine Dragons", "Arcane", "League Of Legends"], "DATE": ["2021-10-27"], "DISCTOTAL": ["1"], "ALBUM": ["Enemy (from the series Arcane League of Legends)"], 
+/// "ISRC": ["USUM72120989"], "DISCNUMBER": ["1"], "TITLE": ["Enemy (From the series Arcane League of Legends)"], "album_artwork_height": ["800"], "album_artwork_width": ["800"], "duration": ["173"], "ITUNESADVISORY": ["0"], "bitrate": ["1411200"], 
+/// "LENGTH": ["173000"], "TRACKNUMBER": ["1"], "TRACKTOTAL": ["1"],
+///  "COMPOSER": ["Dan Reynolds", "Wayne Sermon", "Ben McKee", "Daniel Platzman", "Robin Fredriksson", "Mattias Larsson", "Justin Tranter", "Destin Route"], "SOURCE": ["Deezer"], "channels": ["2"], "SOURCEID": ["1543744602"]}
+/// ```
 pub struct AudioFileFlac {
-    song_table_data: SONG_TABLE_DATA,
-    song_artists_table_data: SONG_ARTISTS_TABLE_DATA,
-    album_artists_table_data: ALBUM_ARTISTS_TABLE_DATA,
-    composers_table_data: COMPOSERS_TABLE_DATA,
-    genres_table_data: GENRES_TABLE_DATA,
     raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
 }
@@ -223,35 +225,97 @@ impl AudioFileFlac{
     }
 }
 
+
+
 impl AudioFile for AudioFileFlac{
 
-    fn load_file(&mut self, filepath: String) {
-        
-        self.add_symphonia_data(filepath.clone());
-        self.add_metaflac_data(filepath.clone());
-        println!("New metadata: {:?}", self.raw_metadata);
-        self.filepath = filepath;
-
-
-        // println!("The metaTags is: {:?}", metaTags);
+    fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>{
+        let mut composers_table_data_vec: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
+        let composers = self.raw_metadata.get("COMPOSER").unwrap();
+        for composer in composers{
+            let mut composers_table_data = COMPOSERS_TABLE_DATA::default();
+            composers_table_data.composer_name = composer.clone();
+            composers_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            composers_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            composers_table_data_vec.push(composers_table_data);
+        }
+        return composers_table_data_vec;
     }
 
-    fn default() -> Self {
-        AudioFileFlac {
-            song_table_data: SONG_TABLE_DATA::default(),
-            song_artists_table_data: SONG_ARTISTS_TABLE_DATA::default(),
-            album_artists_table_data: ALBUM_ARTISTS_TABLE_DATA::default(),
-            composers_table_data: COMPOSERS_TABLE_DATA::default(),
-            genres_table_data: GENRES_TABLE_DATA::default(),
-            raw_metadata: HashMap::new(),
-            filepath: String::new(),
+    fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA>{
+        let mut genres_table_data_vec: Vec<GENRES_TABLE_DATA> = Vec::new();
+        let genres = self.raw_metadata.get("GENRE").unwrap();
+        for genre in genres{
+            let mut genres_table_data = GENRES_TABLE_DATA::default();
+            genres_table_data.genre_name = genre.clone();
+            genres_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            genres_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            genres_table_data_vec.push(genres_table_data);
         }
+        return genres_table_data_vec;
+    }
+
+    fn get_album_artists_table_data(&self) -> Vec<ALBUM_ARTISTS_TABLE_DATA>{
+        let mut album_artists_table_data_vec: Vec<ALBUM_ARTISTS_TABLE_DATA> = Vec::new();
+        let album_artists = self.raw_metadata.get("ALBUMARTIST").unwrap();
+        for artist in album_artists{
+            let mut album_artists_table_data = ALBUM_ARTISTS_TABLE_DATA::default();
+            album_artists_table_data.artist_name = artist.clone();
+            album_artists_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            album_artists_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            album_artists_table_data_vec.push(album_artists_table_data);
+        }
+        return album_artists_table_data_vec;
+    }
+
+    /// We need to return all the song artists for the song
+    fn get_song_artists_table_data(&self) -> Vec<SONG_ARTISTS_TABLE_DATA>{
+        let mut song_artists_table_data_vec: Vec<SONG_ARTISTS_TABLE_DATA> = Vec::new();
+        let song_artists = self.raw_metadata.get("ARTIST").unwrap();
+        for artist in song_artists{
+            let mut song_artists_table_data = SONG_ARTISTS_TABLE_DATA::default();
+            song_artists_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            song_artists_table_data.artist_name = artist.clone();
+            song_artists_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            song_artists_table_data_vec.push(song_artists_table_data);
+        }
+        return song_artists_table_data_vec;
     }
 
     fn get_song_table_data(&self) -> SONG_TABLE_DATA {
-        // make a new song table data struct
+
         let mut song_table_data = SONG_TABLE_DATA::default();
-        song_table_data.song_id = file_to_hash(self.filepath.clone()).unwrap();
+        song_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+        song_table_data.main_artist = self.raw_metadata.get("ARTIST").unwrap()[0].clone();
+        song_table_data.filesize_bytes = self.raw_metadata.get("filesize").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.padding_bytes = -1; // just set this to -1 for now
+        song_table_data.album_artwork_bit_depth = self.raw_metadata.get("album_artwork_bit_depth").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.album_artwork_colors = -1; // just set this to -1 for now
+        song_table_data.album_artwork_height = self.raw_metadata.get("album_artwork_height").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.album_artwork_width = self.raw_metadata.get("album_artwork_width").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.bit_depth = self.raw_metadata.get("bit_depth").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.bitrate = self.raw_metadata.get("bitrate").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.channels = self.raw_metadata.get("channels").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.duration = self.raw_metadata.get("duration").unwrap()[0].parse::<f64>().unwrap();
+        song_table_data.sample_rate = self.raw_metadata.get("sample_rate").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.album = self.raw_metadata.get("ALBUM").unwrap()[0].clone();
+        song_table_data.barcode = self.raw_metadata.get("BARCODE").unwrap()[0].clone();
+        song_table_data.date_created = self.raw_metadata.get("DATE").unwrap()[0].clone();
+        song_table_data.disc_number = self.raw_metadata.get("DISCNUMBER").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.disc_total = self.raw_metadata.get("DISCTOTAL").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.isrc = self.raw_metadata.get("ISRC").unwrap()[0].clone();
+        song_table_data.itunesadvisory = self.raw_metadata.get("ITUNESADVISORY").unwrap()[0].clone();
+        song_table_data.length = self.raw_metadata.get("LENGTH").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.publisher = self.raw_metadata.get("PUBLISHER").unwrap()[0].clone();
+        song_table_data.rating = self.raw_metadata.get("RATING").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.title = self.raw_metadata.get("TITLE").unwrap()[0].clone();
+        song_table_data.track_number = self.raw_metadata.get("TRACKNUMBER").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.track_total = self.raw_metadata.get("TRACKTOTAL").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.source = self.raw_metadata.get("SOURCE").unwrap()[0].clone();
+
+
+
+
         println!("Song_table_data: {:#?}", song_table_data);
         
 
@@ -259,5 +323,47 @@ impl AudioFile for AudioFileFlac{
         
         song_table_data
     }
+
+    fn load_file(&mut self, filepath: String) {
+        
+        // add all the data from the symphonia library
+
+        self.add_symphonia_data(filepath.clone());
+
+        // add all the data from the metaflac library
+        // THIS HAS TO BE CALLED SECOND
+        self.add_metaflac_data(filepath.clone());
+
+
+
+        self.filepath = filepath;
+
+        // add the filesize to the metadata
+        let file = File::open(&self.filepath).unwrap();
+        let metadata = file.metadata().unwrap();
+        let filesize = metadata.len();
+
+        let mut filesize_vec: Vec<String> = Vec::new();
+        filesize_vec.push(filesize.to_string());
+
+        self.raw_metadata.insert("filesize".to_string(), filesize_vec);
+        self.raw_metadata.insert("song_id".to_string(), vec![file_to_hash(self.filepath.clone()).unwrap()]);
+        
+
+        println!("New metadata: {:#?}", self.raw_metadata);
+
+
+
+
+        // println!("The metaTags is: {:?}", metaTags);
+    }
+
+    fn default() -> Self {
+        AudioFileFlac {
+            raw_metadata: HashMap::new(),
+            filepath: String::new(),
+        }
+    }
+
 
 }

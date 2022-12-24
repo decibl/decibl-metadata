@@ -95,7 +95,12 @@ fn main() {
     let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/enemy.flac";   
     let mut afile = engine::AudioFileFlac::default();
     afile.load_file(filePathSal.to_string());
-    afile.get_song_table_data();
+    // afile.get_song_table_data();
+    let song_artists = afile.get_song_artists_table_data();
+
+    for artist in song_artists {
+        println!("The artist is: {:#?}", artist);
+    }
 
     // let mut hash = engine::file_to_hash(filepath.to_string());
     // println!("The hash is: {}", hash);
