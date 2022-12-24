@@ -345,7 +345,7 @@ impl AudioFile for AudioFileFlac{
 
 // ------------------------------------ MP3 ----------------------------------------
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct AudioFileMP3 {
     raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
@@ -455,8 +455,10 @@ impl AudioFileMP3{
         let composers_vec = composers.composers.clone();
         id3_data.insert("composers".to_string(), composers_vec);
 
-        let publisher_vec: Vec<String> = Vec::new();
         let publisher = &metadata.optional_info[0].publisher.clone().unwrap();
+        let publisher = publisher.trim_end_matches('\0').to_string();
+        let publisher_vec = vec![publisher];
+
         id3_data.insert("publisher".to_string(), publisher_vec);
 
         // print id3_data
@@ -471,6 +473,65 @@ impl AudioFileMP3{
 }
 
 impl AudioFile for AudioFileMP3 {
+
+    fn get_song_artists_table_data(&self) -> Vec<SONG_ARTISTS_TABLE_DATA>{
+        let mut song_artists_vec: Vec<SONG_ARTISTS_TABLE_DATA> = Vec::new();
+
+        // go through each artist in self.raw_metadata.get("main_artist")
+        for artist in self.raw_metadata.get("main_artist").unwrap() {
+            let mut song_artists_table_data = SONG_ARTISTS_TABLE_DATA::default();
+            song_artists_table_data.artist_name = artist.clone();
+            song_artists_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            song_artists_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            song_artists_vec.push(song_artists_table_data);
+        }
+
+        song_artists_vec
+    }
+    fn get_album_artists_table_data(&self) -> Vec<ALBUM_ARTISTS_TABLE_DATA>{
+        let mut album_artists_vec: Vec<ALBUM_ARTISTS_TABLE_DATA> = Vec::new();
+
+        // go through each artist in self.raw_metadata.get("album_artists")
+        for artist in self.raw_metadata.get("main_artist").unwrap() {
+            let mut album_artists_table_data = ALBUM_ARTISTS_TABLE_DATA::default();
+            album_artists_table_data.artist_name = artist.clone();
+            album_artists_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            album_artists_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            album_artists_vec.push(album_artists_table_data);
+        }
+
+        album_artists_vec
+    }
+    fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>{
+        let mut composers_vec: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
+
+        // go through each composer in self.raw_metadata.get("composers")
+        for composer in self.raw_metadata.get("composers").unwrap() {
+            let mut composers_table_data = COMPOSERS_TABLE_DATA::default();
+            composers_table_data.composer_name = composer.clone();
+            composers_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            composers_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            composers_vec.push(composers_table_data);
+        }
+
+        composers_vec
+    }
+    fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA>{
+        let mut genres_vec: Vec<GENRES_TABLE_DATA> = Vec::new();
+
+        // go through each genre in self.raw_metadata.get("genre")
+        for genre in self.raw_metadata.get("genre").unwrap() {
+            let mut genres_table_data = GENRES_TABLE_DATA::default();
+            genres_table_data.genre_name = genre.clone();
+            genres_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+            genres_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            genres_vec.push(genres_table_data);
+        }
+
+        genres_vec
+    }
+
+
     
 
     /// we want to return the following stuff. Yeah there isn't that much data we can get from mp3 files reliably :<
@@ -517,9 +578,13 @@ impl AudioFile for AudioFileMP3 {
         self.raw_metadata.insert("filesize".to_string(), filesize_vec);
         self.raw_metadata.insert("song_id".to_string(), vec![file_to_hash(self.filepath.clone()).unwrap()]);
         
+    }
 
-
-
+    fn default() -> Self {
+        Self {
+            filepath: "".to_string(),
+            raw_metadata: HashMap::new(),
+        }
     }
 
 }
