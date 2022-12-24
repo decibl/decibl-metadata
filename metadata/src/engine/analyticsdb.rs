@@ -4,7 +4,7 @@ use crate::engine::config::*;
 use crate::engine::models::*;
 use crate::engine::audio_metadata::*;
 use std::collections::HashMap;
-
+use walkdir;
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 //                                                           CREATE TABLES
@@ -918,6 +918,18 @@ pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
 
 // now some more, useful functions
 
+pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String>{
+    let mut filepaths: Vec<String> = Vec::new();
+    
+    // we want to get all the filepaths in the directory, including subdirectories
+    // we can use the walkdir crate for this
+    for entry in walkdir::WalkDir::new(dirpath) {
+        let entry = entry.unwrap();
+        let filepath = entry.path().to_str().unwrap().to_string();
+        filepaths.push(filepath);
+    }
+    filepaths
+}
 /// This is going to be used to populate the database with some data.
 /// Look into config.get_soundfiles_path() to find all the soundfiles. Iterate through each one, parse their metadata, etc.
 pub fn populate_database(){

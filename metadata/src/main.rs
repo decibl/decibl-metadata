@@ -1,5 +1,6 @@
 #![allow(warnings)]
 
+use decibl_metadata::engine::analyticsdb;
 use decibl_metadata::engine::analyticsdb::*;
 use decibl_metadata::engine::audio_metadata::*;
 use decibl_metadata::engine::config::*;
@@ -92,14 +93,20 @@ fn salshit() {
 
 }
 
+fn test_filepath_to_audiofile(){
+    let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/cbat.mp3";   
+    let AudioStuff = engine::audio_metadata::filepath_to_audiofile(filePathSal.to_string());
+    println!("The AudioStuff is: {:#?}", AudioStuff.get_song_table_data());
+}
 
 fn main() {
     //sal this for u
     // salshit();
     // let filepathJeff = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
     let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/cbat.mp3";   
-    let AudioStuff = engine::audio_metadata::filepath_to_audiofile(filePathSal.to_string());
-    println!("The AudioStuff is: {:#?}", AudioStuff.get_song_table_data());
+    let dirPath = "C:/Users/drale/AppData/Roaming/decibl";
+    let dirs = engine::analyticsdb::get_all_filepaths_in_directory(dirPath.to_string());
+    println!("The dirs are: {:#?}", dirs);
     // let mut afile = AudioFileMP3::default();
     // afile.load_file(filePathSal.to_string());
 
