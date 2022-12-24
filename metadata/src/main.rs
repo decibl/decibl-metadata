@@ -100,6 +100,9 @@ fn main() {
     let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/cbat.mp3";   
     let mut afile = AudioFileMP3::default();
     afile.load_file(filePathSal.to_string());
+    let song_table_data = afile.get_song_table_data();
+    println!("The song_table_data is: {:#?}", song_table_data);
+
     // afile.get_song_table_data();
     // let song_artists = afile.get_song_artists_table_data();
 

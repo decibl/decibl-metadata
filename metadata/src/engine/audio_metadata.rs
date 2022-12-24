@@ -288,6 +288,7 @@ impl AudioFile for AudioFileFlac{
         song_table_data.track_number = self.raw_metadata.get("TRACKNUMBER").unwrap()[0].parse::<i64>().unwrap();
         song_table_data.track_total = self.raw_metadata.get("TRACKTOTAL").unwrap()[0].parse::<i64>().unwrap();
         song_table_data.source = self.raw_metadata.get("SOURCE").unwrap()[0].clone();
+        song_table_data.filetype = "flac".to_string();
 
 
 
@@ -353,6 +354,8 @@ pub struct AudioFileMP3 {
 impl AudioFileMP3{
 
 
+
+
     /// Adds a ton of data from the mp3-metadata library to the raw_metadata hashmap
     /// We can get the following data from this library:
     /// 1. title
@@ -366,7 +369,6 @@ impl AudioFileMP3{
     /// 9. channels (channel type)
     /// 10. composers
     /// 11. publisher
-
     pub fn add_id3_data(&mut self, filepath: String){
         let mut metadata = mp3_metadata::read_from_file(filepath).unwrap();
         let audiotag = metadata.tag.unwrap();
@@ -376,17 +378,26 @@ impl AudioFileMP3{
 
         // add the title
         let mut title_vec: Vec<String> = Vec::new();
-        title_vec.push(audiotag.title);
+        let title = audiotag.title.to_string();
+        // remove the trailing \0
+        let title = title.trim_end_matches('\0').to_string();
+        title_vec.push(title);
         id3_data.insert("title".to_string(), title_vec);
 
         // add the artist
         let mut artist_vec: Vec<String> = Vec::new();
-        artist_vec.push(audiotag.artist);
+        let artist = audiotag.artist.to_string();
+        // remove the trailing \0
+        let artist = artist.trim_end_matches('\0').to_string();
+        artist_vec.push(artist);
         id3_data.insert("main_artist".to_string(), artist_vec);
 
         // add the album
         let mut album_vec: Vec<String> = Vec::new();
-        album_vec.push(audiotag.album);
+        let album = audiotag.album.to_string();
+        // remove the trailing \0
+        let album = album.trim_end_matches('\0').to_string();
+        album_vec.push(album);
         id3_data.insert("album".to_string(), album_vec);
 
         // add the year
@@ -396,20 +407,119 @@ impl AudioFileMP3{
 
         // add the genre
         let mut genre_vec: Vec<String> = Vec::new();
+        // get the output of printing audiotag.genre
+        let genre_string = format!("{:?}", audiotag.genre);
+        genre_vec.push(genre_string);
+        id3_data.insert("genre".to_string(), genre_vec);
+
+        // add the duration
+        let mut duration_vec: Vec<String> = Vec::new();
+        let duration = metadata.duration.as_secs();
+        duration_vec.push(duration.to_string());
+        id3_data.insert("duration".to_string(), duration_vec);
+
+        // the sample_rate, bitrate, and channels should be taken from metadata.frames[0]
+        // add the sample_rate
+        let mut sample_rate_vec: Vec<String> = Vec::new();
+        let sample_rate = metadata.frames[0].sampling_freq;
+        sample_rate_vec.push(sample_rate.to_string());
+        id3_data.insert("sample_rate".to_string(), sample_rate_vec);
+
+        // add the bitrate
+        let mut bitrate_vec: Vec<String> = Vec::new();
+        let bitrate = metadata.frames[0].bitrate;
+        bitrate_vec.push(bitrate.to_string());
+        id3_data.insert("bitrate".to_string(), bitrate_vec);
+
+        // add the channels
+        let mut channels_vec: Vec<String> = Vec::new();
+        let channels = metadata.frames[0].chan_type;
+
+        // possible values are: Stereo, Joint Stereo, Dual Channel, Single Channel, Unknown
+        // convert these into 2, 2, 2, 1, 0
+        let channels = match channels {
+            mp3_metadata::ChannelType::Stereo => 2,
+            mp3_metadata::ChannelType::JointStereo => 2,
+            mp3_metadata::ChannelType::DualChannel => 2,
+            mp3_metadata::ChannelType::SingleChannel => 1,
+            mp3_metadata::ChannelType::Unknown => 0,
+        };
+
+        channels_vec.push(channels.to_string());
+        id3_data.insert("channels".to_string(), channels_vec);
+
+        // Composers and publishers will be found in metadata.optional_info
+
+        // add the composers
+        let composers = &metadata.optional_info[0];
+        let composers_vec = composers.composers.clone();
+        id3_data.insert("composers".to_string(), composers_vec);
+
+        let publisher_vec: Vec<String> = Vec::new();
+        let publisher = &metadata.optional_info[0].publisher.clone().unwrap();
+        id3_data.insert("publisher".to_string(), publisher_vec);
+
+        // print id3_data
+        self.raw_metadata = id3_data;
         
-        // genre is an enum, add the string representation of the enum
-        // cast the enum to a vector
-        // let genre_vec_enum: Vec<String> = audiotag.genre.iter().map(|x| x.to_string()).collect();
+        
         
 
-    }
-    pub fn load_file(&mut self, filepath: String) {
-        // add all the data from the symphonia library
-        self.add_id3_data(filepath.clone());
 
 
-
-        println!("The metaTags is: {:?}", self.raw_metadata);
     }
 }
 
+impl AudioFile for AudioFileMP3 {
+    
+
+    /// we want to return the following stuff. Yeah there isn't that much data we can get from mp3 files reliably :<
+    /// 1. title
+    /// 2. artist
+    /// 3. album
+    /// 4. year
+    /// 6. duration
+    /// 7. sample_rate (sampling freq)
+    /// 8. bitrate
+    /// 9. channels (channel type)
+    fn get_song_table_data(&self) -> SONG_TABLE_DATA{
+        let mut song_table_data = SONG_TABLE_DATA::default();
+
+        song_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
+        song_table_data.filesize_bytes = self.raw_metadata.get("filesize").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.title = self.raw_metadata.get("title").unwrap()[0].clone();
+        song_table_data.main_artist = self.raw_metadata.get("main_artist").unwrap()[0].clone();
+        song_table_data.album = self.raw_metadata.get("album").unwrap()[0].clone();
+        song_table_data.date_created = self.raw_metadata.get("year").unwrap()[0].parse::<i64>().unwrap().to_string();
+        song_table_data.duration = self.raw_metadata.get("duration").unwrap()[0].parse::<i64>().unwrap() as f64;
+        song_table_data.sample_rate = self.raw_metadata.get("sample_rate").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.bitrate = self.raw_metadata.get("bitrate").unwrap()[0].parse::<i64>().unwrap();
+        song_table_data.channels = self.raw_metadata.get("channels").unwrap()[0].clone().parse::<i64>().unwrap();
+        song_table_data
+        
+    }
+    fn load_file(&mut self, filepath: String) {
+        // add all the data from the symphonia library
+        // time how long it takes to load the file
+
+        self.filepath = filepath.clone();
+
+        self.add_id3_data(filepath.clone());
+
+        // add the filesize to the metadata
+        let file = File::open(&self.filepath).unwrap();
+        let metadata = file.metadata().unwrap();
+        let filesize = metadata.len();
+
+        let mut filesize_vec: Vec<String> = Vec::new();
+        filesize_vec.push(filesize.to_string());
+
+        self.raw_metadata.insert("filesize".to_string(), filesize_vec);
+        self.raw_metadata.insert("song_id".to_string(), vec![file_to_hash(self.filepath.clone()).unwrap()]);
+        
+
+
+
+    }
+
+}
