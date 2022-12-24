@@ -3,13 +3,11 @@
 
 use once_cell::sync::Lazy;
 
-
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 //                                                          TABLES
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
-
 
 pub struct Column {
     pub name: &'static str,
@@ -24,8 +22,6 @@ pub struct Table {
     // make columns an array of the Column struct that is NOT a vector
     pub columns: Vec<Column>,
 }
-
-
 
 // make public function compile_table which takes a table and returns a valid SQL string for creating the table
 
@@ -59,7 +55,7 @@ pub fn compile_song_table() -> String {
 
 pub fn compile_plays_table() -> String {
     compile_table(&PLAYS)
-}   
+}
 
 pub fn compile_playlists_table() -> String {
     compile_table(&PLAYLISTS)
@@ -107,38 +103,41 @@ pub trait default {
     fn default() -> Self;
 }
 
-pub struct SONG_TABLE_DATA  {
+// DERIVE DEBUG MEANS WE CAN PRINT IT
+#[derive(Debug)]
+pub struct SONG_TABLE_DATA {
     pub song_id: String,
-    pub main_artist: String, // yes
-    pub filesize_bytes: i64,  // yes *
-    pub padding_bytes: i64,  // flack pack yes
+    pub main_artist: String,          // yes
+    pub filesize_bytes: i64,          // yes *
+    pub padding_bytes: i64,           // flack pack yes
     pub album_artwork_bit_depth: i64, // yes
-    pub album_artwork_colors: i64, // yes
-    pub album_artwork_height: i64, //  yes
-    pub album_artwork_width: i64, // yes
-    pub bit_depth: i64, // flac bits_per_sample 
-    pub bitrate: i64, // flac can calculate
-    pub channels: i64, // flac pack
-    pub duration: f64, // can calculate
-    pub sample_rate: i64,  // flac pack
-    pub album: String, // yes
-    pub barcode: String, // yes
-    pub date_created: String, // yes
-    pub disc_number: i64, // yes
-    pub disc_total: i64, // yes
-    pub isrc: String, // yes
-    pub itunesadvisory: String, // yes
-    pub length: i64, // yes
-    pub publisher: String, // yes
-    pub rating: i64,  // yes
-    pub title: String, // yes
-    pub track_number: i64, // yes
-    pub track_total: i64, // yes
-    pub source: String,  // yes
+    pub album_artwork_colors: i64,    // yes
+    pub album_artwork_height: i64,    //  yes
+    pub album_artwork_width: i64,     // yes
+    pub bit_depth: i64,               // flac bits_per_sample
+    pub bitrate: i64,                 // flac can calculate
+    pub channels: i64,                // flac pack
+    pub duration: f64,                // can calculate
+    pub sample_rate: i64,             // flac pack
+    pub album: String,                // yes
+    pub barcode: String,              // yes
+    pub date_created: String,         // yes
+    pub disc_number: i64,             // yes
+    pub disc_total: i64,              // yes
+    pub isrc: String,                 // yes
+    pub itunesadvisory: String,       // yes
+    pub length: i64,                  // yes
+    pub publisher: String,            // yes
+    pub rating: i64,                  // yes
+    pub title: String,                // yes
+    pub track_number: i64,            // yes
+    pub track_total: i64,             // yes
+    pub source: String,               // yes
 
-    // make new function
+                                      // make new function
 }
 
+#[derive(Debug)]
 pub struct PLAY_TABLE_DATA {
     pub play_id: String,
     pub song_id: String,
@@ -149,6 +148,7 @@ pub struct PLAY_TABLE_DATA {
     pub end_dt: String,
 }
 
+#[derive(Debug)]
 pub struct PLAYLIST_TABLE_DATA {
     pub playlist_id: String,
     pub playlist_name: String,
@@ -156,46 +156,52 @@ pub struct PLAYLIST_TABLE_DATA {
     pub created_dt: String,
 }
 
+#[derive(Debug)]
 pub struct PLAYLIST_SONGS_TABLE_DATA {
     pub playlist_id: String,
     pub song_id: String,
     pub added_dt: String,
 }
 
+#[derive(Debug)]
 pub struct SONG_ARTISTS_TABLE_DATA {
     pub artist_name: String,
     pub song_id: String,
     pub dt_added: String,
 }
 
+#[derive(Debug)]
 pub struct ALBUM_ARTISTS_TABLE_DATA {
     pub artist_name: String,
     pub song_id: String,
     pub dt_added: String,
 }
 
+#[derive(Debug)]
 pub struct COMPOSERS_TABLE_DATA {
     pub composer_name: String,
     pub song_id: String,
     pub dt_added: String,
 }
 
+#[derive(Debug)]
 pub struct GENRES_TABLE_DATA {
     pub genre_name: String,
     pub song_id: String,
     pub dt_added: String,
 }
+#[derive(Debug)]
 pub struct SONGPATHS_TABLE_DATA {
     pub song_id: String,
     pub song_path: String,
 }
-
+#[derive(Debug)]
 pub struct ARTISTS_TABLE_DATA {
     pub artist_name: String,
     pub artist_bio: String,
     pub artist_photo_location: String,
 }
-
+#[derive(Debug)]
 pub struct ALBUMS_TABLE_DATA {
     pub album_id: String,
     pub album_name: String,
@@ -636,7 +642,7 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The end date and time of the play in YYYY-MM-DD HH:MM:SS",
-        }
+        },
     ],
 });
 
@@ -685,7 +691,7 @@ pub static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
 // // song_id TEXT NOT NULL,
 // // added_dt TEXT NOT NULL
 
-pub static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {   
+pub static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {
     name: "playlist_songs",
     columns: vec![
         Column {
@@ -808,7 +814,6 @@ pub static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
     ],
 });
 
-
 // // GENRES TABLE
 // // genre_name TEXT NOT NULL,
 // // song_id TEXT NOT NULL,
@@ -840,7 +845,6 @@ pub static GENRES: Lazy<Table> = Lazy::new(|| Table {
         },
     ],
 });
-
 
 // // SONGPATHS TABLE
 // // song_id TEXT NOT NULL,
@@ -960,7 +964,6 @@ pub fn generate_insertion_sql(table: &Table) -> String {
     sql.push_str(") VALUES (");
     for _ in &table.columns {
         sql.push_str("?, ");
-
     }
     sql.pop();
     sql.pop();

@@ -204,7 +204,7 @@ impl AudioFileFlac{
         let mut bitrate_vec: Vec<String> = Vec::new();
         let mut duration_vec: Vec<String> = Vec::new();
 
-        // cast streaminfo.bits_per_sample to u64
+        // we have to calculate bitrate
 
         let bitrate = (streaminfo.bits_per_sample as u64 * streaminfo.sample_rate as u64 * streaminfo.num_channels as u64);
 
@@ -252,7 +252,7 @@ impl AudioFile for AudioFileFlac{
         // make a new song table data struct
         let mut song_table_data = SONG_TABLE_DATA::default();
         song_table_data.song_id = file_to_hash(self.filepath.clone()).unwrap();
-        println!("song_id: {:?}", song_table_data.song_id);
+        println!("Song_table_data: {:#?}", song_table_data);
         
 
         // println!("hashmap: {:?}", self.raw_metadata);
