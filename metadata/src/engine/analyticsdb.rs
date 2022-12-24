@@ -2,6 +2,7 @@ use rusqlite::params;
 use rusqlite::{Connection};
 use crate::engine::config::*;
 use crate::engine::models::*;
+use crate::engine::audio_metadata::*;
 use std::collections::HashMap;
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -494,6 +495,39 @@ pub fn insert_album(album: ALBUMS_TABLE_DATA){
 
     }
 }
+
+/// Important function: Pass in an object with trait AudioFile and it will insert the important information in the following tables:
+/// songs, song_artists, album_artists, composers, genres
+pub fn insert_song_information<T: AudioFile>(song: T){
+
+    // lets get the important structs
+    let song_table_data = song.get_song_table_data();
+    let song_artists_table_data = song.get_song_artists_table_data();
+    let album_artists_table_data = song.get_album_artists_table_data();
+    let composers_table_data = song.get_composers_table_data();
+    let genres_table_data = song.get_genres_table_data();
+
+    // insert into the appropriate tables
+    insert_song(song_table_data);
+    
+    for song_artist in song_artists_table_data{
+        insert_song_artist(song_artist);
+    }
+
+    for album_artist in album_artists_table_data{
+        insert_album_artist(album_artist);
+    }
+
+    for composer in composers_table_data{
+        insert_composer(composer);
+    }
+
+    for genre in genres_table_data{
+        insert_genre(genre);
+    }
+}
+
+
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 //                                                           RETRIEVE DATA 

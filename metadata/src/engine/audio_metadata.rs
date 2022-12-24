@@ -556,6 +556,7 @@ impl AudioFile for AudioFileMP3 {
         song_table_data.sample_rate = self.raw_metadata.get("sample_rate").unwrap()[0].parse::<i64>().unwrap();
         song_table_data.bitrate = self.raw_metadata.get("bitrate").unwrap()[0].parse::<i64>().unwrap();
         song_table_data.channels = self.raw_metadata.get("channels").unwrap()[0].clone().parse::<i64>().unwrap();
+        song_table_data.filetype = self.raw_metadata.get("filetype").unwrap()[0].clone();
         song_table_data
         
     }
@@ -577,7 +578,7 @@ impl AudioFile for AudioFileMP3 {
 
         self.raw_metadata.insert("filesize".to_string(), filesize_vec);
         self.raw_metadata.insert("song_id".to_string(), vec![file_to_hash(self.filepath.clone()).unwrap()]);
-        
+        self.raw_metadata.insert("filetype".to_string(), vec!["mp3".to_string()]);
     }
 
     fn default() -> Self {

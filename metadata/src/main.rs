@@ -96,20 +96,23 @@ fn salshit() {
 fn main() {
     //sal this for u
     // salshit();
-    let filepathJeff = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
+    // let filepathJeff = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
     let filePathSal = "C:/Users/drale/Documents/GitHub/decibl-metadata/metadata/cbat.mp3";   
     let mut afile = AudioFileMP3::default();
     afile.load_file(filePathSal.to_string());
-    let song_table_data = afile.get_song_table_data();
-    let song_artists = afile.get_song_artists_table_data();
-    let album_arists = afile.get_album_artists_table_data();
-    let composers = afile.get_composers_table_data();
-    let genres = afile.get_genres_table_data();
-    println!("The song_table_data is: {:#?}", song_table_data);
-    println!("The song_artists is: {:#?}", song_artists);
-    println!("The album_artists is: {:#?}", album_arists);
-    println!("The composers is: {:#?}", composers);
-    println!("The genres is: {:#?}", genres);
+
+    engine::analyticsdb::create_all_tables();
+    engine::analyticsdb::insert_song_information(afile);
+    // let song_table_data = afile.get_song_table_data();
+    // let song_artists = afile.get_song_artists_table_data();
+    // let album_arists = afile.get_album_artists_table_data();
+    // let composers = afile.get_composers_table_data();
+    // let genres = afile.get_genres_table_data();
+    // println!("The song_table_data is: {:#?}", song_table_data);
+    // println!("The song_artists is: {:#?}", song_artists);
+    // println!("The album_artists is: {:#?}", album_arists);
+    // println!("The composers is: {:#?}", composers);
+    // println!("The genres is: {:#?}", genres);
 
     // afile.get_song_table_data();
     // let song_artists = afile.get_song_artists_table_data();
