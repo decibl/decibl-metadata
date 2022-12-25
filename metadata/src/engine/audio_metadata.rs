@@ -4,6 +4,8 @@ make audio metadata class
 make classes with files that inherit from abstract class
 */
 
+use std::io::{BufReader, Read, Write,Result};
+use ring::digest::{Context, Digest, SHA256};
 use std::io::Error;
 /*
 //
@@ -12,18 +14,21 @@ use std::io::Error;
 */
 use std::fs::File;
 use std::io;
+
 use crate::engine::models::*;
-use sha2::{Digest, Sha256};
+
+use data_encoding::HEXUPPER;
+
 use symphonia::core::formats::FormatOptions;
 use symphonia::core::formats::FormatReader;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::io::MediaSourceStream;
 use symphonia::core::probe::Hint;
+
 // include hashmap
 use std::collections::HashMap;
 use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
 use mp3_metadata;
-
 use metaflac;
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -45,18 +50,32 @@ pub trait AudioFile {
 
 
 
-pub fn file_to_hash(filepath: String) -> Result<String,Error> {
-    let mut hasher = Sha256::new();
-    let mut file = File::open(filepath)?;
-    
-    let bytes_written = io::copy(&mut file, &mut hasher)?;
-    let hash_bytes = hasher.finalize();
-    let string = format!("{:x}", hash_bytes);
-    Ok(string)
+fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest> {
+    let mut context = Context::new(&SHA256);
+    let mut buffer = [0; 1024];
+
+    loop {
+        let count = reader.read(&mut buffer)?;
+        if count == 0 {
+            break;
+        }
+        context.update(&buffer[..count]);
+    }
+
+    Ok(context.finish())
+}
+
+fn file_to_hash(path:String) -> Result<String> {
+
+
+    let input = File::open(path.clone())?;
+    let reader = BufReader::new(input);
+    let digest = sha256_digest(reader)?;
+
+    Ok(HEXUPPER.encode(digest.as_ref()))
 }
 
 pub fn get_symphonia_data(filepath: String, fileHint: String) -> Box<dyn FormatReader> {
-    let args = std::env::args().collect::<Vec<String>>();
     let path = filepath.clone();
 
     let src = std::fs::File::open(path).unwrap();
@@ -117,17 +136,32 @@ pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::st
     let mut artwork_width_vec: Vec<String> = Vec::new();
 
     
-    let bit_depth = vec_visual[0].bits_per_pixel.expect("No bit depth");
-    let height = vec_visual[0].dimensions.unwrap().height;
-    let width = vec_visual[0].dimensions.unwrap().width;
+    // check if bits_per_pixel is not None
 
-    artwork_bit_depth_vec.push(bit_depth.to_string());
-    artwork_height_vec.push(height.to_string());
-    artwork_width_vec.push(width.to_string());
+    if vec_visual[0].bits_per_pixel.is_none() {
+        artwork_bit_depth_vec.push("0".to_string());
+        metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
+    } else {
+        let bit_depth = vec_visual[0].bits_per_pixel.expect("No bit depth");
+        artwork_bit_depth_vec.push(bit_depth.to_string());
+        metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
+    }
 
-    metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
-    metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
-    metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
+    if vec_visual[0].dimensions.is_none() {
+        artwork_height_vec.push("0".to_string());
+        metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
+
+        artwork_width_vec.push("0".to_string());
+        metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
+    } else {
+        let height = vec_visual[0].dimensions.unwrap().height;
+        artwork_height_vec.push(height.to_string());
+        metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
+
+        let width = vec_visual[0].dimensions.unwrap().width;
+        artwork_width_vec.push(width.to_string());
+        metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
+    }
 
 
 
@@ -173,6 +207,20 @@ impl AudioFileFLAC{
             raw_metadata: HashMap::new(),
             filepath: String::new(),
         }
+    }
+
+    pub fn add_blank_data(&mut self){
+        // add all the above raw.metadata to the song_table_data so it doesnt throw an error
+        // make a list of these keys so we can iterate over them
+        let mut keys = vec!["song_id", "ARTIST", "filesize", "album_artwork_bit_depth", "album_artwork_colors", "album_artwork_height", "album_artwork_width", "bit_depth", "bitrate", "channels", "duration", "sample_rate", "ALBUM", "BARCODE", "DATE", "DISCNUMBER", "DISCTOTAL", "ISRC", "ITUNESADVISORY", "LENGTH", "PUBLISHER", "TITLE", "TRACKNUMBER", "TRACKTOTAL", "SOURCE", "album_artwork", "COMPOSER", "GENRE", "ALBUMARTIST"];
+
+        // go through each key and add it if it doesnt exist
+        for key in keys{
+            if !self.raw_metadata.contains_key(key){
+                self.raw_metadata.insert(key.to_string(), vec!["-1".to_string()]);
+            }
+        }
+        
     }
 
     fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
@@ -226,6 +274,10 @@ impl AudioFile for AudioFileFLAC{
 
     fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>{
         let mut composers_table_data_vec: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
+        // if there is no composer, we return an empty vector
+        if !self.raw_metadata.contains_key("COMPOSER"){
+            return composers_table_data_vec;
+        }
         let composers = self.raw_metadata.get("COMPOSER").unwrap();
         for composer in composers{
             let mut composers_table_data = COMPOSERS_TABLE_DATA::default();
@@ -280,6 +332,7 @@ impl AudioFile for AudioFileFLAC{
     fn get_song_table_data(&self) -> SONG_TABLE_DATA {
 
         let mut song_table_data = SONG_TABLE_DATA::default();
+        // if there is no song_id, write "unknown" to the database
         song_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
         song_table_data.main_artist = self.raw_metadata.get("ARTIST").unwrap()[0].clone();
         song_table_data.filesize_bytes = self.raw_metadata.get("filesize").unwrap()[0].parse::<i64>().unwrap();
@@ -302,7 +355,6 @@ impl AudioFile for AudioFileFLAC{
         song_table_data.itunesadvisory = self.raw_metadata.get("ITUNESADVISORY").unwrap()[0].clone();
         song_table_data.length = self.raw_metadata.get("LENGTH").unwrap()[0].parse::<i64>().unwrap();
         song_table_data.publisher = self.raw_metadata.get("PUBLISHER").unwrap()[0].clone();
-        song_table_data.rating = self.raw_metadata.get("RATING").unwrap()[0].parse::<i64>().unwrap();
         song_table_data.title = self.raw_metadata.get("TITLE").unwrap()[0].clone();
         song_table_data.track_number = self.raw_metadata.get("TRACKNUMBER").unwrap()[0].parse::<i64>().unwrap();
         song_table_data.track_total = self.raw_metadata.get("TRACKTOTAL").unwrap()[0].parse::<i64>().unwrap();
@@ -312,7 +364,7 @@ impl AudioFile for AudioFileFLAC{
 
 
 
-        println!("Song_table_data: {:#?}", song_table_data);
+        // println!("Song_table_data: {:#?}", song_table_data);
         
 
         // println!("hashmap: {:?}", self.raw_metadata);
@@ -325,6 +377,8 @@ impl AudioFile for AudioFileFLAC{
         // add all the data from the symphonia library
         let mut metadata = add_symphonia_data(filepath.clone(), "flac".to_string());
         self.raw_metadata = metadata;
+        self.add_blank_data();
+
 
         // add all the data from the metaflac library
         // THIS HAS TO BE CALLED SECOND
@@ -346,7 +400,7 @@ impl AudioFile for AudioFileFLAC{
         self.raw_metadata.insert("song_id".to_string(), vec![file_to_hash(self.filepath.clone()).unwrap()]);
         
 
-        println!("New metadata: {:#?}", self.raw_metadata);
+        // println!("New metadata: {:#?}", self.raw_metadata);
 
 
 

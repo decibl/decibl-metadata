@@ -186,13 +186,16 @@ pub fn clear_all_tables() {
 /// };
 /// insert_song(song_table_data);
 pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
-    let conn = Connection::open(get_database_file_path());
+    let mut conn = Connection::open(get_database_file_path());
 
     // example query
     // let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
     // INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27, ?27)
     // static SONGS: Lazy<Table> = Lazy::new(|| Table {
     // pub fn generate_insertion_sql(table: Lazy<Table>) -> String {
+    
+    // check if song_id already exists
+    // if it does, dont dod anything
 
     let sql_query = generate_insertion_sql(&SONGS);
     // println!("{}", sql_query);
@@ -916,6 +919,11 @@ pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
     albums
 }
 
+// single retrieval
+
+// pub fn get_song_by_id(song_id: String) -> SONG_TABLE_DATA{
+
+// }
 // now some more, useful functions
 
 pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String>{
@@ -945,6 +953,9 @@ pub fn populate_database(dirpath: String){
         if !filepath.ends_with(".mp3") && !filepath.ends_with(".flac") {
             continue;
         }
+
+        println!("Parsing file: {}", filepath);
+        
         let fileExt = std::path::Path::new(&filepath)
         .extension()
         .and_then(std::ffi::OsStr::to_str)
