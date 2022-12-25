@@ -932,6 +932,42 @@ pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String>{
 }
 /// This is going to be used to populate the database with some data.
 /// Look into config.get_soundfiles_path() to find all the soundfiles. Iterate through each one, parse their metadata, etc.
-pub fn populate_database(){
-    return;
+pub fn populate_database(dirpath: String){
+    // first, we need to get all the filepaths in the directory
+    let filepaths = get_all_filepaths_in_directory(dirpath);
+
+    // now for each filepath, we need to make sure it's a soundfile, so ends with .mp3 or .flac
+    // then we need to parse the metadata, and add it to the database   
+    for filepath in filepaths {
+        
+        // if filepath doesn't end with .mp3 or .flac, then we don't want to parse it
+
+        if !filepath.ends_with(".mp3") && !filepath.ends_with(".flac") {
+            continue;
+        }
+        let fileExt = std::path::Path::new(&filepath)
+        .extension()
+        .and_then(std::ffi::OsStr::to_str)
+        .unwrap()
+        .to_string();
+
+        match fileExt.as_str() {
+            "mp3" => {
+                let mut afile = AudioFileMP3::default();
+                afile.load_file(filepath);
+                insert_song_information(afile);
+                
+            },
+            "flac" => {
+                let mut afile = AudioFileFLAC::default();
+                afile.load_file(filepath);
+                insert_song_information(afile);
+                
+            },
+            _ => {
+                println!("File extension not supported");
+            }
+
+        }
+    }
 }

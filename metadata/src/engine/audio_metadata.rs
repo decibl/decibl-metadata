@@ -31,49 +31,18 @@ use metaflac;
 //                                                       USEFUL FUNCTIONS
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// inherit clone
 pub trait AudioFile {
     fn get_song_table_data(&self) -> SONG_TABLE_DATA;
     fn get_song_artists_table_data(&self) -> Vec<SONG_ARTISTS_TABLE_DATA>;
     fn get_album_artists_table_data(&self) -> Vec<ALBUM_ARTISTS_TABLE_DATA>;
     fn get_composers_table_data(&self) -> Vec<COMPOSERS_TABLE_DATA>;
     fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA>;
-    
     fn load_file(&mut self, filepath:String);
 }
 
-pub fn filepath_to_audiofile(filepath: String) -> Box<dyn AudioFile> {
-    // get the file extension
-    let fileExt = std::path::Path::new(&filepath)
-        .extension()
-        .and_then(std::ffi::OsStr::to_str)
-        .unwrap()
-        .to_string();
 
-    // now we want to match the file extension to the correct audio file type
-
-    match fileExt.as_str() {
-        "mp3" => {
-            let mut afile = AudioFileMP3::default();
-            afile.load_file(filepath);
-            return Box::new(afile);
-        },
-        "flac" => {
-            let mut afile = AudioFileFLAC::default();
-            afile.load_file(filepath);
-            return Box::new(afile);
-        },
-        _ => {
-            println!("File extension not supported");
-        }
-
-    }
-
-    // return empty audio file
-    return Box::new(AudioFileMP3::default());
-
-
-    
-}
 
 
 pub fn file_to_hash(filepath: String) -> Result<String,Error> {
@@ -191,7 +160,7 @@ pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::st
 /// "LENGTH": ["173000"], "TRACKNUMBER": ["1"], "TRACKTOTAL": ["1"],
 ///  "COMPOSER": ["Dan Reynolds", "Wayne Sermon", "Ben McKee", "Daniel Platzman", "Robin Fredriksson", "Mattias Larsson", "Justin Tranter", "Destin Route"], "SOURCE": ["Deezer"], "channels": ["2"], "SOURCEID": ["1543744602"]}
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AudioFileFLAC {
     raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
@@ -199,7 +168,7 @@ pub struct AudioFileFLAC {
 
 impl AudioFileFLAC{
 
-    fn default() -> Self {
+    pub fn default() -> Self {
         AudioFileFLAC {
             raw_metadata: HashMap::new(),
             filepath: String::new(),
@@ -394,14 +363,14 @@ impl AudioFile for AudioFileFLAC{
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AudioFileMP3 {
     raw_metadata: HashMap<String, Vec<String>>,
     filepath: String,
 }
 
 impl AudioFileMP3{
-    fn default() -> Self {
+    pub fn default() -> Self {
         Self {
             filepath: "".to_string(),
             raw_metadata: HashMap::new(),
