@@ -50,7 +50,7 @@ pub trait AudioFile {
 
 
 
-fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest> {
+pub fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest> {
     let mut context = Context::new(&SHA256);
     let mut buffer = [0; 1024];
 
@@ -65,11 +65,18 @@ fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest> {
     Ok(context.finish())
 }
 
-fn file_to_hash(path:String) -> Result<String> {
+pub fn file_to_hash(path:String) -> Result<String> {
 
 
     let input = File::open(path.clone())?;
     let reader = BufReader::new(input);
+    let digest = sha256_digest(reader)?;
+
+    Ok(HEXUPPER.encode(digest.as_ref()))
+}
+
+pub fn string_to_hash(path:String) -> Result<String> {
+    let mut reader = path.as_bytes();
     let digest = sha256_digest(reader)?;
 
     Ok(HEXUPPER.encode(digest.as_ref()))

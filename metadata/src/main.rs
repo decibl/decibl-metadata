@@ -1,5 +1,5 @@
 #![allow(warnings)]
-
+#[allow(non_camel_case_types)]
 use decibl_metadata::engine::analyticsdb;
 use decibl_metadata::engine::analyticsdb::*;
 use decibl_metadata::engine::audio_metadata::*;
@@ -101,8 +101,8 @@ fn main() {
     let dirPath = "C:/Users/drale/Documents/GitHub/decibl-metadata/test_soundfiles";
     // engine::analyticsdb::create_all_tables();
     // engine::analyticsdb::populate_database(dirPath.to_string());
-    // let a = engine::analyticsdb::get_song_by_id("41EC462C1B0D24287ED4E507915F96AE62E8ADC980926279494418EE80625922".to_string());
-    // println!("The song is: {:#?}", a);
+    let a = engine::analyticsdb::get_song_by_id("41EC462C1B0D24287ED4E507915F96AE62E8ADC980926279494418EE80625922".to_string());
+    println!("The song is: {:#?}", a);
     // let mut afile = AudioFileFLAC::default();
     // afile.load_file(filePathSal.to_string());
 

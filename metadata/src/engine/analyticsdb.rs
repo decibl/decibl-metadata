@@ -534,7 +534,7 @@ pub fn insert_song_information<T: AudioFile>(song: T){
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
-//                                                           RETRIEVE DATA 
+//                                                           RETRIEVE DATA MASS
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -919,94 +919,298 @@ pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
     albums
 }
 
-// single retrieval
 
-// pub fn get_song_by_id(song_id: String) -> SONG_TABLE_DATA{
-//     let conn = Connection::open(get_database_file_path());
-//     let mut song: SONG_TABLE_DATA = SONG_TABLE_DATA::default();
-
-//     // make sql query
-
-//     let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
-
-//     // song_id: row.get(0).unwrap(),
-//     // main_artist: row.get(1).unwrap(),
-//     // filesize_bytes: row.get(2).unwrap(),
-//     // padding_bytes: row.get(3).unwrap(),
-//     // album_artwork_bit_depth: row.get(4).unwrap(),
-//     // album_artwork_colors: row.get(5).unwrap(),
-//     // album_artwork_height: row.get(6).unwrap(),
-//     // album_artwork_width: row.get(7).unwrap(),
-//     // bit_depth: row.get(8).unwrap(),
-//     // bitrate: row.get(9).unwrap(),
-//     // channels: row.get(10).unwrap(),
-//     // duration: row.get(11).unwrap(),
-//     // sample_rate: row.get(12).unwrap(),
-//     // album: row.get(13).unwrap(),
-//     // barcode: row.get(14).unwrap(),
-//     // date_created: row.get(15).unwrap(),
-//     // disc_number: row.get(16).unwrap(),
-//     // disc_total: row.get(17).unwrap(),
-//     // isrc: row.get(18).unwrap(),
-//     // itunesadvisory: row.get(19).unwrap(),
-//     // length: row.get(20).unwrap(),
-//     // publisher: row.get(21).unwrap(),
-//     // rating: row.get(22).unwrap(),
-//     // title: row.get(23).unwrap(),
-//     // track_number: row.get(24).unwrap(),
-//     // track_total: row.get(25).unwrap(),
-//     // source: row.get(26).unwrap(),
-//     // filetype: row.get(27).unwrap(),
-
-//     match conn {
-//         Ok(conn) => {
-//             let mut stmt = conn.prepare(&sql_query).unwrap();
-//             let song_iter = stmt.query_map([song_id], |row| {
-//                 Ok(SONG_TABLE_DATA {
-//                     song_id: row.get(0).unwrap(),
-//                     main_artist: row.get(1).unwrap(),
-//                     filesize_bytes: row.get(2).unwrap(),
-//                     padding_bytes: row.get(3).unwrap(),
-//                     album_artwork_bit_depth: row.get(4).unwrap(),
-//                     album_artwork_colors: row.get(5).unwrap(),
-//                     album_artwork_height: row.get(6).unwrap(),
-//                     album_artwork_width: row.get(7).unwrap(),
-//                     bit_depth: row.get(8).unwrap(),
-//                     bitrate: row.get(9).unwrap(),
-//                     channels: row.get(10).unwrap(),
-//                     duration: row.get(11).unwrap(),
-//                     sample_rate: row.get(12).unwrap(),
-//                     album: row.get(13).unwrap(),
-//                     barcode: row.get(14).unwrap(),
-//                     date_created: row.get(15).unwrap(),
-//                     disc_number: row.get(16).unwrap(),
-//                     disc_total: row.get(17).unwrap(),
-//                     isrc: row.get(18).unwrap(),
-//                     itunesadvisory: row.get(19).unwrap(),
-//                     length: row.get(20).unwrap(),
-//                     publisher: row.get(21).unwrap(),
-//                     rating: row.get(22).unwrap(),
-//                     title: row.get(23).unwrap(),
-//                     track_number: row.get(24).unwrap(),
-//                     track_total: row.get(25).unwrap(),
-//                     source: row.get(26).unwrap(),
-//                     filetype: row.get(27).unwrap(),
-//                 })
-//             }).unwrap();
-//             for song in song_iter {
-//                 song = song.unwrap();
-//             }
-//         }
-//         Err(e) => {
-//             println!("Error: {}", e);
-//         }
-//     }
-
-//     song
+// --------------------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------
+//                                                           RETRIEVE DATA SINGLE (TYPICALLY MORE USEFUL)
+// --------------------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------
 
 
-// }
+pub fn get_song_by_id(song_id: String) -> SONG_TABLE_DATA{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut song: SONG_TABLE_DATA = SONG_TABLE_DATA::default();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM SONGS WHERE song_id = '{}'", song_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(SONG_TABLE_DATA {
+            song_id: row.get(0).unwrap(),
+            main_artist: row.get(1).unwrap(),
+            filesize_bytes: row.get(2).unwrap(),
+            padding_bytes: row.get(3).unwrap(),
+            album_artwork_bit_depth: row.get(4).unwrap(),
+            album_artwork_colors: row.get(5).unwrap(),
+            album_artwork_height: row.get(6).unwrap(),
+            album_artwork_width: row.get(7).unwrap(),
+            bit_depth: row.get(8).unwrap(),
+            bitrate: row.get(9).unwrap(),
+            channels: row.get(10).unwrap(),
+            duration: row.get(11).unwrap(),
+            sample_rate: row.get(12).unwrap(),
+            album: row.get(13).unwrap(),
+            barcode: row.get(14).unwrap(),
+            date_created: row.get(15).unwrap(),
+            disc_number: row.get(16).unwrap(),
+            disc_total: row.get(17).unwrap(),
+            isrc: row.get(18).unwrap(),
+            itunesadvisory: row.get(19).unwrap(),
+            length: row.get(20).unwrap(),
+            publisher: row.get(21).unwrap(),
+            rating: row.get(22).unwrap(),
+            title: row.get(23).unwrap(),
+            track_number: row.get(24).unwrap(),
+            track_total: row.get(25).unwrap(),
+            source: row.get(26).unwrap(),
+            filetype: row.get(27).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        song = row.unwrap();
+    }
+
+    song
+
+
+
+}
 // now some more, useful functions
+pub fn get_play_by_id(play_id: String) -> PLAY_TABLE_DATA{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut play: PLAY_TABLE_DATA = PLAY_TABLE_DATA::default();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM PLAYS WHERE play_id = '{}'", play_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(PLAY_TABLE_DATA {
+            play_id: row.get(0).unwrap(),
+            song_id: row.get(1).unwrap(),
+            song_title: row.get(2).unwrap(),
+            main_artist: row.get(3).unwrap(),
+            filesize_bytes: row.get(4).unwrap(),
+            start_dt: row.get(5).unwrap(),
+            end_dt: row.get(6).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        play = row.unwrap();
+    }
+
+    play
+}
+
+pub fn get_playlist_by_id(playlist_id: String) -> PLAYLIST_TABLE_DATA{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut playlist: PLAYLIST_TABLE_DATA = PLAYLIST_TABLE_DATA::default();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM PLAYLISTS WHERE playlist_id = '{}'", playlist_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(PLAYLIST_TABLE_DATA {
+            playlist_id: row.get(0).unwrap(),
+            playlist_name: row.get(1).unwrap(),
+            playlist_desc: row.get(2).unwrap(),
+            created_dt: row.get(3).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        playlist = row.unwrap();
+    }
+
+    playlist
+}
+
+pub fn get_playlist_songs_by_id(playlist_id: String) -> Vec<PLAYLIST_SONGS_TABLE_DATA>{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut playlist_songs: Vec<PLAYLIST_SONGS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM PLAYLIST_SONGS WHERE playlist_id = '{}'", playlist_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(PLAYLIST_SONGS_TABLE_DATA {
+            playlist_id: row.get(0).unwrap(),
+            song_id: row.get(1).unwrap(),
+            added_dt: row.get(5).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        playlist_songs.push(row.unwrap());
+    }
+
+    playlist_songs
+}
+
+pub fn get_songs_in_playlist(playlist_id: String) -> Vec<SONG_TABLE_DATA>{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut songs: Vec<SONG_TABLE_DATA> = Vec::new();
+
+    // what we will do is: call get_playlist_songs_by_id and search for where playlist_id = playlist_id
+    // then grab all the song_id values and search for where song_id = song_id in the songs table
+    // then return the songs
+
+    let playlist_songs = get_playlist_songs_by_id(playlist_id);
+
+    for playlist_song in playlist_songs {
+        let song = get_song_by_id(playlist_song.song_id);
+        songs.push(song);
+    }
+
+    songs
+    
+
+    
+}
+
+pub fn get_song_artists_by_song_id(song_id: String) -> Vec<SONG_ARTISTS_TABLE_DATA>{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut song_artists: Vec<SONG_ARTISTS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM SONG_ARTISTS WHERE song_id = '{}'", song_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(SONG_ARTISTS_TABLE_DATA {
+            song_id: row.get(0).unwrap(),
+            artist_name: row.get(2).unwrap(),
+            dt_added: row.get(3).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        song_artists.push(row.unwrap());
+    }
+
+    song_artists
+}
+
+pub fn get_album_artists_by_song_id(song_id: String) -> Vec<ALBUM_ARTISTS_TABLE_DATA>{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut album_artists: Vec<ALBUM_ARTISTS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM ALBUM_ARTISTS WHERE song_id = '{}'", song_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(ALBUM_ARTISTS_TABLE_DATA {
+            song_id: row.get(0).unwrap(),
+            artist_name: row.get(2).unwrap(),
+            dt_added: row.get(3).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        album_artists.push(row.unwrap());
+    }
+
+    album_artists
+}
+
+pub fn get_genres_by_song_id(song_id: String) -> Vec<GENRES_TABLE_DATA>{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut genres: Vec<GENRES_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM GENRES WHERE song_id = '{}'", song_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(GENRES_TABLE_DATA {
+            song_id: row.get(0).unwrap(),
+            genre_name: row.get(2).unwrap(),
+            dt_added: row.get(3).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        genres.push(row.unwrap());
+    }
+
+    genres
+}
+
+pub fn get_composers_by_song_id(song_id: String) -> Vec<COMPOSERS_TABLE_DATA>{
+    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
+    let mut composers: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
+
+    // make sql query
+
+    // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
+    let sql_query = format!("SELECT * FROM COMPOSERS WHERE song_id = '{}'", song_id).to_string();
+
+    // println!("SQL QUERY: {}", sql_query);
+
+    let mut receiver = conn.prepare(&sql_query).expect("Could not prepare statement");
+
+    let mut rows = receiver.query_map([], |row| {
+        Ok(COMPOSERS_TABLE_DATA {
+            song_id: row.get(0).unwrap(),
+            composer_name: row.get(2).unwrap(),
+            dt_added: row.get(3).unwrap(),
+        })
+    }).unwrap();
+
+    for row in rows {
+        composers.push(row.unwrap());
+    }
+
+    composers
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------
+//                                                           PRIMARY/OTHER FUNCTIONS 
+// --------------------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------
+
 
 pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String>{
     let mut filepaths: Vec<String> = Vec::new();
