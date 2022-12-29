@@ -38,6 +38,7 @@ pub fn create_table(sql_query: String) {
 pub fn clear_table(table_name: String) {
     let conn = Connection::open(get_database_file_path());
 
+    // drop the table
     match conn {
         Ok(conn) => {
             let sql_query = format!("DELETE FROM {}", table_name);
@@ -331,8 +332,8 @@ pub fn insert_song_artist(song_artist: SONG_ARTISTS_TABLE_DATA){
             conn.execute(
                 &sql_query,
                 params![
-                    song_artist.song_id,
                     song_artist.artist_name,
+                    song_artist.song_id,
                     song_artist.dt_added,
                 ],
             )
@@ -356,8 +357,8 @@ pub fn insert_album_artist(album_artist: ALBUM_ARTISTS_TABLE_DATA){
             conn.execute(
                 &sql_query,
                 params![
-                    album_artist.song_id,
                     album_artist.artist_name,
+                    album_artist.song_id,
                     album_artist.dt_added,
                 ],
             )
@@ -381,8 +382,8 @@ pub fn insert_composer(composer: COMPOSERS_TABLE_DATA){
             conn.execute(
                 &sql_query,
                 params![
-                    composer.song_id,
                     composer.composer_name,
+                    composer.song_id,
                     composer.dt_added,
                 ],
             )
@@ -406,8 +407,8 @@ pub fn insert_genre(genre: GENRES_TABLE_DATA){
             conn.execute(
                 &sql_query,
                 params![
-                    genre.song_id,
                     genre.genre_name,
+                    genre.song_id,
                     genre.dt_added,
                 ],
             )

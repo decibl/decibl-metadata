@@ -94,15 +94,16 @@ fn salshit() {
 }
 
 fn main() {
+    engine::analyticsdb::clear_all_tables();
     //sal this for u
     // salshit();
     // let filepathJeff = "C:/Users/Jeffrey Ma/Documents/GitHub/decibl-metadata/metadata/enemy.flac";
     // let filePathSal = "C:/Users/drale/Music/music/FavoritesPL/001 - $uicideboy$ - ...And To Those I Love, Thanks For Sticking Around.flac";   
-    let dirPath = "C:/Users/drale/Documents/GitHub/decibl-metadata/test_soundfiles";
+    // let dirPath = "C:/Users/drale/Documents/GitHub/decibl-metadata/test_soundfiles";
     // engine::analyticsdb::create_all_tables();
     // engine::analyticsdb::populate_database(dirPath.to_string());
-    let a = engine::analyticsdb::get_song_by_id("41EC462C1B0D24287ED4E507915F96AE62E8ADC980926279494418EE80625922".to_string());
-    println!("The song is: {:#?}", a);
+    // let a = engine::analyticsdb::get_song_by_id("41EC462C1B0D24287ED4E507915F96AE62E8ADC980926279494418EE80625922".to_string());
+    // println!("The song is: {:#?}", a);
     // let mut afile = AudioFileFLAC::default();
     // afile.load_file(filePathSal.to_string());
 

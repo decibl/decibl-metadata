@@ -38,6 +38,8 @@ use metaflac;
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // inherit clone
+/// We want to use the AudioFIle trait b/c there's multiple possible AudioFile types (flac or mp3)
+/// They're all guranteed to have this functionality.
 pub trait AudioFile {
     fn get_song_table_data(&self) -> SONG_TABLE_DATA;
     fn get_song_artists_table_data(&self) -> Vec<SONG_ARTISTS_TABLE_DATA>;
@@ -49,7 +51,7 @@ pub trait AudioFile {
 
 
 
-
+/// Used for hashing files
 pub fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest> {
     let mut context = Context::new(&SHA256);
     let mut buffer = [0; 1024];
@@ -65,6 +67,7 @@ pub fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest> {
     Ok(context.finish())
 }
 
+/// Also used for hashing files
 pub fn file_to_hash(path:String) -> Result<String> {
 
 
@@ -75,6 +78,7 @@ pub fn file_to_hash(path:String) -> Result<String> {
     Ok(HEXUPPER.encode(digest.as_ref()))
 }
 
+/// Turns a string into a hash
 pub fn string_to_hash(path:String) -> Result<String> {
     let mut reader = path.as_bytes();
     let digest = sha256_digest(reader)?;
@@ -144,8 +148,10 @@ pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::st
 
     
     // check if bits_per_pixel is not None
+    // check if length of vec_visual is not 0
+    
 
-    if vec_visual[0].bits_per_pixel.is_none() {
+    if vec_visual.len() == 0 || vec_visual[0].bits_per_pixel.is_none() {
         artwork_bit_depth_vec.push("0".to_string());
         metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
     } else {
@@ -154,7 +160,7 @@ pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::st
         metadata.insert("album_artwork_bit_depth".to_string(), artwork_bit_depth_vec);
     }
 
-    if vec_visual[0].dimensions.is_none() {
+    if vec_visual.len() == 0 || vec_visual[0].dimensions.is_none() {
         artwork_height_vec.push("0".to_string());
         metadata.insert("album_artwork_height".to_string(), artwork_height_vec);
 

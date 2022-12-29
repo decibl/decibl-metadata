@@ -17,6 +17,7 @@ pub static DATABASE_FILE_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.confi
 pub static ARTIST_PHOTO_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("artist_photos"));
 pub static ALBUM_PHOTO_PATH: Lazy<path::PathBuf> = Lazy::new(|| APP_INFO.config_dir().join("album_photos"));
 pub static TEST_SOUNDFILES_PATH: Lazy<path::PathBuf> = Lazy::new(|| path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).parent().unwrap().join("test_soundfiles"));
+pub static TEST_SOUNDFILES_PATH_1 : Lazy<path::PathBuf> = Lazy::new(|| TEST_SOUNDFILES_PATH.join("1/"));
 
 
 pub fn get_config_file_path() -> String {
@@ -41,6 +42,10 @@ pub fn get_album_photo_path() -> String {
 
 pub fn get_soundfiles_path() -> String {
     get_config_var("soundfiles_paths").1
+}
+
+pub fn get_soundfiles_path_1() -> String {
+    TEST_SOUNDFILES_PATH_1.to_str().unwrap().to_string()
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------

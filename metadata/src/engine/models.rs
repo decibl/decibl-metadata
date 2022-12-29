@@ -1,8 +1,13 @@
 #[allow(non_camel_case_types)]
 // This file will hold all the different tables as models
 // We'll have structs for each table and a compile method which turns the struct into an sql string
-
 use once_cell::sync::Lazy;
+
+// This is how it's broken down:
+// 1. Make our accessory shit like Columns and Table structs which will be used to make the tables
+// 2. Make the format (TABLE_DATA) that our other functions will expect the data to be in so that we can insert it into the database
+// 3. Make the actual tables and functions that compile our models into sql strings which we can use to create the tables
+// Pretty simple right? right?
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -49,6 +54,11 @@ pub fn compile_table(table: &Table) -> String {
 }
 
 // now make compiles for each table
+// you know, looking at this code reminds me of the internships i've done
+// and how utterly lost I would feel if I was someone else having to read this
+// and I'm the one who wrote it
+//  I'm not sure if I should be proud or ashamed
+// LOL
 
 pub fn compile_song_table() -> String {
     compile_table(&SONGS)
@@ -606,9 +616,9 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
     columns: vec![
         Column {
             name: "play_id",
-            data_type: "INTEGER",
+            data_type: "TEXT",
             primary_key: true,
-            auto_increment: true,
+            auto_increment: false,
             notes: "The unique ID of the play",
         },
         Column {
@@ -667,9 +677,9 @@ pub static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
     columns: vec![
         Column {
             name: "playlist_id",
-            data_type: "INTEGER",
+            data_type: "TEXT",
             primary_key: true,
-            auto_increment: true,
+            auto_increment: false,
             notes: "The unique ID of the playlist",
         },
         Column {
