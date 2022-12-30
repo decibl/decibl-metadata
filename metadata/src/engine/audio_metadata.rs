@@ -86,6 +86,8 @@ pub fn string_to_hash(path:String) -> Result<String> {
     Ok(HEXUPPER.encode(digest.as_ref()))
 }
 
+/// Function that gets the metadata for a file using the symphonia library
+/// Returns a Symphonia object that should be used with add_symphonia_data
 pub fn get_symphonia_data(filepath: String, fileHint: String) -> Box<dyn FormatReader> {
     let path = filepath.clone();
 
@@ -105,6 +107,8 @@ pub fn get_symphonia_data(filepath: String, fileHint: String) -> Box<dyn FormatR
     format
 }
 
+/// Function that takes a Symphonia object and returns a hashmap of metadata
+/// It's still raw metadata so it has to be parsed by other methods
 pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::string::String, Vec<std::string::String>> {
     let mut format = get_symphonia_data(filepath.clone(), fileHint.clone());
 
@@ -293,6 +297,10 @@ impl AudioFile for AudioFileFLAC{
         }
         let composers = self.raw_metadata.get("COMPOSER").unwrap();
         for composer in composers{
+            // if composer is -1, we skip it
+            if composer == "-1"{
+                continue;
+            }
             let mut composers_table_data = COMPOSERS_TABLE_DATA::default();
             composers_table_data.composer_name = composer.clone();
             composers_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
@@ -304,7 +312,8 @@ impl AudioFile for AudioFileFLAC{
 
     fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA>{
         let mut genres_table_data_vec: Vec<GENRES_TABLE_DATA> = Vec::new();
-        let genres = self.raw_metadata.get("GENRE").unwrap();
+        let mut genres = self.raw_metadata.get("GENRE").unwrap();
+        
         for genre in genres{
             let mut genres_table_data = GENRES_TABLE_DATA::default();
             genres_table_data.genre_name = genre.clone();
@@ -514,7 +523,9 @@ impl AudioFileMP3{
 
         // add the bitrate
         let mut bitrate_vec: Vec<String> = Vec::new();
-        let bitrate = metadata.frames[0].bitrate;
+        let bitrate_u16 = metadata.frames[0].bitrate;
+        // bitrate is in kbps, we want it in bps
+        let bitrate: u64 = (bitrate_u16 as u64) * 1000;
         bitrate_vec.push(bitrate.to_string());
         id3_data.insert("bitrate".to_string(), bitrate_vec);
 
@@ -594,10 +605,13 @@ impl AudioFile for AudioFileMP3 {
 
         // go through each composer in self.raw_metadata.get("composers")
         for composer in self.raw_metadata.get("composers").unwrap() {
+            // if composer_name is -1, then there is no composer
+            println!("composer: {:?}", composer);
             let mut composers_table_data = COMPOSERS_TABLE_DATA::default();
             composers_table_data.composer_name = composer.clone();
             composers_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
             composers_table_data.dt_added = chrono::Utc::now().naive_utc().to_string();
+            // if composer_name is -1, then there is no composer
             composers_vec.push(composers_table_data);
         }
 
@@ -608,6 +622,10 @@ impl AudioFile for AudioFileMP3 {
 
         // go through each genre in self.raw_metadata.get("genre")
         for genre in self.raw_metadata.get("genre").unwrap() {
+            // if genre is -1, then there is no genre
+            if genre == "-1" {
+                continue;
+            }
             let mut genres_table_data = GENRES_TABLE_DATA::default();
             genres_table_data.genre_name = genre.clone();
             genres_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();

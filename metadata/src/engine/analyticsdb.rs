@@ -511,6 +511,7 @@ pub fn insert_song_information<T: AudioFile>(song: T){
     let composers_table_data = song.get_composers_table_data();
     let genres_table_data = song.get_genres_table_data();
 
+    // print composers
     // insert into the appropriate tables
     insert_song(song_table_data);
     
