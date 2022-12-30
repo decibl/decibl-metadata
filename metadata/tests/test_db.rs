@@ -10,10 +10,7 @@ use decibl_metadata::engine::{
 };
 #[cfg(test)]
 // RUN cargo test --tests -- --nocapture
-use rusqlite::params;
-use rusqlite::Connection;
 use serial_test::serial;
-use std::collections::HashMap;
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 /*                                                                 Helper Functions                                                                 */

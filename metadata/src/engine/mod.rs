@@ -1,7 +1,6 @@
 
 
-// pub use self::file_creation::write_soundfiles_path;
-
+/// The config module is
 pub mod config;
 pub mod audio_metadata;
 pub mod analyticsdb;
