@@ -51,7 +51,7 @@ pub trait AudioFile {
 
 
 
-/// Used for hashing files
+/// Used for hashing files. SHA256 is the algorithm used.
 pub fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest> {
     let mut context = Context::new(&SHA256);
     let mut buffer = [0; 1024];
