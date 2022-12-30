@@ -35,6 +35,14 @@ pub fn create_table(sql_query: String) {
     }
 }
 
+/// Clears the table with the given `table_name`.
+/// # Examples
+/// ```
+/// use rusqlite::{Connection, Result};
+/// let conn = Connection::open("my_database.db")?;
+/// let table_name = "users";
+/// clear_table(table_name);
+/// ```
 pub fn clear_table(table_name: String) {
     let conn = Connection::open(get_database_file_path());
 
@@ -103,16 +111,19 @@ pub fn create_song_paths_table() {
     create_table(song_paths_sql_query)
 }
 
+/// Creates the 'artists' table in the SQLite database.
 pub fn create_artists_table() {
     let artists_sql_query = compile_artists_table();
     create_table(artists_sql_query)
 }
 
+/// Creates the 'albums' table in the SQLite database.
 pub fn create_albums_table() {
     let albums_sql_query = compile_albums_table();
     create_table(albums_sql_query)
 }
 
+/// Creates all the tables in the SQLite database.
 pub fn create_all_tables() {
     create_song_table();
     create_plays_table();
@@ -127,6 +138,7 @@ pub fn create_all_tables() {
     create_albums_table();
 }
 
+/// Clears all the tables in the SQLite database.
 pub fn clear_all_tables() {
     clear_table("songs".to_string());
     clear_table("plays".to_string());
@@ -140,6 +152,7 @@ pub fn clear_all_tables() {
     clear_table("artists".to_string());
     clear_table("albums".to_string());
 }
+
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
 //                                                           INSERT DATA
@@ -186,6 +199,7 @@ pub fn clear_all_tables() {
 ///     source: "CD",
 /// };
 /// insert_song(song_table_data);
+/// ```
 pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
     let mut conn = Connection::open(get_database_file_path());
 
@@ -243,6 +257,28 @@ pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
     }
 }
 
+/// Insert a new play into the database
+/// ```
+/// use rusqlite::{Connection, Result};
+/// use rusqlite::params;
+/// use crate::database::get_database_file_path;
+/// use crate::database::PLAY_TABLE_DATA;
+/// use crate::database::insert_play;
+/// use crate::database::PLAYS;
+/// use crate::database::generate_insertion_sql;
+/// 
+/// let play_table_data = PLAY_TABLE_DATA {
+///    play_id: "1234567890",
+///    song_id: "1234567890",
+///    song_title: "Best Song Ever",
+///   main_artist: "John Doe",
+///   filesize_bytes: 1234567890,
+///  start_dt: "2022-01-01",
+/// end_dt: "2022-01-01",
+/// };
+/// 
+/// insert_play(play_table_data);
+/// ```
 pub fn insert_play(plays: PLAY_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
@@ -271,6 +307,19 @@ pub fn insert_play(plays: PLAY_TABLE_DATA) {
     }
 }
 
+// OK NO MORE USE BULLSHIT IN THESE DOCSTRINGS ITS GETTING OLD >:(
+
+/// Insert a new playlist into the database
+/// ```
+/// let playlist_table_data = PLAYLIST_TABLE_DATA {
+///   playlist_id: "1234567890",
+///  playlist_name: "Best Playlist Ever",
+/// playlist_desc: "Best Playlist Ever",
+/// created_dt: "2022-01-01",
+/// };
+/// 
+/// insert_playlist(playlist_table_data);
+/// ```
 pub fn insert_playlist(playlist: PLAYLIST_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -297,6 +346,16 @@ pub fn insert_playlist(playlist: PLAYLIST_TABLE_DATA){
     }
 }
 
+/// Insert a new playlist_song into the database. Make sure the playlist_id and song_id is real.
+/// ```
+/// let playlist_song_table_data = PLAYLIST_SONGS_TABLE_DATA {
+///  playlist_id: "1234567890",
+/// song_id: "1234567890",
+/// added_dt: "2022-01-01",
+/// };
+///     
+/// insert_playlist_song(playlist_song_table_data);
+/// ```
 pub fn insert_playlist_song(playlist_song: PLAYLIST_SONGS_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -322,6 +381,16 @@ pub fn insert_playlist_song(playlist_song: PLAYLIST_SONGS_TABLE_DATA){
     }
 }
 
+/// Insert a new song_artist into the database. Make sure the song_id is real.
+/// ```
+/// let song_artist_table_data = SONG_ARTISTS_TABLE_DATA {
+/// artist_name: "John Doe",
+/// song_id: "1234567890",
+/// dt_added: "2022-01-01",
+/// };
+/// 
+/// insert_song_artist(song_artist_table_data);
+/// ```
 pub fn insert_song_artist(song_artist: SONG_ARTISTS_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -347,6 +416,16 @@ pub fn insert_song_artist(song_artist: SONG_ARTISTS_TABLE_DATA){
     }
 }
 
+/// Insert a new album_artist into the database. Make sure the song_id is real.
+/// ```
+/// let album_artist_table_data = ALBUM_ARTISTS_TABLE_DATA {
+/// artist_name: "John Doe",
+/// song_id: "1234567890",
+/// dt_added: "2022-01-01",
+/// };
+/// 
+/// insert_album_artist(album_artist_table_data);
+/// ```
 pub fn insert_album_artist(album_artist: ALBUM_ARTISTS_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -372,6 +451,16 @@ pub fn insert_album_artist(album_artist: ALBUM_ARTISTS_TABLE_DATA){
     }
 }
 
+/// Insert a new composer into the database. Make sure the song_id is real.
+/// ```
+/// let composer_table_data = COMPOSERS_TABLE_DATA {
+/// composer_name: "John Doe",
+/// song_id: "1234567890",
+/// dt_added: "2022-01-01",
+/// };
+/// 
+/// insert_composer(composer_table_data);
+/// ```
 pub fn insert_composer(composer: COMPOSERS_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -397,6 +486,16 @@ pub fn insert_composer(composer: COMPOSERS_TABLE_DATA){
     }
 }
 
+/// Insert a new genre into the database. Make sure the song_id is real.
+/// ```
+/// let genre_table_data = GENRES_TABLE_DATA {
+/// genre_name: "John Doe",
+/// song_id: "1234567890",
+/// dt_added: "2022-01-01",
+/// };
+/// 
+/// insert_genre(genre_table_data);
+/// ```
 pub fn insert_genre(genre: GENRES_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -422,6 +521,15 @@ pub fn insert_genre(genre: GENRES_TABLE_DATA){
     }
 }
 
+/// Insert a new songpath into the database. Make sure the song_id is real.
+/// ```
+/// let songpath_table_data = SONGPATHS_TABLE_DATA {
+///     song_id: "1234567890",
+///    song_path: "C:\\Users\\John\\Music\\John Doe\\John Doe - John Doe.mp3",
+/// };
+/// 
+/// insert_songpath(songpath_table_data);
+/// ```
 pub fn insert_songpath(songpath: SONGPATHS_TABLE_DATA){ 
 
     let conn = Connection::open(get_database_file_path());
@@ -447,6 +555,16 @@ pub fn insert_songpath(songpath: SONGPATHS_TABLE_DATA){
     }
 }
 
+/// Insert a new artist into the artist database (DIFFERENT FROM SONG AND ALBUM ARTIST). This table is used for caching and rendering stuff fast, so there might be some duplication.
+/// ```
+/// let artist_table_data = ARTISTS_TABLE_DATA {
+///    artist_name: "John Doe",
+///   artist_bio: "John Doe is a singer-songwriter from the United States.",
+///  artist_photo_location: "C:\\Users\\John\\Pictures\\John Doe.jpg",
+/// };
+/// 
+/// insert_artist(artist_table_data);
+/// ```
 pub fn insert_artist(artist: ARTISTS_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -472,6 +590,7 @@ pub fn insert_artist(artist: ARTISTS_TABLE_DATA){
     }
 }
 
+/// Insert a new album into the database. Make sure the album_id is real.
 pub fn insert_album(album: ALBUMS_TABLE_DATA){
     let conn = Connection::open(get_database_file_path());
 
@@ -502,6 +621,13 @@ pub fn insert_album(album: ALBUMS_TABLE_DATA){
 
 /// Important function: Pass in an object with trait AudioFile and it will insert the important information in the following tables:
 /// songs, song_artists, album_artists, composers, genres
+/// ```
+/// let filepath = "C:\\Users\\John\\Music\\John Doe\\John Doe - John Doe.mp3";
+/// let audioFile = AudioFileMP3::default(); // you have to decide which audioFile class to use by default! Use like an if statement or see populate_database() down below
+/// audioFile.load_file(filepath);
+/// 
+/// insert_song_information(audioFile);
+/// ```
 pub fn insert_song_information<T: AudioFile>(song: T){
 
     // lets get the important structs
@@ -542,19 +668,9 @@ pub fn insert_song_information<T: AudioFile>(song: T){
 
 // mass retrieval
 
+/// Get all the table names in the database.
 pub fn get_all_table_names() -> Vec<String> {
     let mut table_names: Vec<String> = Vec::new();
-    // table_names.push("songs".to_string());
-    // table_names.push("plays".to_string());
-    // table_names.push("playlists".to_string());
-    // table_names.push("playlist_songs".to_string());
-    // table_names.push("song_artists".to_string());
-    // table_names.push("album_artists".to_string());
-    // table_names.push("composers".to_string());
-    // table_names.push("genres".to_string());
-    // table_names.push("songpaths".to_string());
-    // table_names.push("artists".to_string());
-    // table_names.push("albums".to_string());
     table_names.push(SONGS.name.to_string());
     table_names.push(PLAYS.name.to_string());
     table_names.push(PLAYLISTS.name.to_string());
@@ -569,6 +685,7 @@ pub fn get_all_table_names() -> Vec<String> {
     table_names
 }
 
+/// Get all the songs in the database.
 pub fn get_all_songs() -> Vec<SONG_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut songs: Vec<SONG_TABLE_DATA> = Vec::new();
@@ -623,6 +740,7 @@ pub fn get_all_songs() -> Vec<SONG_TABLE_DATA> {
     songs
 }
 
+/// Get all the plays in the database.
 pub fn get_all_plays() -> Vec<PLAY_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut plays: Vec<PLAY_TABLE_DATA> = Vec::new();
@@ -657,6 +775,7 @@ pub fn get_all_plays() -> Vec<PLAY_TABLE_DATA> {
     plays
 }
 
+/// Get all the playlists in the database.
 pub fn get_all_playlists() -> Vec<PLAYLIST_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut playlists: Vec<PLAYLIST_TABLE_DATA> = Vec::new();
@@ -687,6 +806,7 @@ pub fn get_all_playlists() -> Vec<PLAYLIST_TABLE_DATA> {
     playlists
 }
 
+/// Get all the playlist songs in the database.
 pub fn get_all_playlist_songs() -> Vec<PLAYLIST_SONGS_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut playlist_songs: Vec<PLAYLIST_SONGS_TABLE_DATA> = Vec::new();
@@ -716,6 +836,7 @@ pub fn get_all_playlist_songs() -> Vec<PLAYLIST_SONGS_TABLE_DATA> {
     playlist_songs
 }
 
+/// Get all the song artists in the database.
 pub fn get_all_song_artists() -> Vec<SONG_ARTISTS_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut song_artists: Vec<SONG_ARTISTS_TABLE_DATA> = Vec::new();
@@ -745,6 +866,7 @@ pub fn get_all_song_artists() -> Vec<SONG_ARTISTS_TABLE_DATA> {
     song_artists
 }
 
+/// Get all the album artists in the database.
 pub fn get_all_album_artists() -> Vec<ALBUM_ARTISTS_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut album_artists: Vec<ALBUM_ARTISTS_TABLE_DATA> = Vec::new();
@@ -774,6 +896,7 @@ pub fn get_all_album_artists() -> Vec<ALBUM_ARTISTS_TABLE_DATA> {
     album_artists
 }
 
+/// Get all the composers in the database.
 pub fn get_all_composers() -> Vec<COMPOSERS_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut composers: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
@@ -803,6 +926,7 @@ pub fn get_all_composers() -> Vec<COMPOSERS_TABLE_DATA> {
     composers
 }
 
+/// Get all the genres in the database.
 pub fn get_all_genres() -> Vec<GENRES_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut genres: Vec<GENRES_TABLE_DATA> = Vec::new();
@@ -832,6 +956,7 @@ pub fn get_all_genres() -> Vec<GENRES_TABLE_DATA> {
     genres
 }
 
+/// Get all the song paths in the database.
 pub fn get_all_songpaths() -> Vec<SONGPATHS_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut songpaths: Vec<SONGPATHS_TABLE_DATA> = Vec::new();
@@ -860,6 +985,7 @@ pub fn get_all_songpaths() -> Vec<SONGPATHS_TABLE_DATA> {
     songpaths
 }
 
+/// Get all the artists in the database.
 pub fn get_all_artists() -> Vec<ARTISTS_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut artists: Vec<ARTISTS_TABLE_DATA> = Vec::new();
@@ -889,6 +1015,7 @@ pub fn get_all_artists() -> Vec<ARTISTS_TABLE_DATA> {
     artists
 }
 
+/// Get all the albums in the database.
 pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
     let conn = Connection::open(get_database_file_path());
     let mut albums: Vec<ALBUMS_TABLE_DATA> = Vec::new();
@@ -929,6 +1056,7 @@ pub fn get_all_albums() -> Vec<ALBUMS_TABLE_DATA> {
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
 
+/// Get a single song from the database.
 pub fn get_song_by_id(song_id: String) -> SONG_TABLE_DATA{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut song: SONG_TABLE_DATA = SONG_TABLE_DATA::default();
@@ -984,7 +1112,8 @@ pub fn get_song_by_id(song_id: String) -> SONG_TABLE_DATA{
 
 
 }
-// now some more, useful functions
+
+/// Get a single play from the database by its id.
 pub fn get_play_by_id(play_id: String) -> PLAY_TABLE_DATA{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut play: PLAY_TABLE_DATA = PLAY_TABLE_DATA::default();
@@ -1017,6 +1146,7 @@ pub fn get_play_by_id(play_id: String) -> PLAY_TABLE_DATA{
     play
 }
 
+/// Get a single playlist from the database by its id.
 pub fn get_playlist_by_id(playlist_id: String) -> PLAYLIST_TABLE_DATA{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut playlist: PLAYLIST_TABLE_DATA = PLAYLIST_TABLE_DATA::default();
@@ -1046,6 +1176,7 @@ pub fn get_playlist_by_id(playlist_id: String) -> PLAYLIST_TABLE_DATA{
     playlist
 }
 
+/// Get all the playlistt_songs from the database by its id. (NOT SONGS IN PLAYLIST, THAT'S BELOW METHOD)
 pub fn get_playlist_songs_by_id(playlist_id: String) -> Vec<PLAYLIST_SONGS_TABLE_DATA>{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut playlist_songs: Vec<PLAYLIST_SONGS_TABLE_DATA> = Vec::new();
@@ -1074,6 +1205,8 @@ pub fn get_playlist_songs_by_id(playlist_id: String) -> Vec<PLAYLIST_SONGS_TABLE
     playlist_songs
 }
 
+
+/// Get all the songs in a playlist by the playlist_id
 pub fn get_songs_in_playlist(playlist_id: String) -> Vec<SONG_TABLE_DATA>{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut songs: Vec<SONG_TABLE_DATA> = Vec::new();
@@ -1095,6 +1228,7 @@ pub fn get_songs_in_playlist(playlist_id: String) -> Vec<SONG_TABLE_DATA>{
     
 }
 
+/// Get all the song_artists with a given song_id
 pub fn get_song_artists_by_song_id(song_id: String) -> Vec<SONG_ARTISTS_TABLE_DATA>{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut song_artists: Vec<SONG_ARTISTS_TABLE_DATA> = Vec::new();
@@ -1123,6 +1257,7 @@ pub fn get_song_artists_by_song_id(song_id: String) -> Vec<SONG_ARTISTS_TABLE_DA
     song_artists
 }
 
+/// Get all the album_artists with a given song_id
 pub fn get_album_artists_by_song_id(song_id: String) -> Vec<ALBUM_ARTISTS_TABLE_DATA>{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut album_artists: Vec<ALBUM_ARTISTS_TABLE_DATA> = Vec::new();
@@ -1151,6 +1286,7 @@ pub fn get_album_artists_by_song_id(song_id: String) -> Vec<ALBUM_ARTISTS_TABLE_
     album_artists
 }
 
+/// Get all the genres with a given song_id
 pub fn get_genres_by_song_id(song_id: String) -> Vec<GENRES_TABLE_DATA>{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut genres: Vec<GENRES_TABLE_DATA> = Vec::new();
@@ -1179,6 +1315,7 @@ pub fn get_genres_by_song_id(song_id: String) -> Vec<GENRES_TABLE_DATA>{
     genres
 }
 
+/// Get all the composers with a given song_id
 pub fn get_composers_by_song_id(song_id: String) -> Vec<COMPOSERS_TABLE_DATA>{
     let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut composers: Vec<COMPOSERS_TABLE_DATA> = Vec::new();
@@ -1214,6 +1351,7 @@ pub fn get_composers_by_song_id(song_id: String) -> Vec<COMPOSERS_TABLE_DATA>{
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
 
+/// This function is going to be used to get all the filepaths in a directory, including subdirectories.
 pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String>{
     let mut filepaths: Vec<String> = Vec::new();
     
@@ -1227,7 +1365,7 @@ pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String>{
     filepaths
 }
 /// This is going to be used to populate the database with some data.
-/// Look into config.get_soundfiles_path() to find all the soundfiles. Iterate through each one, parse their metadata, etc.
+/// Given a directory, it will go through all the files in the directory, and call the insert_song_information function
 pub fn populate_database(dirpath: String){
     // first, we need to get all the filepaths in the directory
     let filepaths = get_all_filepaths_in_directory(dirpath);
