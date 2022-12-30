@@ -213,8 +213,8 @@ pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::st
 /// ```
 #[derive(Debug, Clone)]
 pub struct AudioFileFLAC {
-    raw_metadata: HashMap<String, Vec<String>>,
-    filepath: String,
+    pub raw_metadata: HashMap<String, Vec<String>>,
+    pub filepath: String,
 }
 
 impl AudioFileFLAC{
@@ -240,7 +240,7 @@ impl AudioFileFLAC{
         
     }
 
-    fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
+    pub fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
         let mut tag = metaflac::Tag::read_from_path(filepath).unwrap();
         let metadata = tag.get_streaminfo().unwrap();
         // println!("The metadata is: {:?}", metadata);
@@ -249,7 +249,7 @@ impl AudioFileFLAC{
         return retn;
     }
 
-    fn add_metaflac_data(&mut self, filepath: String){
+    pub fn add_metaflac_data(&mut self, filepath: String){
         let streaminfo = self.get_metaflac_data(filepath.clone());
         
         // we have the following keys we need in stream info:
