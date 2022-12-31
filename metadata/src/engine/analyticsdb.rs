@@ -125,6 +125,7 @@ pub fn create_albums_table() {
 
 /// Creates all the tables in the SQLite database.
 pub fn create_all_tables() {
+    create_all_files();
     create_song_table();
     create_plays_table();
     create_playlist_table();
