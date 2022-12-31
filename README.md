@@ -1,4 +1,8 @@
 # decibl-metadata
+
+[![decibl](https://circleci.com/gh/decibl/decibl-metadata.svg?style=svg)](https://app.circleci.com/pipelines/github/decibl/decibl-metadata)
+
+
 Rust backend crate
 
 https://doc.rust-lang.org/book/ch07-02-defining-modules-to-control-scope-and-privacy.html
