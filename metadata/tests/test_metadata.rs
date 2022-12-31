@@ -1,6 +1,6 @@
 use decibl_metadata::engine::{
     audio_metadata::{
-        add_symphonia_data, file_to_hash, get_symphonia_data, string_to_hash, AudioFileFLAC,
+        add_symphonia_data, file_to_hash, get_symphonia_data, string_to_hash, AudioFileFLAC, AudioFile,
     },
     config::get_soundfiles_path_1,
     models::default,
@@ -108,8 +108,117 @@ fn test_metaflac_data() {
 
 }
 
+#[test]
+#[serial]
+fn test_flac_get_composers_table_data() {
+    let filepath = format!("{}/a.flac", get_soundfiles_path_1());
 
+    let mut afile = AudioFileFLAC::default();
+    afile.load_file(filepath);
 
+    let data = afile.get_composers_table_data();
+// [COMPOSERS_TABLE_DATA { composer_name: "Majent", song_id: "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E", dt_added: "2022-12-31 10:04:06.264219900" }, COMPOSERS_TABLE_DATA { composer_name: "Randy Findell", song_id: "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E", dt_added: "2022-12-31 10:04:06.264245700" }]
+
+    let valid_composers = vec!["Majent", "Randy Findell"];
+    let valid_ids = vec![
+        "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E",
+        "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E",
+    ];
+
+    for (i, composer) in data.iter().enumerate() {
+        assert_eq!(composer.composer_name, valid_composers[i]);
+        assert_eq!(composer.song_id, valid_ids[i]);
+    }
+    
+}
+
+#[test]
+#[serial]
+fn test_flac_get_genres_table_data() {
+    let filepath = format!("{}/a.flac", get_soundfiles_path_1());
+
+    let mut afile = AudioFileFLAC::default();
+    afile.load_file(filepath);
+
+    let data = afile.get_genres_table_data();
+    
+    // genre is Pop
+    assert_eq!(data[0].genre_name, "Pop");
+}
+
+#[test]
+#[serial]
+fn test_flac_get_album_artists_table_data() {
+    let filepath = format!("{}/a.flac", get_soundfiles_path_1());
+
+    let mut afile = AudioFileFLAC::default();
+    afile.load_file(filepath);
+
+    let data = afile.get_album_artists_table_data();
+    
+    // artist is brakence
+    assert_eq!(data[0].artist_name, "brakence");
+}
+
+#[test]
+#[serial]
+fn test_flac_get_song_artists_table_data() {
+    let filepath = format!("{}/a.flac", get_soundfiles_path_1());
+
+    let mut afile = AudioFileFLAC::default();
+    afile.load_file(filepath);
+
+    let data = afile.get_song_artists_table_data();
+    
+    // artist is brakence
+    assert_eq!(data[0].artist_name, "brakence");
+}
+
+#[test]
+#[serial]
+fn test_get_song_table_data() {
+    let filepath = format!("{}/a.flac", get_soundfiles_path_1());
+
+    let mut afile = AudioFileFLAC::default();
+    afile.load_file(filepath);
+
+    let song = afile.get_song_table_data();
+
+    assert_eq!(
+        song.song_id,
+        "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E".to_string()
+    );
+    assert_eq!(song.main_artist, "brakence".to_string());
+    assert_eq!(song.filesize_bytes, 15297020);
+    assert_eq!(song.padding_bytes, -1);
+    assert_eq!(song.album_artwork_bit_depth, 24);
+    assert_eq!(song.album_artwork_colors, -1);
+    assert_eq!(song.album_artwork_height, 800);
+    assert_eq!(song.album_artwork_width, 800);
+    assert_eq!(song.bit_depth, 16);
+    assert_eq!(song.bitrate, 1411200);
+    assert_eq!(song.channels, 2);
+    assert_eq!(song.duration, 161.0);
+    assert_eq!(song.sample_rate, 44100);
+    assert_eq!(song.album, "punk2".to_string());
+    assert_eq!(song.barcode, "886448554691".to_string());
+    assert_eq!(song.date_created, "2020-07-01".to_string());
+    assert_eq!(song.disc_number, 1);
+    assert_eq!(song.disc_total, 2);
+    assert_eq!(song.isrc, "USSM12003816".to_string());
+    assert_eq!(song.itunesadvisory, "1".to_string());
+    assert_eq!(song.length, 161000);
+    assert_eq!(song.publisher, "Columbia".to_string());
+    assert_eq!(song.rating, -1);
+    assert_eq!(
+        song.title,
+        "brakence 2.0 freestyle (feat. Majent)".to_string()
+    );
+    assert_eq!(song.track_number, 10);
+    assert_eq!(song.track_total, 11);
+    assert_eq!(song.source, "Deezer".to_string());
+    assert_eq!(song.filetype, "flac".to_string());
+}
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 /*                                                              testing mp3 files                                                              */
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
