@@ -39,7 +39,7 @@ pub fn bench_id3_data(c: &mut Criterion) {
 }
 
 pub fn bench_create_flac(c: &mut Criterion) {
-    c.bench_function("insert song", |b| {
+    c.bench_function("create flac", |b| {
         b.iter(|| {
             let filehint = "flac".to_string();
             let filepath = format!("{}/a.flac", get_soundfiles_path_1());
@@ -50,7 +50,7 @@ pub fn bench_create_flac(c: &mut Criterion) {
 }
 
 pub fn bench_create_mp3(c: &mut Criterion) {
-    c.bench_function("insert song", |b| {
+    c.bench_function("create mp3", |b| {
         b.iter(|| {
             let filepath = format!("{}/cbat.mp3", get_soundfiles_path_1());
             let mut afile = AudioFileMP3::default();
@@ -60,7 +60,7 @@ pub fn bench_create_mp3(c: &mut Criterion) {
 }
 
 pub fn bench_insert_song_information(c: &mut Criterion) {
-    c.bench_function("insert song", |b| {
+    c.bench_function("insert song information", |b| {
         b.iter(|| {
             let filepath = format!("{}/a.flac", get_soundfiles_path_1());
             let mut afile = AudioFileFLAC::default();
@@ -74,7 +74,7 @@ pub fn bench_insert_song_information(c: &mut Criterion) {
 }
 
 pub fn bench_populate_database(c: &mut Criterion) {
-    c.bench_function("insert song", |b| {
+    c.bench_function("populate database", |b| {
         b.iter(|| {
             let filepath = get_soundfiles_path_1();
 
