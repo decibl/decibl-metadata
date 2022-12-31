@@ -93,6 +93,6 @@ criterion_group!(
     bench_create_flac,
     bench_create_mp3,
     bench_insert_song_information,
-    bench_populate_database
+    bench_populate_database,
 );
 criterion_main!(benches);
