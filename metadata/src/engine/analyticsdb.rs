@@ -1380,7 +1380,7 @@ pub fn populate_database(dirpath: String){
             continue;
         }
 
-        println!("Parsing file: {}", filepath);
+        // println!("Parsing file: {}", filepath);
         
         let fileExt = std::path::Path::new(&filepath)
         .extension()
