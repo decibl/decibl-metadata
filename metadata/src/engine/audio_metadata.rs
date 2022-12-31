@@ -110,7 +110,12 @@ pub fn get_symphonia_data(filepath: String, fileHint: String) -> Box<dyn FormatR
 /// Function that takes a Symphonia object and returns a hashmap of metadata
 /// It's still raw metadata so it has to be parsed by other methods
 pub fn add_symphonia_data(filepath: String, fileHint: String) -> HashMap<std::string::String, Vec<std::string::String>> {
+
+    // yeah i'm gonne be 100% real wit u
+    // i have no idea what half of this code does. I just saw it from the docs and copied and it works.
+    
     let mut format = get_symphonia_data(filepath.clone(), fileHint.clone());
+
 
     let binding = format.metadata();
     let metaTags = binding.current().unwrap().tags();
