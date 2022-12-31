@@ -9,4 +9,4 @@ jobs:
       - run: cargo --version
       - run:
           name: Run Tests
-          command: "cd metadata && cargo test --tests"
+          command: "cd metadata && rustup update && cargo test --tests"
