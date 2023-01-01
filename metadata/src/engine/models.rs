@@ -972,7 +972,7 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
 // for example "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
 // static SONGS: Lazy<Table> = Lazy::new(|| Table {
 pub fn generate_insertion_sql(table: &Table) -> String {
-    let mut sql = String::from("INSERT INTO ");
+    let mut sql = String::from("INSERT OR IGNORE INTO ");
     sql.push_str(&table.name);
     sql.push_str(" (");
     for column in &table.columns {
@@ -988,6 +988,7 @@ pub fn generate_insertion_sql(table: &Table) -> String {
     sql.pop();
     sql.pop();
     sql.push_str(")");
+
     sql
 }
 

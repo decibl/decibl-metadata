@@ -18,15 +18,15 @@ pub static CONFIG_FILE_PATH: Lazy<path::PathBuf> =
 pub static DATABASE_FILE_PATH: Lazy<path::PathBuf> =
     Lazy::new(|| APP_INFO.config_dir().join("analytics.db"));
 pub static ARTIST_PHOTO_PATH: Lazy<path::PathBuf> =
-    Lazy::new(|| APP_INFO.config_dir().join("artist_photos"));
-pub static ALBUM_PHOTO_PATH: Lazy<path::PathBuf> =
-    Lazy::new(|| APP_INFO.config_dir().join("album_photos"));
+    Lazy::new(|| APP_INFO.config_dir().join("artists"));
+
 pub static TEST_SOUNDFILES_PATH: Lazy<path::PathBuf> = Lazy::new(|| {
     path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .unwrap()
         .join("test_soundfiles")
 });
+
 pub static TEST_SOUNDFILES_PATH_1: Lazy<path::PathBuf> =
     Lazy::new(|| TEST_SOUNDFILES_PATH.join("1/"));
 
@@ -46,8 +46,14 @@ pub fn get_artist_photo_path() -> String {
     ARTIST_PHOTO_PATH.to_str().unwrap().to_string()
 }
 
-pub fn get_album_photo_path() -> String {
-    ALBUM_PHOTO_PATH.to_str().unwrap().to_string()
+pub fn get_album_photo_path(artist_name: &str, album_name: &str) -> String {
+    let mut path = APP_INFO.config_dir().join("artists");
+    // we want the apth to be config_dir() / "artists" / artist_name / album_name
+    path.push(artist_name);
+    path.push(album_name);
+    path.to_str().unwrap().to_string()
+
+    
 }
 
 pub fn get_soundfiles_path() -> String {
@@ -74,7 +80,8 @@ pub fn create_all_files() {
 
     std::fs::create_dir_all(config_dir).unwrap();
     std::fs::create_dir_all(ARTIST_PHOTO_PATH.to_str().unwrap()).unwrap();
-    std::fs::create_dir_all(ALBUM_PHOTO_PATH.to_str().unwrap()).unwrap();
+    // get_album_photo_path("artist", "album");
+    std::fs::create_dir_all(get_album_photo_path("artist", "album")).unwrap();
 
     // only create the config file if it doesn't exist
     if std::path::Path::new(config_file_path).exists() {
@@ -98,7 +105,6 @@ pub fn write_whole_config(config: Config) {
     file.write_all(yaml.as_bytes())
         .expect("Unable to write data");
 
-    // println!("The path is: {}", yaml);
 }
 
 // make function write_config_var which accepts a string and a string and writes the string to the config file with the key being the string
@@ -129,7 +135,6 @@ pub fn write_config_var(key: &str, value: &str) {
             .write_all(yaml.as_bytes())
             .expect("Unable to write data");
 
-        // println!("The path is: {}", yaml);
 
         return;
     }
@@ -152,7 +157,6 @@ pub fn write_config_var(key: &str, value: &str) {
         .write_all(yaml.as_bytes())
         .expect("Unable to write data");
 
-    // println!("The path is: {}", yaml);
 }
 
 /// Returns a tuple of the key and value of the config file for the given key

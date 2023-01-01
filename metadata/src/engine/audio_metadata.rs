@@ -181,7 +181,6 @@ pub fn add_symphonia_data(
         metadata.insert("album_artwork_width".to_string(), artwork_width_vec);
     }
 
-    // println!("The colors are: {:?}", colors);
     metadata
 }
 
@@ -270,7 +269,6 @@ impl AudioFileFLAC {
     pub fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
         let mut tag = metaflac::Tag::read_from_path(filepath).unwrap();
         let metadata = tag.get_streaminfo().unwrap();
-        // println!("The metadata is: {:?}", metadata);
         let retn = metadata.clone();
 
         return retn;
@@ -445,10 +443,6 @@ impl AudioFile for AudioFileFLAC {
         song_table_data.source = self.raw_metadata.get("SOURCE").unwrap()[0].clone();
         song_table_data.filetype = "flac".to_string();
 
-        // println!("Song_table_data: {:#?}", song_table_data);
-
-        // println!("hashmap: {:?}", self.raw_metadata);
-
         song_table_data
     }
 
@@ -479,9 +473,6 @@ impl AudioFile for AudioFileFLAC {
             vec![file_to_hash(self.filepath.clone()).unwrap()],
         );
 
-        // println!("New metadata: {:#?}", self.raw_metadata);
-
-        // println!("The metaTags is: {:?}", metaTags);
     }
 }
 
@@ -651,7 +642,6 @@ impl AudioFile for AudioFileMP3 {
         // go through each composer in self.raw_metadata.get("composers")
         for composer in self.raw_metadata.get("composers").unwrap() {
             // if composer_name is -1, then there is no composer
-            println!("composer: {:?}", composer);
             let mut composers_table_data = COMPOSERS_TABLE_DATA::default();
             composers_table_data.composer_name = composer.clone();
             composers_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();

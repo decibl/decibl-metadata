@@ -2,9 +2,12 @@ use crate::engine::audio_metadata::*;
 use crate::engine::config::*;
 use crate::engine::models::*;
 use indicatif::ProgressBar;
+use indicatif::ProgressState;
+use indicatif::ProgressStyle;
 use rusqlite::params;
 use rusqlite::Connection;
 use std::collections::HashMap;
+use std::fmt::Write;
 use walkdir;
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -215,7 +218,7 @@ pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
     // if it does, dont dod anything
 
     let sql_query = generate_insertion_sql(&SONGS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -285,7 +288,7 @@ pub fn insert_play(plays: PLAY_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&PLAYS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -325,7 +328,7 @@ pub fn insert_playlist(playlist: PLAYLIST_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&PLAYLISTS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -359,7 +362,7 @@ pub fn insert_playlist_song(playlist_song: PLAYLIST_SONGS_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&PLAYLIST_SONGS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -392,7 +395,7 @@ pub fn insert_song_artist(song_artist: SONG_ARTISTS_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&SONG_ARTISTS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -425,7 +428,7 @@ pub fn insert_album_artist(album_artist: ALBUM_ARTISTS_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&ALBUM_ARTISTS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -458,7 +461,7 @@ pub fn insert_composer(composer: COMPOSERS_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&COMPOSERS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -487,7 +490,7 @@ pub fn insert_genre(genre: GENRES_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&GENRES);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -515,7 +518,7 @@ pub fn insert_songpath(songpath: SONGPATHS_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&SONGPATHS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(&sql_query, params![songpath.song_id, songpath.song_path,])
@@ -541,7 +544,7 @@ pub fn insert_artist(artist: ARTISTS_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&ARTISTS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -565,7 +568,7 @@ pub fn insert_album(album: ALBUMS_TABLE_DATA) {
     let conn = Connection::open(get_database_file_path());
 
     let sql_query = generate_insertion_sql(&ALBUMS);
-    // println!("{}", sql_query);
+    
     match conn {
         Ok(conn) => {
             conn.execute(
@@ -1050,7 +1053,6 @@ pub fn get_song_by_id(song_id: String) -> SONG_TABLE_DATA {
     // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
     let sql_query = format!("SELECT * FROM SONGS WHERE song_id = '{}'", song_id).to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1108,7 +1110,6 @@ pub fn get_play_by_id(play_id: String) -> PLAY_TABLE_DATA {
     // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
     let sql_query = format!("SELECT * FROM PLAYS WHERE play_id = '{}'", play_id).to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1149,7 +1150,6 @@ pub fn get_playlist_by_id(playlist_id: String) -> PLAYLIST_TABLE_DATA {
     )
     .to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1187,7 +1187,6 @@ pub fn get_playlist_songs_by_id(playlist_id: String) -> Vec<PLAYLIST_SONGS_TABLE
     )
     .to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1239,7 +1238,6 @@ pub fn get_song_artists_by_song_id(song_id: String) -> Vec<SONG_ARTISTS_TABLE_DA
     // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
     let sql_query = format!("SELECT * FROM SONG_ARTISTS WHERE song_id = '{}'", song_id).to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1273,7 +1271,6 @@ pub fn get_album_artists_by_song_id(song_id: String) -> Vec<ALBUM_ARTISTS_TABLE_
     let sql_query =
         format!("SELECT * FROM ALBUM_ARTISTS WHERE song_id = '{}'", song_id).to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1306,7 +1303,6 @@ pub fn get_genres_by_song_id(song_id: String) -> Vec<GENRES_TABLE_DATA> {
     // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
     let sql_query = format!("SELECT * FROM GENRES WHERE song_id = '{}'", song_id).to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1339,7 +1335,6 @@ pub fn get_composers_by_song_id(song_id: String) -> Vec<COMPOSERS_TABLE_DATA> {
     // let sql_query =  "SELECT * FROM SONGS WHERE song_id = ?1".to_string();
     let sql_query = format!("SELECT * FROM COMPOSERS WHERE song_id = '{}'", song_id).to_string();
 
-    // println!("SQL QUERY: {}", sql_query);
 
     let mut receiver = conn
         .prepare(&sql_query)
@@ -1390,6 +1385,10 @@ pub fn populate_database(dirpath: String) {
     let total_files = filepaths.len();
 
     let bar = ProgressBar::new(total_files as u64);
+    bar.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+        .unwrap()
+        .with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
+        .progress_chars("#>-"));
 
     // now for each filepath, we need to make sure it's a soundfile, so ends with .mp3 or .flac
     // then we need to parse the metadata, and add it to the database
@@ -1400,7 +1399,6 @@ pub fn populate_database(dirpath: String) {
             continue;
         }
 
-        // println!("Parsing file: {}", filepath);
 
         let fileExt = std::path::Path::new(&filepath)
             .extension()
