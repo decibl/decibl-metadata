@@ -1364,6 +1364,7 @@ pub fn get_composers_by_song_id(song_id: String) -> Vec<COMPOSERS_TABLE_DATA> {
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
 
+
 /// This function is going to be used to get all the filepaths in a directory, including subdirectories.
 pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String> {
     let mut filepaths: Vec<String> = Vec::new();
