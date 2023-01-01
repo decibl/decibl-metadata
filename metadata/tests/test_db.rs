@@ -1,7 +1,7 @@
 use decibl_metadata::engine::{
     analyticsdb::{self, clear_all_tables, create_all_tables, populate_database},
     audio_metadata::{AudioFile, AudioFileFLAC},
-    config::{get_soundfiles_path_1, create_all_files},
+    config::{create_all_files, get_soundfiles_path_1},
     models::{
         default, ALBUM_ARTISTS_TABLE_DATA, COMPOSERS_TABLE_DATA, GENRES_TABLE_DATA,
         PLAYLIST_SONGS_TABLE_DATA, PLAYLIST_TABLE_DATA, PLAY_TABLE_DATA, SONGPATHS_TABLE_DATA,
@@ -15,7 +15,6 @@ use serial_test::serial;
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 /*                                                                      Testing table interactions                                                                     */
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
-
 
 #[test]
 #[serial]
@@ -435,7 +434,6 @@ fn test_populate_database() {
     for artist in album_artists {
         assert!(album_artist_names_valid.contains(&artist.artist_name));
         assert!(album_artist_song_ids_valid.contains(&artist.song_id));
-
     }
 
     /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
@@ -481,5 +479,4 @@ fn test_populate_database() {
         assert!(composer_names_valid.contains(&composer.composer_name));
         assert!(song_ids_valid.contains(&composer.song_id));
     }
-
 }

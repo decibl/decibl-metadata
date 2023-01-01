@@ -20,6 +20,7 @@ mp3-metadata = "0.3.4"
 walkdir = "2.3.2"
 ring = "0.16.20"
 serial_test = "0.4.0"
+indicatif = "0.17.2"
 
 [dependencies.rusqlite]
 version = "0.28.0"
