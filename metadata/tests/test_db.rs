@@ -1,7 +1,7 @@
 use decibl_metadata::engine::{
     analyticsdb::{self, clear_all_tables, create_all_tables, populate_database},
     audio_metadata::{AudioFile, AudioFileFLAC},
-    config::{create_all_files, get_soundfiles_path_1},
+    config::{get_soundfiles_path_1},
     models::{
         default, ALBUM_ARTISTS_TABLE_DATA, COMPOSERS_TABLE_DATA, GENRES_TABLE_DATA,
         PLAYLIST_SONGS_TABLE_DATA, PLAYLIST_TABLE_DATA, PLAY_TABLE_DATA, SONGPATHS_TABLE_DATA,

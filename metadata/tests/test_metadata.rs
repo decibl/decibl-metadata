@@ -3,7 +3,6 @@ use decibl_metadata::engine::{
         add_symphonia_data, file_to_hash, string_to_hash, AudioFileFLAC, AudioFile,
     },
     config::get_soundfiles_path_1,
-    models::default,
 };
 
 
