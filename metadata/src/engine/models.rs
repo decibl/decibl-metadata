@@ -1,4 +1,4 @@
-#[allow(non_camel_case_types)]
+#![allow(non_camel_case_types)]
 // This file will hold all the different tables as models
 // We'll have structs for each table and a compile method which turns the struct into an sql string
 use once_cell::sync::Lazy;

@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use directories_next::ProjectDirs;
 use once_cell::sync::Lazy;
 use std::collections::BTreeMap;

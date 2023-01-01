@@ -11,3 +11,4 @@ pub mod config;
 pub mod audio_metadata;
 pub mod analyticsdb;
 pub mod models; 
+pub mod api_metadata;
