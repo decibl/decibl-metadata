@@ -26,11 +26,12 @@ pub fn get_artist_profile_genius(artist_name: &str) -> String {
     // we need to replace spaces with dashes
     let artist_name_fix = artist_name.replace(" ", "-");
 
-    let mut url = String::from("https://genius.com/api/artists/");
+    let mut url = String::from("https://genius.com/artists/");
     url.push_str(&artist_name_fix);
 
     // now we need to get the response
     let response = reqwest::blocking::get(&url).unwrap().text().unwrap();
+
 
     // now we need to parse the response
     let document = scraper::Html::parse_document(&response);
