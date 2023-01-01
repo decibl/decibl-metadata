@@ -1,19 +1,16 @@
 /*
-make absract class
-make audio metadata class
-make classes with files that inherit from abstract class
+This class will deal with all the parsing of the physical music files. Like getting the "title" metadata from hello.mp3
+The basic rundown is the following:
+1. Make a trait that all the audio files will inherit from. This will have required functions that all audio files will have, so we can use them in the same way.
+2. Make a class for each Audiofile type and make it inherit from the trait. This will have the functions that are specific to that audio file type, but same return type.
+
+For example, if I have AudioFileFLAC and AudioFileMP3 and call get_title() on both, they will return the same type of data, but the implementation will be different.
 */
 
+
 use ring::digest::{Context, Digest, SHA256};
-use std::io::Error;
-use std::io::{BufReader, Read, Result, Write};
-/*
-//
-//              AudioFile Trait
-//
-*/
+use std::io::{BufReader, Read, Result};
 use std::fs::File;
-use std::io;
 
 use crate::engine::models::*;
 
@@ -33,11 +30,10 @@ use std::collections::HashMap;
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//                                                       USEFUL FUNCTIONS
+//                                                                  USEFUL FUNCTIONS
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// inherit clone
 /// We want to use the AudioFIle trait b/c there's multiple possible AudioFile types (flac or mp3)
 /// They're all guranteed to have this functionality.
 pub trait AudioFile {
