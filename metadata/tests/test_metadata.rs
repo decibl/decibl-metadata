@@ -1,6 +1,6 @@
 use decibl_metadata::engine::{
     audio_metadata::{
-        add_symphonia_data, file_to_hash, get_symphonia_data, string_to_hash, AudioFileFLAC, AudioFile,
+        add_symphonia_data, file_to_hash, string_to_hash, AudioFileFLAC, AudioFile,
     },
     config::get_soundfiles_path_1,
     models::default,
@@ -121,8 +121,8 @@ fn test_flac_get_composers_table_data() {
 
     let valid_composers = vec!["Majent", "Randy Findell"];
     let valid_ids = vec![
-        "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E",
-        "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E",
+        "551229E1295C4B719B1B2AC853677B9E7537AC39ED715E3436FD1370D621E7E2",
+        "551229E1295C4B719B1B2AC853677B9E7537AC39ED715E3436FD1370D621E7E2",
     ];
 
     for (i, composer) in data.iter().enumerate() {
@@ -186,7 +186,7 @@ fn test_get_song_table_data() {
 
     assert_eq!(
         song.song_id,
-        "2916D1AF7C16DF259A98FEC02A984F10CD0AF370A339CE6C40670F14FB364E6E".to_string()
+        "551229E1295C4B719B1B2AC853677B9E7537AC39ED715E3436FD1370D621E7E2".to_string()
     );
     assert_eq!(song.main_artist, "brakence".to_string());
     assert_eq!(song.filesize_bytes, 15297020);

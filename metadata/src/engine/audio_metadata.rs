@@ -523,8 +523,8 @@ impl AudioFile for AudioFileFLAC {
         self.raw_metadata = metadata;
         self.add_blank_data();
 
-        // add all the data from the metaflac library
-        // THIS HAS TO BE CALLED SECOND
+        // // add all the data from the metaflac library
+        // // THIS HAS TO BE CALLED SECOND
         self.add_metaflac_data(filepath.clone());
 
         self.filepath = filepath;
@@ -539,10 +539,17 @@ impl AudioFile for AudioFileFLAC {
 
         self.raw_metadata
             .insert("filesize".to_string(), filesize_vec);
+
+        // make the song_id the hash of song title + artist + album
+        let mut song_id = String::new();
+        song_id.push_str(&self.raw_metadata.get("TITLE").unwrap()[0]);  
+        song_id.push_str(&self.raw_metadata.get("filesize").unwrap()[0]);
+        song_id.push_str(&self.raw_metadata.get("ALBUM").unwrap()[0]);
         self.raw_metadata.insert(
             "song_id".to_string(),
-            vec![file_to_hash(self.filepath.clone()).unwrap()],
+            vec![string_to_hash(song_id).unwrap()],
         );
+
     }
 }
 
@@ -846,39 +853,6 @@ impl AudioFile for AudioFileMP3 {
         let defaultMap = SONG_TABLE_DATA::default();
 
         // now we need to make default values for all the metadata.
-
-        // self.raw_metadata
-        //     .insert("title".to_string(), vec![defaultMap.title]);
-        // self.raw_metadata
-        //     .insert("main_artist".to_string(), vec![defaultMap.main_artist]);
-        // self.raw_metadata
-        //     .insert("album".to_string(), vec![defaultMap.album]);
-        // self.raw_metadata
-        //     .insert("year".to_string(), vec![defaultMap.date_created]);
-        // self.raw_metadata.insert(
-        //     "duration".to_string(),
-        //     vec![defaultMap.duration.to_string()],
-        // );
-        // self.raw_metadata.insert(
-        //     "sample_rate".to_string(),
-        //     vec![defaultMap.sample_rate.to_string()],
-        // );
-        // self.raw_metadata
-        //     .insert("bitrate".to_string(), vec![defaultMap.bitrate.to_string()]);
-        // self.raw_metadata.insert(
-        //     "channels".to_string(),
-        //     vec![defaultMap.channels.to_string()],
-        // );
-        // self.raw_metadata
-        //     .insert("composers".to_string(), vec!["-1".to_string()]);
-        // self.raw_metadata
-        //     .insert("genre".to_string(), vec!["-1".to_string()]);
-        // self.raw_metadata
-        //     .insert("filesize".to_string(), vec!["-1".to_string()]);
-        // self.raw_metadata
-        //     .insert("song_id".to_string(), vec!["-1".to_string()]);
-        // self.raw_metadata
-        //     .insert("filetype".to_string(), vec!["-1".to_string()]);
 
         self.add_id3_data(filepath.clone());
 

@@ -12,6 +12,7 @@ use symphonia::core::probe::Hint;
 
 fn main() {
     create_all_tables();
+    // clear_all_tables();
     let path = "C:/Users/drale/Music/music/FavoritesPL".to_string();
     populate_database(path);
 }
