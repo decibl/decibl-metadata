@@ -1,19 +1,16 @@
 /*
-make absract class
-make audio metadata class
-make classes with files that inherit from abstract class
+This class will deal with all the parsing of the physical music files. Like getting the "title" metadata from hello.mp3
+The basic rundown is the following:
+1. Make a trait that all the audio files will inherit from. This will have required functions that all audio files will have, so we can use them in the same way.
+2. Make a class for each Audiofile type and make it inherit from the trait. This will have the functions that are specific to that audio file type, but same return type.
+
+For example, if I have AudioFileFLAC and AudioFileMP3 and call get_title() on both, they will return the same type of data, but the implementation will be different.
 */
 
+#![allow(non_snake_case)]
 use ring::digest::{Context, Digest, SHA256};
-use std::io::Error;
-use std::io::{BufReader, Read, Result, Write};
-/*
-//
-//              AudioFile Trait
-//
-*/
+use std::io::{BufReader, Read, Result};
 use std::fs::File;
-use std::io;
 
 use crate::engine::models::*;
 
@@ -26,18 +23,17 @@ use symphonia::core::meta::MetadataOptions;
 use symphonia::core::probe::Hint;
 
 // include hashmap
-use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
+// use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use metaflac;
 use mp3_metadata;
 use std::collections::HashMap;
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//                                                       USEFUL FUNCTIONS
+//                                                                  USEFUL FUNCTIONS
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// inherit clone
 /// We want to use the AudioFIle trait b/c there's multiple possible AudioFile types (flac or mp3)
 /// They're all guranteed to have this functionality.
 pub trait AudioFile {
@@ -76,7 +72,7 @@ pub fn file_to_hash(path: String) -> Result<String> {
 
 /// Turns a string into a hash
 pub fn string_to_hash(path: String) -> Result<String> {
-    let mut reader = path.as_bytes();
+    let reader = path.as_bytes();
     let digest = sha256_digest(reader)?;
 
     Ok(HEXUPPER.encode(digest.as_ref()))
@@ -100,7 +96,7 @@ pub fn get_symphonia_data(filepath: String, fileHint: String) -> Box<dyn FormatR
         .format(&hint, mss, &format_opts, &meta_opts)
         .expect("failed to probe");
 
-    let mut format = probed.format;
+    let format = probed.format;
 
     format
 }
@@ -132,7 +128,7 @@ pub fn add_symphonia_data(
 
         // if key is already in the hashmap, push the value to the vector
         if metadata.contains_key(&key) {
-            let mut vec = metadata.get_mut(&key).unwrap();
+            let vec = metadata.get_mut(&key).unwrap();
             vec.push(value);
         } else {
             // if key is not in the hashmap, create a new vector and push the value to it
@@ -225,7 +221,7 @@ impl AudioFileFLAC {
     pub fn add_blank_data(&mut self) {
         // add all the above raw.metadata to the song_table_data so it doesnt throw an error
         // make a list of these keys so we can iterate over them
-        let mut keys = vec![
+        let keys = vec![
             "song_id",
             "ARTIST",
             "filesize",
@@ -267,7 +263,7 @@ impl AudioFileFLAC {
     }
 
     pub fn get_metaflac_data(&mut self, filepath: String) -> metaflac::block::StreamInfo {
-        let mut tag = metaflac::Tag::read_from_path(filepath).unwrap();
+        let tag = metaflac::Tag::read_from_path(filepath).unwrap();
         let metadata = tag.get_streaminfo().unwrap();
         let retn = metadata.clone();
 
@@ -295,9 +291,9 @@ impl AudioFileFLAC {
 
         // we have to calculate bitrate
 
-        let bitrate = (streaminfo.bits_per_sample as u64
+        let bitrate = streaminfo.bits_per_sample as u64
             * streaminfo.sample_rate as u64
-            * streaminfo.num_channels as u64);
+            * streaminfo.num_channels as u64;
 
         bitrate_vec.push(bitrate.to_string());
 
@@ -341,7 +337,7 @@ impl AudioFile for AudioFileFLAC {
 
     fn get_genres_table_data(&self) -> Vec<GENRES_TABLE_DATA> {
         let mut genres_table_data_vec: Vec<GENRES_TABLE_DATA> = Vec::new();
-        let mut genres = self.raw_metadata.get("GENRE").unwrap();
+        let genres = self.raw_metadata.get("GENRE").unwrap();
 
         for genre in genres {
             let mut genres_table_data = GENRES_TABLE_DATA::default();
@@ -519,7 +515,7 @@ impl AudioFile for AudioFileFLAC {
 
     fn load_file(&mut self, filepath: String) {
         // add all the data from the symphonia library
-        let mut metadata = add_symphonia_data(filepath.clone(), "flac".to_string());
+        let metadata = add_symphonia_data(filepath.clone(), "flac".to_string());
         self.raw_metadata = metadata;
         self.add_blank_data();
 
@@ -594,8 +590,8 @@ impl AudioFileMP3 {
     /// 10. composers
     /// 11. publisher
     pub fn add_id3_data(&mut self, filepath: String) {
-        let mut metadata = mp3_metadata::read_from_file(filepath).unwrap();
-        let mut audiotag = metadata.tag;
+        let metadata = mp3_metadata::read_from_file(filepath).unwrap();
+        let audiotag = metadata.tag;
         let mut id3_data: HashMap<String, Vec<String>> = HashMap::new();
 
         // if audioTag is None, then there is no ID3 data, so we can just return

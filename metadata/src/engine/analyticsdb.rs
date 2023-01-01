@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use crate::engine::audio_metadata::*;
 use crate::engine::config::*;
 use crate::engine::models::*;
@@ -6,7 +8,6 @@ use indicatif::ProgressState;
 use indicatif::ProgressStyle;
 use rusqlite::params;
 use rusqlite::Connection;
-use std::collections::HashMap;
 use std::fmt::Write;
 use walkdir;
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -206,7 +207,7 @@ pub fn clear_all_tables() {
 /// insert_song(song_table_data);
 /// ```
 pub fn insert_song(song_table_data: SONG_TABLE_DATA) {
-    let mut conn = Connection::open(get_database_file_path());
+    let conn = Connection::open(get_database_file_path());
 
     // example query
     // let sql_query = "INSERT INTO songs (song_id, main_artist, filesize_bytes, padding_bytes, album_artwork_bit_depth, album_artwork_colors, album_artwork_height, album_artwork_width, bit_depth, bitrate, channels, duration, sample_rate, album, barcode, date_created, disc_number, disc_total, isrc, itunesadvisory, length, publisher, rating, title, track_number, track_total, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27)";
@@ -1058,7 +1059,7 @@ pub fn get_song_by_id(song_id: String) -> SONG_TABLE_DATA {
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(SONG_TABLE_DATA {
                 song_id: row.get(0).unwrap(),
@@ -1115,7 +1116,7 @@ pub fn get_play_by_id(play_id: String) -> PLAY_TABLE_DATA {
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(PLAY_TABLE_DATA {
                 play_id: row.get(0).unwrap(),
@@ -1155,7 +1156,7 @@ pub fn get_playlist_by_id(playlist_id: String) -> PLAYLIST_TABLE_DATA {
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(PLAYLIST_TABLE_DATA {
                 playlist_id: row.get(0).unwrap(),
@@ -1192,7 +1193,7 @@ pub fn get_playlist_songs_by_id(playlist_id: String) -> Vec<PLAYLIST_SONGS_TABLE
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(PLAYLIST_SONGS_TABLE_DATA {
                 playlist_id: row.get(0).unwrap(),
@@ -1211,7 +1212,6 @@ pub fn get_playlist_songs_by_id(playlist_id: String) -> Vec<PLAYLIST_SONGS_TABLE
 
 /// Get all the songs in a playlist by the playlist_id
 pub fn get_songs_in_playlist(playlist_id: String) -> Vec<SONG_TABLE_DATA> {
-    let conn = Connection::open(get_database_file_path()).expect("Could not open database");
     let mut songs: Vec<SONG_TABLE_DATA> = Vec::new();
 
     // what we will do is: call get_playlist_songs_by_id and search for where playlist_id = playlist_id
@@ -1243,7 +1243,7 @@ pub fn get_song_artists_by_song_id(song_id: String) -> Vec<SONG_ARTISTS_TABLE_DA
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(SONG_ARTISTS_TABLE_DATA {
                 song_id: row.get(0).unwrap(),
@@ -1276,7 +1276,7 @@ pub fn get_album_artists_by_song_id(song_id: String) -> Vec<ALBUM_ARTISTS_TABLE_
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(ALBUM_ARTISTS_TABLE_DATA {
                 song_id: row.get(0).unwrap(),
@@ -1308,7 +1308,7 @@ pub fn get_genres_by_song_id(song_id: String) -> Vec<GENRES_TABLE_DATA> {
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(GENRES_TABLE_DATA {
                 song_id: row.get(0).unwrap(),
@@ -1340,7 +1340,7 @@ pub fn get_composers_by_song_id(song_id: String) -> Vec<COMPOSERS_TABLE_DATA> {
         .prepare(&sql_query)
         .expect("Could not prepare statement");
 
-    let mut rows = receiver
+    let rows = receiver
         .query_map([], |row| {
             Ok(COMPOSERS_TABLE_DATA {
                 song_id: row.get(0).unwrap(),
@@ -1384,8 +1384,8 @@ pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String> {
 pub fn populate_database(dirpath: String) {
     // first, we need to get all the filepaths in the directory
     let filepaths = get_all_filepaths_in_directory(dirpath);
-    let songs = get_all_songs();
-    let song_ids: Vec<String> = songs.iter().map(|song| song.song_id.clone()).collect();
+    // let songs = get_all_songs();
+    // let song_ids: Vec<String> = songs.iter().map(|song| song.song_id.clone()).collect();
 
 
     let total_files = filepaths.len();
