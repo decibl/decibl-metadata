@@ -385,64 +385,135 @@ impl AudioFile for AudioFileFLAC {
         // if there is no song_id, write "unknown" to the database
         song_table_data.song_id = self.raw_metadata.get("song_id").unwrap()[0].clone();
         song_table_data.main_artist = self.raw_metadata.get("ARTIST").unwrap()[0].clone();
-        song_table_data.filesize_bytes = self.raw_metadata.get("filesize").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
+        let temp_filesize_bytes = self.raw_metadata.get("filesize").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_filesize_bytes {
+            Ok(filesize_bytes) => song_table_data.filesize_bytes = filesize_bytes,
+            Err(_) => song_table_data.filesize_bytes = -1,  
+        }
+        
         song_table_data.padding_bytes = -1; // just set this to -1 for now
-        song_table_data.album_artwork_bit_depth =
-            self.raw_metadata.get("album_artwork_bit_depth").unwrap()[0]
-                .parse::<i64>()
-                .unwrap();
+        
+        let temp_album_artwork_bit_depth = self.raw_metadata.get("album_artwork_bit_depth").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_album_artwork_bit_depth {
+            Ok(album_artwork_bit_depth) => song_table_data.album_artwork_bit_depth = album_artwork_bit_depth,
+            Err(_) => song_table_data.album_artwork_bit_depth = -1,  
+        }
+        
         song_table_data.album_artwork_colors = -1; // just set this to -1 for now
-        song_table_data.album_artwork_height =
-            self.raw_metadata.get("album_artwork_height").unwrap()[0]
-                .parse::<i64>()
-                .unwrap();
-        song_table_data.album_artwork_width = self.raw_metadata.get("album_artwork_width").unwrap()
-            [0]
-        .parse::<i64>()
-        .unwrap();
-        song_table_data.bit_depth = self.raw_metadata.get("bit_depth").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
-        song_table_data.bitrate = self.raw_metadata.get("bitrate").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
-        song_table_data.channels = self.raw_metadata.get("channels").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
-        song_table_data.duration = self.raw_metadata.get("duration").unwrap()[0]
-            .parse::<f64>()
-            .unwrap();
-        song_table_data.sample_rate = self.raw_metadata.get("sample_rate").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
+        
+        let temp_album_artwork_height = self.raw_metadata.get("album_artwork_height").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_album_artwork_height {
+            Ok(album_artwork_height) => song_table_data.album_artwork_height = album_artwork_height,
+            Err(_) => song_table_data.album_artwork_height = -1,  
+        }
+        
+        let temp_album_artwork_width = self.raw_metadata.get("album_artwork_width").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_album_artwork_width {
+            Ok(album_artwork_width) => song_table_data.album_artwork_width = album_artwork_width,
+            Err(_) => song_table_data.album_artwork_width = -1,  
+        }
+        
+        let temp_bit_depth = self.raw_metadata.get("bit_depth").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_bit_depth {
+            Ok(bit_depth) => song_table_data.bit_depth = bit_depth,
+            Err(_) => song_table_data.bit_depth = -1,  
+        }
+        
+        let temp_bitrate = self.raw_metadata.get("bitrate").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_bitrate {
+            Ok(bitrate) => song_table_data.bitrate = bitrate,
+            Err(_) => song_table_data.bitrate = -1,  
+        }
+        
+        let temp_channels = self.raw_metadata.get("channels").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_channels {
+            Ok(channels) => song_table_data.channels = channels,
+            Err(_) => song_table_data.channels = -1,  
+        }
+        
+        let temp_duration = self.raw_metadata.get("duration").unwrap()[0]
+            .parse::<f64>();
+        
+        match temp_duration {
+            Ok(duration) => song_table_data.duration = duration,
+            Err(_) => song_table_data.duration = -1.0,  
+        }
+        
+        let temp_sample_rate = self.raw_metadata.get("sample_rate").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_sample_rate {
+            Ok(sample_rate) => song_table_data.sample_rate = sample_rate,
+            Err(_) => song_table_data.sample_rate = -1,  
+        }
+        
         song_table_data.album = self.raw_metadata.get("ALBUM").unwrap()[0].clone();
         song_table_data.barcode = self.raw_metadata.get("BARCODE").unwrap()[0].clone();
         song_table_data.date_created = self.raw_metadata.get("DATE").unwrap()[0].clone();
-        song_table_data.disc_number = self.raw_metadata.get("DISCNUMBER").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
-        song_table_data.disc_total = self.raw_metadata.get("DISCTOTAL").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
+        
+        let temp_disc_number = self.raw_metadata.get("DISCNUMBER").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_disc_number {
+            Ok(disc_number) => song_table_data.disc_number = disc_number,
+            Err(_) => song_table_data.disc_number = -1,  
+        }
+        
+        let temp_disc_total = self.raw_metadata.get("DISCTOTAL").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_disc_total {
+            Ok(disc_total) => song_table_data.disc_total = disc_total,
+            Err(_) => song_table_data.disc_total = -1,  
+        }
+        
         song_table_data.isrc = self.raw_metadata.get("ISRC").unwrap()[0].clone();
-        song_table_data.itunesadvisory =
-            self.raw_metadata.get("ITUNESADVISORY").unwrap()[0].clone();
-        song_table_data.length = self.raw_metadata.get("LENGTH").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
+        song_table_data.itunesadvisory = self.raw_metadata.get("ITUNESADVISORY").unwrap()[0].clone();
+        
+        let temp_length = self.raw_metadata.get("LENGTH").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_length {
+            Ok(length) => song_table_data.length = length,
+            Err(_) => song_table_data.length = -1,  
+        }
+        
         song_table_data.publisher = self.raw_metadata.get("PUBLISHER").unwrap()[0].clone();
         song_table_data.title = self.raw_metadata.get("TITLE").unwrap()[0].clone();
-        song_table_data.track_number = self.raw_metadata.get("TRACKNUMBER").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
-        song_table_data.track_total = self.raw_metadata.get("TRACKTOTAL").unwrap()[0]
-            .parse::<i64>()
-            .unwrap();
+        
+        let temp_track_number = self.raw_metadata.get("TRACKNUMBER").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_track_number {
+            Ok(track_number) => song_table_data.track_number = track_number,
+            Err(_) => song_table_data.track_number = -1,  
+        }
+        
+        let temp_track_total = self.raw_metadata.get("TRACKTOTAL").unwrap()[0]
+            .parse::<i64>();
+        
+        match temp_track_total {
+            Ok(track_total) => song_table_data.track_total = track_total,
+            Err(_) => song_table_data.track_total = -1,  
+        }
+        
         song_table_data.source = self.raw_metadata.get("SOURCE").unwrap()[0].clone();
         song_table_data.filetype = "flac".to_string();
-
+        
         song_table_data
     }
 
@@ -480,6 +551,14 @@ impl AudioFile for AudioFileFLAC {
 //                                                                               MP3
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// OK I'M NOT GONNA LIE
+// Everything involving MP3s is a mess
+// It's not my fault, the support for MP3s in Rust is just not there
+// You'll see some random if statements checking if something is None or not,
+// that's because the mp3-metadata library doesn't always return the same data
+// and is inconsistent sometimes
 
 #[derive(Debug, Clone)]
 pub struct AudioFileMP3 {
@@ -597,21 +676,48 @@ impl AudioFileMP3 {
         // Composers and publishers will be found in metadata.optional_info
 
         // add the composers
-        let composers = &metadata.optional_info[0];
-        let composers_vec = composers.composers.clone();
-        id3_data.insert("composers".to_string(), composers_vec);
+        // let composers = &metadata.optional_info[0];
+        // let composers_vec = composers.composers.clone();
+        // id3_data.insert("composers".to_string(), composers_vec);
 
-        // if there is no publisher, then we can just return
-        if metadata.optional_info[0].publisher.is_none() {
-            self.raw_metadata = id3_data;
-            return;
+        // make sure the composer exists, check if len of metadata.optional_info is 0
+
+        if metadata.optional_info.len() == 0 {
+            let composers_vec: Vec<String> = Vec::new();
+            id3_data.insert("composers".to_string(), composers_vec);
         }
-        let publisher = &metadata.optional_info[0].publisher.clone().unwrap();
-        let publisher = publisher.trim_end_matches('\0').to_string();
-        let publisher_vec = vec![publisher];
+        else {
+            // if there is a composer,
+            let composers = &metadata.optional_info[0].composers;
+            let composers_vec = composers.clone();
+            id3_data.insert("composers".to_string(), composers_vec);
+        }
 
-        id3_data.insert("publisher".to_string(), publisher_vec);
+        // if there is no publisher, then we need to add an empty vector
+        if metadata.optional_info.len() == 0 {
+            let publisher_vec: Vec<String> = Vec::new();
+            id3_data.insert("publisher".to_string(), publisher_vec);
+        }
+        else {
+            // if there is a publisher,
+            // make sure publisher is not None
+            let publisher = &metadata.optional_info[0].publisher.clone();
+            // let publisher = publisher.trim_end_matches('\0').to_string();
+            // let publisher_vec = vec![publisher];
 
+            // id3_data.insert("publisher".to_string(), publisher_vec);
+            match publisher {
+                Some(publisher) => {
+                    let publisher = publisher.trim_end_matches('\0').to_string();
+                    let publisher_vec = vec![publisher];
+                    id3_data.insert("publisher".to_string(), publisher_vec);
+                },
+                None => {
+                    let publisher_vec: Vec<String> = Vec::new();
+                    id3_data.insert("publisher".to_string(), publisher_vec);
+                }
+            }
+        }
         // print id3_data
         self.raw_metadata = id3_data;
     }

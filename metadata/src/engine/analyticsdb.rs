@@ -1404,14 +1404,6 @@ pub fn populate_database(dirpath: String) {
             continue;
         }
 
-        // let song_id = file_to_hash(filepath.clone()).unwrap();
-
-        // // if the song_id is already in the database, then we don't want to parse it
-        // if song_ids.contains(&song_id) {
-        //     bar.inc(1);
-        //     continue;
-        // }
-
 
         let fileExt = std::path::Path::new(&filepath)
             .extension()
