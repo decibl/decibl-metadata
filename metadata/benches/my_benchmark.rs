@@ -1,9 +1,11 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+// run cargo bench
 use decibl_metadata::engine::{
     analyticsdb::{
         clear_all_tables, create_all_tables, insert_song_information, populate_database,
     },
-    audio_metadata::{add_symphonia_data, AudioFile, AudioFileFLAC, AudioFileMP3},
+    audio_metadata::{add_symphonia_data, AudioFile, AudioFileFLAC, AudioFileMP3, file_to_hash},
     config::get_soundfiles_path_1,
 };
 
@@ -85,6 +87,16 @@ pub fn bench_populate_database(c: &mut Criterion) {
     });
 }
 
+pub fn bench_hash_file(c: &mut Criterion) {
+    c.bench_function("hash file", |b| {
+        b.iter(|| {
+            let filepath = format!("{}/a.flac", get_soundfiles_path_1());
+            file_to_hash(filepath);
+        })
+    });
+}
+            
+
 criterion_group!(
     benches,
     bench_symphonia_data,
@@ -94,5 +106,6 @@ criterion_group!(
     bench_create_mp3,
     bench_insert_song_information,
     bench_populate_database,
+    bench_hash_file,
 );
 criterion_main!(benches);

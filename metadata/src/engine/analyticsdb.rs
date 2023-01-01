@@ -112,7 +112,7 @@ pub fn create_genres_table() {
 /// Creates the 'song_paths' table in the SQLite database.
 pub fn create_song_paths_table() {
     let song_paths_sql_query = compile_song_paths_table();
-    create_table(song_paths_sql_query)
+    create_table(song_paths_sql_query);
 }
 
 /// Creates the 'artists' table in the SQLite database.
@@ -1381,6 +1381,9 @@ pub fn get_all_filepaths_in_directory(dirpath: String) -> Vec<String> {
 pub fn populate_database(dirpath: String) {
     // first, we need to get all the filepaths in the directory
     let filepaths = get_all_filepaths_in_directory(dirpath);
+    let songs = get_all_songs();
+    let song_ids: Vec<String> = songs.iter().map(|song| song.song_id.clone()).collect();
+
 
     let total_files = filepaths.len();
 
@@ -1395,9 +1398,19 @@ pub fn populate_database(dirpath: String) {
     for filepath in filepaths {
         // if filepath doesn't end with .mp3 or .flac, then we don't want to parse it
 
+        // hash the filepath
+
         if !filepath.ends_with(".mp3") && !filepath.ends_with(".flac") {
             continue;
         }
+
+        // let song_id = file_to_hash(filepath.clone()).unwrap();
+
+        // // if the song_id is already in the database, then we don't want to parse it
+        // if song_ids.contains(&song_id) {
+        //     bar.inc(1);
+        //     continue;
+        // }
 
 
         let fileExt = std::path::Path::new(&filepath)

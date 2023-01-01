@@ -21,6 +21,7 @@ pub struct Column {
     pub primary_key: bool,
     pub auto_increment: bool,
     pub notes: &'static str,
+    pub is_unique: bool,
 }
 
 pub struct Table {
@@ -33,6 +34,10 @@ pub struct Table {
 
 pub fn compile_table(table: &Table) -> String {
     let mut sql_string = String::from("CREATE TABLE IF NOT EXISTS ");
+
+    // make a vector to store the unique columns
+    let mut unique_columns: Vec<&str> = Vec::new();
+
     sql_string.push_str(table.name);
     sql_string.push_str(" (");
     for column in &table.columns {
@@ -45,12 +50,27 @@ pub fn compile_table(table: &Table) -> String {
         if column.auto_increment {
             sql_string.push_str(" AUTOINCREMENT");
         }
+        if column.is_unique {
+            unique_columns.push(column.name);
+        }
         sql_string.push_str(", ");
     }
-    sql_string.pop();
-    sql_string.pop();
-    sql_string.push_str(");");
-    sql_string
+    if unique_columns.len() > 0 {
+        sql_string.push_str("UNIQUE (");
+        for column in unique_columns {
+            sql_string.push_str(column);
+            sql_string.push_str(", ");
+        }
+        sql_string.pop();
+        sql_string.pop();
+        sql_string.push_str("));");
+        sql_string
+    } else {
+        sql_string.pop();
+        sql_string.pop();
+        sql_string.push_str(");");
+        sql_string
+    }
 }
 
 // now make compiles for each table
@@ -409,6 +429,7 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: true,
             auto_increment: false,
             notes: "The unique ID of the song",
+            is_unique: true,
         },
         Column {
             name: "main_artist",
@@ -416,6 +437,7 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The main artist of the song",
+            is_unique: false,
         },
         Column {
             name: "filesize_bytes",
@@ -423,6 +445,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The size of the song in bytes",
+            is_unique: false,
+
         },
         Column {
             name: "padding_bytes",
@@ -430,6 +454,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The padding of the song in bytes",
+            is_unique: false,
+
         },
         Column {
             name: "album_artwork_bit_depth",
@@ -437,6 +463,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The bit depth of the album artwork in bits",
+            is_unique: false,
+
         },
         Column {
             name: "album_artwork_colors",
@@ -444,6 +472,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The number of colors in the album artwork",
+            is_unique: false,
+
         },
         Column {
             name: "album_artwork_height",
@@ -451,6 +481,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The height of the album artwork in pixels",
+            is_unique: false,
+
         },
         Column {
             name: "album_artwork_width",
@@ -458,6 +490,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The width of the album artwork in pixels",
+            is_unique: false,
+
         },
         Column {
             name: "bit_depth",
@@ -465,6 +499,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The bit depth of the song in bits",
+            is_unique: false,
+
         },
         Column {
             name: "bitrate",
@@ -472,6 +508,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The bitrate of the song in bits, divide by 1000 to get Kbps",
+            is_unique: false,
+
         },
         Column {
             name: "channels",
@@ -479,6 +517,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The number of channels in the song",
+            is_unique: false,
+
         },
         Column {
             name: "duration",
@@ -486,6 +526,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The duration of the song in seconds",
+            is_unique: false,
+
         },
         Column {
             name: "sample_rate",
@@ -493,6 +535,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The sample rate of the song in KHz",
+            is_unique: false,
+
         },
         Column {
             name: "album",
@@ -500,6 +544,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The album of the song",
+            is_unique: false,
+
         },
         Column {
             name: "barcode",
@@ -507,6 +553,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The barcode of the song",
+            is_unique: false,
+
         },
         Column {
             name: "date_created",
@@ -514,6 +562,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The date the song was created in YYYY-MM-DD",
+            is_unique: false,
+
         },
         Column {
             name: "disc_number",
@@ -521,6 +571,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The disc number of the song",
+            is_unique: false,
+
         },
         Column {
             name: "disc_total",
@@ -528,6 +580,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The total number of discs in the album",
+            is_unique: false,
+
         },
         Column {
             name: "isrc",
@@ -535,6 +589,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ISRC of the song",
+            is_unique: false,
+
         },
         Column {
             name: "itunesadvisory",
@@ -542,6 +598,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The iTunes advisory of the song",
+            is_unique: false,
+
         },
         Column {
             name: "length",
@@ -549,6 +607,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The length of the song",
+            is_unique: false,
+
         },
         Column {
             name: "publisher",
@@ -556,6 +616,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The publisher of the song",
+            is_unique: false,
+
         },
         Column {
             name: "rating",
@@ -563,6 +625,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The rating of the song",
+            is_unique: false,
+
         },
         Column {
             name: "title",
@@ -570,6 +634,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The title of the song",
+            is_unique: false,
+
         },
         Column {
             name: "track_number",
@@ -577,6 +643,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The track number of the song",
+            is_unique: false,
+
         },
         Column {
             name: "track_total",
@@ -584,6 +652,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The total number of tracks in the album",
+            is_unique: false,
+
         },
         Column {
             name: "source",
@@ -591,6 +661,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The source of the song",
+            is_unique: false,
+
         },
         Column {
             name: "filetype",
@@ -598,6 +670,8 @@ pub static SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The file type of the song",
+            is_unique: false,
+
         },
     ],
 });
@@ -620,6 +694,8 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: true,
             auto_increment: false,
             notes: "The unique ID of the play",
+            is_unique: true,
+
         },
         Column {
             name: "song_id",
@@ -627,6 +703,8 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the song",
+            is_unique: false,
+
         },
         Column {
             name: "song_title",
@@ -634,6 +712,8 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The title of the song",
+            is_unique: false,
+
         },
         Column {
             name: "main_artist",
@@ -641,6 +721,8 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The primary artist of the song",
+            is_unique: false,
+
         },
         Column {
             name: "filesize",
@@ -648,6 +730,8 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The size of the song in bytes",
+            is_unique: false,
+
         },
         Column {
             name: "start_dt",
@@ -655,6 +739,8 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The start date and time of the play in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
+
         },
         Column {
             name: "end_dt",
@@ -662,6 +748,8 @@ pub static PLAYS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The end date and time of the play in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
+
         },
     ],
 });
@@ -681,6 +769,8 @@ pub static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: true,
             auto_increment: false,
             notes: "The unique ID of the playlist",
+            is_unique: true,
+
         },
         Column {
             name: "playlist_name",
@@ -688,6 +778,8 @@ pub static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the playlist",
+            is_unique: false,
+
         },
         Column {
             name: "playlist_desc",
@@ -695,6 +787,8 @@ pub static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The description of the playlist",
+            is_unique: false,
+
         },
         Column {
             name: "created_dt",
@@ -702,6 +796,8 @@ pub static PLAYLISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The date and time the playlist was created in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
+
         },
     ],
 });
@@ -720,6 +816,8 @@ pub static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the playlist",
+            is_unique: false,
+
         },
         Column {
             name: "song_id",
@@ -727,6 +825,7 @@ pub static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the song",
+            is_unique: false,
         },
         Column {
             name: "added_dt",
@@ -734,6 +833,7 @@ pub static PLAYLIST_SONGS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The date and time the song was added to the playlist in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
         },
     ],
 });
@@ -752,6 +852,8 @@ pub static SONG_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the artist",
+            is_unique: true,
+
         },
         Column {
             name: "song_id",
@@ -759,6 +861,8 @@ pub static SONG_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the song",
+            is_unique: true,
+
         },
         Column {
             name: "dt_added",
@@ -766,6 +870,8 @@ pub static SONG_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The date and time the artist was added to the song in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
+
         },
     ],
 });
@@ -784,6 +890,7 @@ pub static ALBUM_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the artist",
+            is_unique: true,
         },
         Column {
             name: "song_id",
@@ -791,6 +898,7 @@ pub static ALBUM_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the song",
+            is_unique: true,
         },
         Column {
             name: "dt_added",
@@ -798,6 +906,7 @@ pub static ALBUM_ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The date and time the artist was added to the song in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
         },
     ],
 });
@@ -816,6 +925,7 @@ pub static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the composer",
+            is_unique: true,
         },
         Column {
             name: "song_id",
@@ -823,6 +933,7 @@ pub static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the song",
+            is_unique: true,
         },
         Column {
             name: "dt_added",
@@ -830,6 +941,8 @@ pub static COMPOSERS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The date and time the composer was added to the song in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
+
         },
     ],
 });
@@ -848,6 +961,7 @@ pub static GENRES: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the genre",
+            is_unique: true,
         },
         Column {
             name: "song_id",
@@ -855,6 +969,7 @@ pub static GENRES: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the song",
+            is_unique: true,
         },
         Column {
             name: "dt_added",
@@ -862,6 +977,7 @@ pub static GENRES: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The date and time the genre was added to the song in YYYY-MM-DD HH:MM:SS",
+            is_unique: false,
         },
     ],
 });
@@ -879,6 +995,7 @@ pub static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the song",
+            is_unique: true,
         },
         Column {
             name: "song_path",
@@ -886,6 +1003,7 @@ pub static SONGPATHS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The path to the song",
+            is_unique: true,
         },
     ],
 });
@@ -901,6 +1019,7 @@ pub static ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the artist",
+            is_unique: true,
         },
         Column {
             name: "artist_bio",
@@ -908,6 +1027,7 @@ pub static ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The bio of the artist",
+            is_unique: false,
         },
         Column {
             name: "artist_photo_location",
@@ -915,6 +1035,7 @@ pub static ARTISTS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The location of the artist's photo",
+            is_unique: false,
         },
     ],
 });
@@ -930,6 +1051,7 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The ID of the album",
+            is_unique: true,
         },
         Column {
             name: "album_name",
@@ -937,6 +1059,7 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the album",
+            is_unique: false,
         },
         Column {
             name: "artist_name",
@@ -944,6 +1067,8 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The name of the artist",
+            is_unique: false,
+
         },
         Column {
             name: "album_description",
@@ -951,6 +1076,7 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The description of the album",
+            is_unique: false,
         },
         Column {
             name: "album_art_location",
@@ -958,6 +1084,7 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The location of the album's art",
+            is_unique: false,
         },
         Column {
             name: "album_release_date",
@@ -965,6 +1092,7 @@ pub static ALBUMS: Lazy<Table> = Lazy::new(|| Table {
             primary_key: false,
             auto_increment: false,
             notes: "The release date of the album",
+            is_unique: false,
         },
     ],
 });

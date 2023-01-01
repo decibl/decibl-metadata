@@ -472,7 +472,6 @@ impl AudioFile for AudioFileFLAC {
             "song_id".to_string(),
             vec![file_to_hash(self.filepath.clone()).unwrap()],
         );
-
     }
 }
 
@@ -510,46 +509,52 @@ impl AudioFileMP3 {
     /// 11. publisher
     pub fn add_id3_data(&mut self, filepath: String) {
         let mut metadata = mp3_metadata::read_from_file(filepath).unwrap();
-        let audiotag = metadata.tag.unwrap();
-
-        // make hashmap of all the data
+        let mut audiotag = metadata.tag;
         let mut id3_data: HashMap<String, Vec<String>> = HashMap::new();
 
-        // add the title
-        let mut title_vec: Vec<String> = Vec::new();
-        let title = audiotag.title.to_string();
-        // remove the trailing \0
-        let title = title.trim_end_matches('\0').to_string();
-        title_vec.push(title);
-        id3_data.insert("title".to_string(), title_vec);
+        // if audioTag is None, then there is no ID3 data, so we can just return
+        if !audiotag.is_none() {
+            // if audioTag is not None, then we can unwrap it
+            let audiotag = audiotag.unwrap();
 
-        // add the artist
-        let mut artist_vec: Vec<String> = Vec::new();
-        let artist = audiotag.artist.to_string();
-        // remove the trailing \0
-        let artist = artist.trim_end_matches('\0').to_string();
-        artist_vec.push(artist);
-        id3_data.insert("main_artist".to_string(), artist_vec);
+            // make hashmap of all the data
 
-        // add the album
-        let mut album_vec: Vec<String> = Vec::new();
-        let album = audiotag.album.to_string();
-        // remove the trailing \0
-        let album = album.trim_end_matches('\0').to_string();
-        album_vec.push(album);
-        id3_data.insert("album".to_string(), album_vec);
+            // add the title
+            let mut title_vec: Vec<String> = Vec::new();
+            let title = audiotag.title.to_string();
+            // remove the trailing \0
+            let title = title.trim_end_matches('\0').to_string();
+            title_vec.push(title);
+            id3_data.insert("title".to_string(), title_vec);
 
-        // add the year
-        let mut year_vec: Vec<String> = Vec::new();
-        year_vec.push(audiotag.year.to_string());
-        id3_data.insert("year".to_string(), year_vec);
+            // add the artist
+            let mut artist_vec: Vec<String> = Vec::new();
+            let artist = audiotag.artist.to_string();
+            // remove the trailing \0
+            let artist = artist.trim_end_matches('\0').to_string();
+            artist_vec.push(artist);
+            id3_data.insert("main_artist".to_string(), artist_vec);
 
-        // add the genre
-        let mut genre_vec: Vec<String> = Vec::new();
-        // get the output of printing audiotag.genre
-        let genre_string = format!("{:?}", audiotag.genre);
-        genre_vec.push(genre_string);
-        id3_data.insert("genre".to_string(), genre_vec);
+            // add the album
+            let mut album_vec: Vec<String> = Vec::new();
+            let album = audiotag.album.to_string();
+            // remove the trailing \0
+            let album = album.trim_end_matches('\0').to_string();
+            album_vec.push(album);
+            id3_data.insert("album".to_string(), album_vec);
+
+            // add the year
+            let mut year_vec: Vec<String> = Vec::new();
+            year_vec.push(audiotag.year.to_string());
+            id3_data.insert("year".to_string(), year_vec);
+
+            // add the genre
+            let mut genre_vec: Vec<String> = Vec::new();
+            // get the output of printing audiotag.genre
+            let genre_string = format!("{:?}", audiotag.genre);
+            genre_vec.push(genre_string);
+            id3_data.insert("genre".to_string(), genre_vec);
+        }
 
         // add the duration
         let mut duration_vec: Vec<String> = Vec::new();
@@ -596,6 +601,11 @@ impl AudioFileMP3 {
         let composers_vec = composers.composers.clone();
         id3_data.insert("composers".to_string(), composers_vec);
 
+        // if there is no publisher, then we can just return
+        if metadata.optional_info[0].publisher.is_none() {
+            self.raw_metadata = id3_data;
+            return;
+        }
         let publisher = &metadata.optional_info[0].publisher.clone().unwrap();
         let publisher = publisher.trim_end_matches('\0').to_string();
         let publisher_vec = vec![publisher];
@@ -687,13 +697,26 @@ impl AudioFile for AudioFileMP3 {
         song_table_data.filesize_bytes = self.raw_metadata.get("filesize").unwrap()[0]
             .parse::<i64>()
             .unwrap();
+
+        // if self.raw_metadata.get("title")
         song_table_data.title = self.raw_metadata.get("title").unwrap()[0].clone();
         song_table_data.main_artist = self.raw_metadata.get("main_artist").unwrap()[0].clone();
         song_table_data.album = self.raw_metadata.get("album").unwrap()[0].clone();
-        song_table_data.date_created = self.raw_metadata.get("year").unwrap()[0]
-            .parse::<i64>()
-            .unwrap()
-            .to_string();
+
+        // if year is -1, then there is no year
+
+        let new_year = self.raw_metadata.get("year").unwrap()[0]
+            .parse::<i64>();
+
+        match new_year {
+            Ok(year) => {
+                song_table_data.date_created = year.to_string();
+            }
+            Err(_) => {
+                song_table_data.date_created = "".to_string();
+            }
+        }
+
         song_table_data.duration = self.raw_metadata.get("duration").unwrap()[0]
             .parse::<i64>()
             .unwrap() as f64;
@@ -710,13 +733,113 @@ impl AudioFile for AudioFileMP3 {
         song_table_data.filetype = self.raw_metadata.get("filetype").unwrap()[0].clone();
         song_table_data
     }
-    fn load_file(&mut self, filepath: String) {
-        // add all the data from the symphonia library
-        // time how long it takes to load the file
 
+    fn load_file(&mut self, filepath: String) {
         self.filepath = filepath.clone();
 
+        let defaultMap = SONG_TABLE_DATA::default();
+
+        // now we need to make default values for all the metadata.
+
+        // self.raw_metadata
+        //     .insert("title".to_string(), vec![defaultMap.title]);
+        // self.raw_metadata
+        //     .insert("main_artist".to_string(), vec![defaultMap.main_artist]);
+        // self.raw_metadata
+        //     .insert("album".to_string(), vec![defaultMap.album]);
+        // self.raw_metadata
+        //     .insert("year".to_string(), vec![defaultMap.date_created]);
+        // self.raw_metadata.insert(
+        //     "duration".to_string(),
+        //     vec![defaultMap.duration.to_string()],
+        // );
+        // self.raw_metadata.insert(
+        //     "sample_rate".to_string(),
+        //     vec![defaultMap.sample_rate.to_string()],
+        // );
+        // self.raw_metadata
+        //     .insert("bitrate".to_string(), vec![defaultMap.bitrate.to_string()]);
+        // self.raw_metadata.insert(
+        //     "channels".to_string(),
+        //     vec![defaultMap.channels.to_string()],
+        // );
+        // self.raw_metadata
+        //     .insert("composers".to_string(), vec!["-1".to_string()]);
+        // self.raw_metadata
+        //     .insert("genre".to_string(), vec!["-1".to_string()]);
+        // self.raw_metadata
+        //     .insert("filesize".to_string(), vec!["-1".to_string()]);
+        // self.raw_metadata
+        //     .insert("song_id".to_string(), vec!["-1".to_string()]);
+        // self.raw_metadata
+        //     .insert("filetype".to_string(), vec!["-1".to_string()]);
+
         self.add_id3_data(filepath.clone());
+
+        // now go through self.raw_metadata and add the default values for the ones that are missing, i.e. if it's None
+        let keys = [
+            "title",
+            "main_artist",
+            "album",
+            "year",
+            "duration",
+            "sample_rate",
+            "bitrate",
+            "channels",
+            "composers",
+            "genre",
+            "filesize",
+            "song_id",
+            "filetype",
+        ];
+        for key in keys.iter() {
+            if self.raw_metadata.get(key.clone()).is_none() {
+                match key {
+                    &"title" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.title.clone()]),
+                    &"main_artist" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.main_artist.clone()]),
+                    &"album" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.album.clone()]),
+                    &"year" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.date_created.clone()]),
+                    &"duration" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.duration.to_string()]),
+                    &"sample_rate" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.sample_rate.to_string()]),
+                    &"bitrate" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.bitrate.to_string()]),
+                    &"channels" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec![defaultMap.channels.to_string()]),
+                    &"composers" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec!["-1".to_string()]),
+                    &"genre" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec!["-1".to_string()]),
+                    &"filesize" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec!["-1".to_string()]),
+                    &"song_id" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec!["-1".to_string()]),
+                    &"filetype" => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec!["-1".to_string()]),
+                    _ => self
+                        .raw_metadata
+                        .insert(key.to_string(), vec!["-1".to_string()]),
+                };
+            }
+        }
 
         // add the filesize to the metadata
         let file = File::open(&self.filepath).unwrap();
