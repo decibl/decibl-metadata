@@ -64,7 +64,7 @@ pub fn get_artist_profile_url_genius(artist_name: &str) -> String {
     url.to_string()
 }
 
-pub fn save_artist_profile_url(artist_name: &str) {
+pub fn save_artist_profile_url(artist_name: &str) -> String {
     let url = get_artist_profile_url_genius(artist_name);
 
     // now we need to download the image
@@ -81,6 +81,9 @@ pub fn save_artist_profile_url(artist_name: &str) {
         .last()
         .unwrap();
 
+    // turn artist_name spaces into underscores
+    let artist_name = artist_name.replace(" ", "_");
+
     let filename = format!("{}_profile.{}", artist_name, extension);
 
     let mut save_path = format!("{}/{}", get_artist_photo_path(), filename);
@@ -96,4 +99,7 @@ pub fn save_artist_profile_url(artist_name: &str) {
     std::io::copy(&mut response, &mut file).unwrap();
 
     println!("Saved image to {}", save_path.display());
+
+    save_path.display().to_string()
 }
+
