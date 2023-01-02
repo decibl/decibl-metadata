@@ -15,7 +15,9 @@ use symphonia::core::probe::Hint;
 fn main() {
 
 
-    get_artist_profile_genius(&"Kanye West".to_string());
+    get_artist_profile_url_genius(&"Kanye West".to_string());
+    get_artist_profile_url_genius(&"The Neighbourhood".to_string());
+    save_artist_profile_url(&"Kanye West".to_string());
     // create_all_tables();
     // // clear_all_tables();
     // let path = "C:/Users/drale/Music/music/FavoritesPL".to_string();

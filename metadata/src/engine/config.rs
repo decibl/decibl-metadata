@@ -54,8 +54,6 @@ pub fn get_album_photo_path(artist_name: &str, album_name: &str) -> String {
     path.push(artist_name);
     path.push(album_name);
     path.to_str().unwrap().to_string()
-
-    
 }
 
 pub fn get_soundfiles_path() -> String {
