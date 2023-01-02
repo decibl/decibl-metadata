@@ -11,7 +11,6 @@ use decibl_metadata::engine::{
 use serial_test::serial;
 
 #[test]
-#[serial]
 fn test_sanity() {
     assert_eq!(1, 1);
 }
@@ -21,7 +20,6 @@ fn test_sanity() {
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 
 #[test]
-#[serial]
 fn test_file_to_hash() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
     let hash = file_to_hash(filepath).unwrap();
@@ -33,7 +31,6 @@ fn test_file_to_hash() {
 }
 
 #[test]
-#[serial]
 fn test_string_to_hash() {
     let strin = "hello world";
     let hash = string_to_hash(strin.to_string()).unwrap();
@@ -49,7 +46,6 @@ fn test_string_to_hash() {
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 
 #[test]
-#[serial]
 fn test_symphonia_data() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
     let filehint = "flac".to_string();
@@ -88,7 +84,6 @@ fn test_symphonia_data() {
 }
 
 #[test]
-#[serial]
 fn test_metaflac_data() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
 
@@ -108,7 +103,6 @@ fn test_metaflac_data() {
 }
 
 #[test]
-#[serial]
 fn test_flac_get_composers_table_data() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
 
@@ -132,7 +126,6 @@ fn test_flac_get_composers_table_data() {
 }
 
 #[test]
-#[serial]
 fn test_flac_get_genres_table_data() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
 
@@ -146,7 +139,6 @@ fn test_flac_get_genres_table_data() {
 }
 
 #[test]
-#[serial]
 fn test_flac_get_album_artists_table_data() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
 
@@ -160,7 +152,6 @@ fn test_flac_get_album_artists_table_data() {
 }
 
 #[test]
-#[serial]
 fn test_flac_get_song_artists_table_data() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
 
@@ -174,7 +165,6 @@ fn test_flac_get_song_artists_table_data() {
 }
 
 #[test]
-#[serial]
 fn test_get_song_table_data() {
     let filepath = format!("{}/a.flac", get_soundfiles_path_1());
 

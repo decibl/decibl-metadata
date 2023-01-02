@@ -2,7 +2,7 @@
 // Reference popular GUIs, we want to take an image for the album and the artist.
 // We want to download the album art and place it in config::get_album_photo_path(artist_name, album_name) which gives the path to put the image
 // album image should be named "album.jpg" where album is the album name
-// artist folder eshould have two things, "{ARTIST_NAME}_banner.jpg" and "{ARTIST_NAME}_profile.jpg"
+// artist folder eshould have two things, "{ARTIST_NAME}_banner.jpg or png" and "{ARTIST_NAME}_profile.jpg or png"
 
 // we also want to grab lyrics if we can, in the album folder with {SONG_NAME}_lyrics.txt
 
@@ -16,10 +16,12 @@
 //                                                      Getting Album and Artist Art
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
+use super::config::get_artist_photo_path;
+
 /// Attempts to get the Image of the artist from the Genius website
-pub fn get_artist_profile_genius(artist_name: &str) -> String {
+pub fn get_artist_profile_url_genius(artist_name: &str) -> String {
     // we are going to use the genius "API" to get the artist profile image
-    
+
     // first lets format the URL
     // the general format is https://genius.com/api/artists/{ARTIST_NAME}
 
@@ -31,7 +33,6 @@ pub fn get_artist_profile_genius(artist_name: &str) -> String {
 
     // now we need to get the response
     let response = reqwest::blocking::get(&url).unwrap().text().unwrap();
-
 
     // now we need to parse the response
     let document = scraper::Html::parse_document(&response);
@@ -49,28 +50,56 @@ pub fn get_artist_profile_genius(artist_name: &str) -> String {
         style = style_element.value().attr("style").unwrap().to_string();
     }
 
-    println!("{}", style);
-    style
+
+    // now we need to get the url from the style attribute
+    // the url is in the format "background-image: url('https://images.genius.com/5747a529dca274b0f2765d919c555b2d.1000x1000x1.jpg');"
+    // we need to get the url between the quotes
+
+    let url_start = style.find("url('").unwrap() + 5;
+    let url_end = style.find("');").unwrap();
+
+    let url = &style[url_start..url_end];
 
 
+    url.to_string()
 }
-// let response = reqwest::blocking::get(
-//     "https://www.imdb.com/search/title/?groups=top_100&sort=user_rating,desc&count=100",
-// )
-// .unwrap()
-// .text()
-// .unwrap();
 
-// let document = scraper::Html::parse_document(&response);
+pub fn save_artist_profile_url(artist_name: &str) -> String {
+    let url = get_artist_profile_url_genius(artist_name);
 
-// let title_selector = scraper::Selector::parse("h3.lister-item-header>a").unwrap();
-// let rating_selector = scraper::Selector::parse("div.inline-block.ratings-imdb-rating").unwrap();
+    // now we need to download the image
+    let mut response = reqwest::blocking::get(url).unwrap();
 
-// let mut titles = Vec::new();
+    // now we need to save the image
+    let extension = response
+        .url()
+        .path_segments()
+        .unwrap()
+        .last()
+        .unwrap()
+        .split(".")
+        .last()
+        .unwrap();
 
-// for title in document.select(&title_selector) {
-//     titles.push(title.inner_html());
-// }
+    // turn artist_name spaces into underscores
+    let artist_name = artist_name.replace(" ", "_");
 
+    let filename = format!("{}_profile.{}", artist_name, extension);
 
-// println!("{:?}", titles);
+    let mut save_path = format!("{}/{}", get_artist_photo_path(), filename);
+
+    // turn save_path into a Path
+    let save_path = std::path::Path::new(&save_path);
+
+    println!("{}", save_path.display());
+
+    // now we need to save the image
+    let mut file = std::fs::File::create(save_path).unwrap();
+
+    std::io::copy(&mut response, &mut file).unwrap();
+
+    println!("Saved image to {}", save_path.display());
+
+    save_path.display().to_string()
+}
+
