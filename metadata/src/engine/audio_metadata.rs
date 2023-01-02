@@ -9,7 +9,7 @@ For example, if I have AudioFileFLAC and AudioFileMP3 and call get_title() on bo
 
 #![allow(non_snake_case)]
 use ring::digest::{Context, Digest, SHA256};
-use std::io::{BufReader, Read, Result};
+use std::io::{BufReader, Read, Result, Write};
 use std::fs::File;
 
 use crate::engine::models::*;
@@ -180,6 +180,49 @@ pub fn add_symphonia_data(
     metadata
 }
 
+/// Get the album artwork from a file using the symphonia library
+/// Returns Vec<u8> of the album artwork
+pub fn get_symphonia_picture_data(filepath: String, fileHint: String) -> Vec<u8> {
+    let src = std::fs::File::open(filepath.clone()).unwrap();
+
+    let mss = MediaSourceStream::new(Box::new(src), Default::default());
+    let mut hint = Hint::new();
+    hint.with_extension("flac");
+
+    let meta_opts = MetadataOptions::default();
+    let format_opts = FormatOptions::default();
+
+    let probed = symphonia::default::get_probe()
+        .format(&hint, mss, &format_opts, &meta_opts)
+        .expect("failed to probe");
+
+    let format = probed.format;
+
+    let mut format = get_symphonia_data(filepath.clone(), "flac".to_string());
+    let binding = format.metadata();
+    let visualTags = binding.current().unwrap().visuals();
+
+    let mut album_art = None;
+
+    for tag in visualTags {
+        if tag.media_type == "image/jpeg" {
+            album_art = Some(tag.data.to_vec());
+        }
+        if tag.media_type == "image/png" {
+            album_art = Some(tag.data.to_vec());
+        }
+    }
+
+    let album_art = album_art.unwrap();
+
+    album_art
+}
+
+pub fn write_symphonia_picture_data(filepath: String, album_art: Vec<u8>) {
+    
+    let mut file = std::fs::File::open(filepath.clone()).unwrap();
+    file.write_all(&album_art).unwrap();
+}
 /// We want to make a trait that has the following functions
 /// * get_song_table_data returns SONG_TABLE_DATA struct
 /// * get_song_artists_table_data returns SONG_ARTISTS_TABLE_DATA struct
